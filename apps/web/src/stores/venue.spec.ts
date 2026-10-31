@@ -40,6 +40,10 @@ describe("venue store", () => {
 
     store.renameProject("x".repeat(201));
     expect(store.document.project.name).toBe("Untitled venue");
+
+    store.renameVenue("Main hall");
+    const saved = store.toJson();
+    expect(saved).toContain("Main hall");
   });
 
   it("ignores a file load that was superseded", () => {

@@ -3,12 +3,14 @@ import {
   buildRectangularRoom,
   degreesToRadians,
   formatDegrees,
+  isCounterClockwise,
   openingSpan,
   planToWorld,
   pointInPolygon,
   polygonArea,
   polygonCentroid,
   polygonSelfIntersects,
+  quantize,
   radiansToDegrees,
   segmentIntersection,
   snapPoint,
@@ -34,6 +36,17 @@ describe("units", () => {
   it("quantizes grid snaps to the nearest 0.5 m and 0.01 m", () => {
     expect(snapToGrid({ x: 0.24, z: 0.8 })).toEqual({ x: 0, z: 1 });
     expect(snapToGrid({ x: 0.26, z: -0.2 })).toEqual({ x: 0.5, z: 0 });
+    expect(quantize(0.25, 0.25)).toBe(0.25);
+    expect(quantize(0.5, 0.01)).toBe(0.5);
+  });
+
+  it("rejects a grid that cannot represent its own points", () => {
+    expect(() => snapToGrid({ x: 0.4, z: 0 }, { size: 0.5, precision: 0.3 })).toThrow(
+      /multiple of precision/,
+    );
+    expect(() =>
+      snapToGrid({ x: 1, z: 1 }, { size: Number.POSITIVE_INFINITY, precision: 0.01 }),
+    ).toThrow(/finite/);
   });
 });
 
@@ -72,8 +85,10 @@ describe("rooms and walls", () => {
     const room = buildRectangularRoom({ width: 10, depth: 8 });
     expect(room.area).toBeCloseTo(80);
     expect(room.centroid).toEqual({ x: 5, z: 4 });
-    expect(wallLength(room.walls[0])).toBeCloseTo(10);
-    expect(wallAngle(room.walls[1])).toBeCloseTo(Math.PI / 2);
+    expect(isCounterClockwise(room.boundary)).toBe(true);
+    expect(wallLength(room.walls[0])).toBeCloseTo(8);
+    expect(wallAngle(room.walls[0])).toBeCloseTo(Math.PI / 2);
+    expect(wallLength(room.walls[1])).toBeCloseTo(10);
     expect(pointInPolygon({ x: 1, z: 1 }, room.boundary)).toBe(true);
     expect(pointInPolygon({ x: 10, z: 0 }, room.boundary)).toBe(true);
     expect(pointInPolygon({ x: -1, z: 1 }, room.boundary)).toBe(false);
@@ -97,6 +112,23 @@ describe("rooms and walls", () => {
       { x: 1, z: 0 },
     ];
     expect(polygonSelfIntersects(bowtie)).toBe(true);
+    const touching = [
+      { x: 0, z: 0 },
+      { x: 2, z: 0 },
+      { x: 2, z: 1 },
+      { x: 1, z: 0 },
+      { x: 0, z: 1 },
+    ];
+    expect(polygonSelfIntersects(touching)).toBe(true);
+    const overlap = [
+      { x: 0, z: 0 },
+      { x: 3, z: 0 },
+      { x: 3, z: 1 },
+      { x: 2, z: 0 },
+      { x: 1, z: 0 },
+      { x: 1, z: 1 },
+    ];
+    expect(polygonSelfIntersects(overlap)).toBe(true);
     const hit = segmentIntersection({ x: 0, z: 0 }, { x: 1, z: 1 }, { x: 0, z: 1 }, { x: 1, z: 0 });
     expect(hit?.point.x).toBeCloseTo(0.5);
     expect(hit?.point.z).toBeCloseTo(0.5);

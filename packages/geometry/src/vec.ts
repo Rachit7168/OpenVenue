@@ -21,14 +21,21 @@ export function nearlyEqual(a: number, b: number, epsilon = LENGTH_EPSILON): boo
   return Math.abs(a - b) <= epsilon;
 }
 
+/** Decimal places needed to write `precision` without rounding a valid multiple. */
+function decimalPlaces(precision: number): number {
+  const [mantissa = "0", exponentText = "0"] = precision.toExponential().split("e");
+  const fraction = mantissa.split(".")[1];
+  const places = (fraction ? fraction.length : 0) - Number(exponentText);
+  return Math.max(0, Math.min(20, places));
+}
+
 /** Round to the nearest multiple of `precision` (0.01 m by default). */
 export function quantize(value: number, precision = 0.01): number {
-  if (!(precision > 0)) {
-    throw new Error("precision must be positive");
+  if (!Number.isFinite(value) || !Number.isFinite(precision) || !(precision > 0)) {
+    throw new Error("value and precision must be finite, and precision must be positive");
   }
   const quantized = Math.round(value / precision) * precision;
-  const decimals = precision >= 1 ? 0 : Math.min(10, Math.ceil(-Math.log10(precision) - 1e-12));
-  const parsed = Number(quantized.toFixed(decimals));
+  const parsed = Number(quantized.toFixed(decimalPlaces(precision)));
   return Object.is(parsed, -0) ? 0 : parsed;
 }
 

@@ -79,9 +79,9 @@ export function buildRectangularRoom(options: {
   const farZ = origin.z + options.depth;
   const boundary: [Vec2, Vec2, Vec2, Vec2] = [
     { x: origin.x, z: origin.z },
-    { x: farX, z: origin.z },
-    { x: farX, z: farZ },
     { x: origin.x, z: farZ },
+    { x: farX, z: farZ },
+    { x: farX, z: origin.z },
   ];
   const walls: [WallLine, WallLine, WallLine, WallLine] = [
     { start: boundary[0], end: boundary[1] },

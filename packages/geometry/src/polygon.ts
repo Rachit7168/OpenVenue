@@ -9,7 +9,7 @@ export function signedArea(points: readonly Vec2[]): number {
     if (!current || !next) {
       continue;
     }
-    sum += current.x * next.z - next.x * current.z;
+    sum += current.z * next.x - current.x * next.z;
   }
   return sum / 2;
 }
@@ -42,7 +42,7 @@ export function polygonCentroid(points: readonly Vec2[]): Vec2 {
     if (!current || !next) {
       continue;
     }
-    const cross = current.x * next.z - next.x * current.z;
+    const cross = current.z * next.x - current.x * next.z;
     x += (current.x + next.x) * cross;
     z += (current.z + next.z) * cross;
   }
@@ -137,7 +137,14 @@ function edgesShareVertex(first: number, second: number, count: number): boolean
   return (first === 0 && second === count - 1) || (second === 0 && first === count - 1);
 }
 
-/** True when non-adjacent edges cross. Touching corners of a simple ring do not count. */
+function segmentsTouch(a: Vec2, b: Vec2, c: Vec2, d: Vec2): boolean {
+  if (segmentIntersection(a, b, c, d, false)) {
+    return true;
+  }
+  return onSegment(a, c, d) || onSegment(b, c, d) || onSegment(c, a, b) || onSegment(d, a, b);
+}
+
+/** True when non-adjacent edges cross, overlap, or meet. Adjacent corners of a simple ring do not count. */
 export function polygonSelfIntersects(points: readonly Vec2[]): boolean {
   const count = points.length;
   if (count < 4) {
@@ -155,7 +162,7 @@ export function polygonSelfIntersects(points: readonly Vec2[]): boolean {
       if (!a || !b || !c || !d) {
         continue;
       }
-      if (segmentIntersection(a, b, c, d, false)) {
+      if (segmentsTouch(a, b, c, d)) {
         return true;
       }
     }

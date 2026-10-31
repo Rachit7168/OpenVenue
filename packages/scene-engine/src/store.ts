@@ -7,7 +7,7 @@ export interface SelectionState {
 
 export interface DocumentChange {
   kind: "document";
-  reason: "execute" | "undo" | "redo" | "replace";
+  reason: "execute" | "undo" | "redo" | "replace" | "update";
   commandType: string | null;
   document: VenueDocument;
 }
@@ -24,14 +24,19 @@ export type SceneChange = DocumentChange | SelectionChange;
  * A Vue layer should subscribe and copy these into editor state.
  * Per-frame camera and renderer state stay outside this store.
  */
+function cloneDocument(document: VenueDocument): VenueDocument {
+  return JSON.parse(JSON.stringify(document)) as VenueDocument;
+}
+
 export class SceneStore {
   private document: VenueDocument;
   private selection: SelectionState = { ids: [] };
   private readonly history = new CommandStack();
   private readonly listeners = new Set<(change: SceneChange) => void>();
+  private queue: SceneChange[] | null = null;
 
   constructor(document: VenueDocument) {
-    this.document = document;
+    this.document = cloneDocument(document);
   }
 
   subscribe(listener: (change: SceneChange) => void): () => void {
@@ -42,7 +47,7 @@ export class SceneStore {
   }
 
   getDocument(): VenueDocument {
-    return this.document;
+    return cloneDocument(this.document);
   }
 
   getSelection(): SelectionState {
@@ -59,12 +64,7 @@ export class SceneStore {
 
   execute(command: EditorCommand, options?: ExecuteOptions): void {
     this.document = this.history.execute(this.document, command, options);
-    this.emit({
-      kind: "document",
-      reason: "execute",
-      commandType: command.type,
-      document: this.document,
-    });
+    this.emitDocument("execute", command.type);
   }
 
   undo(): void {
@@ -72,12 +72,7 @@ export class SceneStore {
       return;
     }
     this.document = this.history.undo(this.document);
-    this.emit({
-      kind: "document",
-      reason: "undo",
-      commandType: null,
-      document: this.document,
-    });
+    this.emitDocument("undo", null);
   }
 
   redo(): void {
@@ -85,23 +80,19 @@ export class SceneStore {
       return;
     }
     this.document = this.history.redo(this.document);
-    this.emit({
-      kind: "document",
-      reason: "redo",
-      commandType: null,
-      document: this.document,
-    });
+    this.emitDocument("redo", null);
   }
 
   replaceDocument(document: VenueDocument): void {
     this.history.clear();
-    this.document = document;
-    this.emit({
-      kind: "document",
-      reason: "replace",
-      commandType: null,
-      document: this.document,
-    });
+    this.document = cloneDocument(document);
+    this.emitDocument("replace", null);
+  }
+
+  /** Store a caller-owned document without clearing undo. */
+  updateDocument(document: VenueDocument): void {
+    this.document = cloneDocument(document);
+    this.emitDocument("update", null);
   }
 
   setSelection(ids: readonly string[]): void {
@@ -109,9 +100,33 @@ export class SceneStore {
     this.emit({ kind: "selection", selection: this.getSelection() });
   }
 
+  private emitDocument(reason: DocumentChange["reason"], commandType: string | null): void {
+    this.emit({
+      kind: "document",
+      reason,
+      commandType,
+      document: cloneDocument(this.document),
+    });
+  }
+
   private emit(change: SceneChange): void {
-    for (const listener of this.listeners) {
-      listener(change);
+    if (this.queue) {
+      this.queue.push(change);
+      return;
+    }
+    this.queue = [change];
+    try {
+      while (this.queue.length > 0) {
+        const next = this.queue.shift();
+        if (!next) {
+          break;
+        }
+        for (const listener of [...this.listeners]) {
+          listener(next);
+        }
+      }
+    } finally {
+      this.queue = null;
     }
   }
 }

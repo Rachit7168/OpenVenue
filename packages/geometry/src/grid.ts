@@ -36,10 +36,21 @@ export interface SnapResult {
   wallId?: string;
 }
 
-export function snapToGrid(point: Vec2, grid: GridSettings = DEFAULT_GRID): Vec2 {
-  if (!(grid.size > 0)) {
-    throw new Error("grid size must be positive");
+function assertGrid(grid: GridSettings): void {
+  if (!Number.isFinite(grid.size) || !(grid.size > 0)) {
+    throw new Error("grid size must be a positive finite number");
   }
+  if (!Number.isFinite(grid.precision) || !(grid.precision > 0)) {
+    throw new Error("grid precision must be a positive finite number");
+  }
+  const steps = grid.size / grid.precision;
+  if (Math.abs(steps - Math.round(steps)) > 1e-6) {
+    throw new Error("grid size must be a multiple of precision");
+  }
+}
+
+export function snapToGrid(point: Vec2, grid: GridSettings = DEFAULT_GRID): Vec2 {
+  assertGrid(grid);
   return {
     x: quantize(Math.round(point.x / grid.size) * grid.size, grid.precision),
     z: quantize(Math.round(point.z / grid.size) * grid.size, grid.precision),

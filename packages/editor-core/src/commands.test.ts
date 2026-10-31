@@ -10,6 +10,7 @@ import {
   addObject,
   addRoom,
   addWall,
+  CommandError,
   CommandStack,
   deleteObject,
   moveObject,
@@ -18,6 +19,7 @@ import {
   rotateObject,
   updateMaterial,
   updateWall,
+  type EditorCommand,
 } from "./index.js";
 
 const floorOf = (document: VenueDocument) => {
@@ -176,5 +178,48 @@ describe("commands", () => {
       current = stack.redo(current);
     }
     expect(JSON.stringify(current)).toBe(built);
+  });
+
+  it("leaves history unchanged when execute, undo, or redo throws", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue();
+    const floorId = floorOf(document).id;
+    document = stack.execute(document, addObject(floorId, chair(objectId)));
+    const moved = stack.execute(document, moveObject(document, objectId, { x: 2, y: 0, z: 0 }));
+    expect(() =>
+      stack.execute(createEmptyVenue(), moveObject(document, objectId, { x: 6, y: 0, z: 0 }), {
+        merge: true,
+      }),
+    ).toThrow(CommandError);
+    expect(stack.undo(moved).venue.floors[0]?.objects[0]?.transform.position).toEqual({
+      x: 1,
+      y: 0,
+      z: 2,
+    });
+    const redone = stack.redo(document);
+    expect(floorOf(redone).objects[0]?.transform.position).toEqual({ x: 2, y: 0, z: 0 });
+
+    const failing: EditorCommand = {
+      type: "ADD_WALL",
+      execute: () => {
+        throw new Error("execute failed");
+      },
+      undo: () => {
+        throw new Error("undo failed");
+      },
+    };
+    expect(() => stack.execute(redone, failing)).toThrow("execute failed");
+    expect(stack.canUndo).toBe(true);
+    const stored: EditorCommand = {
+      type: "UPDATE_WALL",
+      execute: (current) => current,
+      undo: () => {
+        throw new Error("undo failed");
+      },
+    };
+    stack.execute(redone, stored);
+    expect(() => stack.undo(redone)).toThrow("undo failed");
+    expect(stack.canUndo).toBe(true);
+    expect(stack.canRedo).toBe(false);
   });
 });

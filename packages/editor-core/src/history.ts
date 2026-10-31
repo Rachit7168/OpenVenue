@@ -45,9 +45,10 @@ export class CommandStack {
       const last = this.undoStack[this.undoStack.length - 1];
       const merged = last?.merge?.(command) ?? null;
       if (last && merged) {
+        const next = command.execute(document);
         this.undoStack[this.undoStack.length - 1] = merged;
         this.redoStack = [];
-        return command.execute(document);
+        return next;
       }
     }
 
@@ -58,21 +59,23 @@ export class CommandStack {
   }
 
   undo(document: VenueDocument): VenueDocument {
-    const command = this.undoStack.pop();
+    const command = this.undoStack[this.undoStack.length - 1];
     if (!command) {
       return document;
     }
     const next = command.undo(document);
+    this.undoStack.pop();
     this.redoStack.push(command);
     return next;
   }
 
   redo(document: VenueDocument): VenueDocument {
-    const command = this.redoStack.pop();
+    const command = this.redoStack[this.redoStack.length - 1];
     if (!command) {
       return document;
     }
     const next = command.execute(document);
+    this.redoStack.pop();
     this.undoStack.push(command);
     return next;
   }

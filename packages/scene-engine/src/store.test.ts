@@ -1,4 +1,4 @@
-import { addWall, planRectangularRoom } from "@openvenue/editor-core";
+import { addObject, addWall, planRectangularRoom } from "@openvenue/editor-core";
 import { createEmptyVenue } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
 import { SceneStore, type SceneChange } from "./store.js";
@@ -75,5 +75,54 @@ describe("scene store", () => {
     store.replaceDocument(createEmptyVenue());
     expect(store.canUndo).toBe(false);
     expect(store.getDocument().venue.floors[0]?.walls).toHaveLength(0);
+  });
+
+  it("returns a copy and delivers nested commands after the current event", () => {
+    const store = new SceneStore(createEmptyVenue());
+    const floor = store.getDocument().venue.floors[0];
+    if (!floor) {
+      throw new Error("missing floor");
+    }
+    const leaked = store.getDocument();
+    leaked.project.name = "changed outside";
+    expect(store.getDocument().project.name).toBe("Untitled venue");
+
+    const seen: string[] = [];
+    let nested = false;
+    store.subscribe((change) => {
+      if (change.kind !== "document") {
+        return;
+      }
+      seen.push(`a:${change.commandType}`);
+      if (!nested && change.commandType === "ADD_WALL") {
+        nested = true;
+        store.execute(
+          addObject(floor.id, {
+            id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            type: "chair",
+            name: "Chair",
+            transform: {
+              position: { x: 1, y: 0, z: 1 },
+              rotation: { x: 0, y: 0, z: 0 },
+            },
+          }),
+        );
+      }
+    });
+    store.subscribe((change) => {
+      if (change.kind === "document") {
+        seen.push(`b:${change.commandType}`);
+      }
+    });
+    store.execute(
+      addWall(floor.id, {
+        id: "55555555-5555-4555-8555-555555555555",
+        start: { x: 0, z: 0 },
+        end: { x: 2, z: 0 },
+        thickness: 0.2,
+        height: 3,
+      }),
+    );
+    expect(seen).toEqual(["a:ADD_WALL", "b:ADD_WALL", "a:ADD_OBJECT", "b:ADD_OBJECT"]);
   });
 });

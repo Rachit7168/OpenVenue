@@ -44,6 +44,10 @@ export const useVenueStore = defineStore("venue", () => {
     document.value.project.metadata.updatedAt = new Date().toISOString();
   }
 
+  function syncDocument() {
+    scene.updateDocument(document.value);
+  }
+
   function invalidateLoads() {
     loadToken.value += 1;
   }
@@ -69,6 +73,7 @@ export const useVenueStore = defineStore("venue", () => {
     }
     assign(next);
     touch();
+    syncDocument();
     issues.value = [];
     status.value = "Unsaved changes";
   }
@@ -122,6 +127,7 @@ export const useVenueStore = defineStore("venue", () => {
 
   function toJson(): string | null {
     touch();
+    syncDocument();
     const result = validateVenue(scene.getDocument());
     if (!result.valid) {
       issues.value = result.issues;
