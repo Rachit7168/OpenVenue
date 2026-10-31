@@ -50,6 +50,12 @@ importers:
       '@openvenue/editor-core':
         specifier: workspace:*
         version: link:../../packages/editor-core
+      '@openvenue/geometry':
+        specifier: workspace:*
+        version: link:../../packages/geometry
+      '@openvenue/renderer-2d':
+        specifier: workspace:*
+        version: link:../../packages/renderer-2d
       '@openvenue/scene-engine':
         specifier: workspace:*
         version: link:../../packages/scene-engine
@@ -139,6 +145,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.7(@types/node@22.20.5)(jiti@1.21.7)(jsdom@27.4.0)
 
   packages/renderer-3d:
     devDependencies:

@@ -41,12 +41,16 @@ describe("app shell", () => {
 
     expect(first.wrapper.get("[data-testid=venue-json]").text()).toContain("Main hall");
     expect(first.wrapper.get("[data-testid=venue-json]").text()).toContain("Hall");
+    expect(first.wrapper.find("[data-testid=floor-plan]").exists()).toBe(true);
+    expect(first.wrapper.get("[data-testid=plan-status]").text()).toContain("metres");
     first.wrapper.unmount();
 
     const second = mountApp();
     await second.router.isReady();
     await flushPromises();
     expect(second.wrapper.get("[data-testid=project-card]").text()).toContain("Main hall");
-    expect(second.wrapper.get("[data-testid=project-thumbnail]").text()).toContain("No preview");
+    expect(
+      second.wrapper.find("[data-testid=project-thumbnail] [data-testid=floor-plan]").exists(),
+    ).toBe(true);
   });
 });
