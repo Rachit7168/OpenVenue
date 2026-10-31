@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
-import type { CameraMode, GizmoMode, ObjectPose } from "@openvenue/renderer-3d";
+import type { CameraMode, GizmoMode, ObjectPose, QualityMode } from "@openvenue/renderer-3d";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
 import VenueStage from "../components/VenueStage.vue";
@@ -17,6 +17,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage" | "both">("plan");
 const cameraMode = ref<CameraMode>("orbit");
 const gizmoMode = ref<GizmoMode>("translate");
+const qualityMode = ref<QualityMode>("high");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
 
 const selectedObjectId = computed(() => {
@@ -314,6 +315,28 @@ function save() {
             </button>
             <button
               type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                qualityMode === 'simple' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="quality-simple"
+              @click="qualityMode = 'simple'"
+            >
+              Simple
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                qualityMode === 'high' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="quality-high"
+              @click="qualityMode = 'high'"
+            >
+              High
+            </button>
+            <button
+              type="button"
               class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
               @click="stage?.fit()"
             >
@@ -361,6 +384,7 @@ function save() {
         :scene="store.scene"
         :camera-mode="cameraMode"
         :gizmo-mode="gizmoMode"
+        :quality-mode="qualityMode"
         :selected-id="selectedObjectId"
         @select="store.setSelection($event ? [$event] : [])"
         @transform="onObjectTransform"

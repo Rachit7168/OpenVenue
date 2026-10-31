@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { entityIdOf, poseFromMesh } from "./pick.js";
+import { entityIdFromHit, entityIdOf, poseFromMesh } from "./pick.js";
 
 describe("picking", () => {
   it("reads the furniture id from a child mesh", () => {
@@ -10,6 +10,13 @@ describe("picking", () => {
     group.add(mesh);
     expect(entityIdOf(mesh)).toBe("table-1");
     expect(entityIdOf(new THREE.Mesh())).toBeNull();
+  });
+
+  it("reads a chair id from its instance index", () => {
+    const batch = new THREE.Object3D();
+    batch.userData.entityIds = ["chair-a", "chair-b"];
+    expect(entityIdFromHit(batch, 1)).toBe("chair-b");
+    expect(entityIdFromHit(batch, 4)).toBeNull();
   });
 
   it("turns a centred, scaled mesh into a floor pose", () => {

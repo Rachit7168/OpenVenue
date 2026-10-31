@@ -1,7 +1,7 @@
 import type { Opening, SceneObject, VenueDocument, Wall } from "@openvenue/scene-schema";
 import * as THREE from "three";
+import { materialPreset } from "./materials.js";
 
-const floorMaterial = new THREE.MeshStandardMaterial({ color: "#166534", roughness: 0.95 });
 const ceilingMaterial = new THREE.MeshStandardMaterial({
   color: "#27272a",
   transparent: true,
@@ -29,6 +29,103 @@ function scaleOf(value: number | undefined): number {
     return 1;
   }
   return Math.abs(value);
+}
+
+function objectSize(object: SceneObject): { width: number; height: number; depth: number } {
+  return {
+    width: (object.dimensions?.width ?? 0.6) * scaleOf(object.transform.scale?.x),
+    height: (object.dimensions?.height ?? 0.75) * scaleOf(object.transform.scale?.y),
+    depth: (object.dimensions?.depth ?? 0.6) * scaleOf(object.transform.scale?.z),
+  };
+}
+
+function sharedSurface(type: string): boolean {
+  return (
+    type === "table" ||
+    type === "chair" ||
+    type === "podium" ||
+    type === "screen" ||
+    type === "generic" ||
+    type === "custom"
+  );
+}
+
+function furnitureMaterial(type: string): THREE.Material {
+  if (type === "screen") {
+    return materialPreset("glass");
+  }
+  if (type === "generic" || type === "custom") {
+    return materialPreset("concrete");
+  }
+  if (type === "table" || type === "chair" || type === "podium") {
+    return materialPreset("wood");
+  }
+  return new THREE.MeshStandardMaterial({
+    color: objectColors[type] ?? "#a8a29e",
+    roughness: 0.7,
+  });
+}
+
+const chairDummy = new THREE.Object3D();
+
+export interface ChairSlot {
+  mesh: THREE.InstancedMesh;
+  index: number;
+  locked: boolean;
+}
+
+/** One slot per visible chair, grouped inside instanced batches. */
+export function indexChairs(group: THREE.Object3D): Map<string, ChairSlot> {
+  const map = new Map<string, ChairSlot>();
+  group.traverse((child) => {
+    if (!(child instanceof THREE.InstancedMesh) || !Array.isArray(child.userData.entityIds)) {
+      return;
+    }
+    const locks = child.userData.lockedFlags;
+    child.userData.entityIds.forEach((id: unknown, index: number) => {
+      if (typeof id !== "string" || id.length === 0) {
+        return;
+      }
+      map.set(id, {
+        mesh: child,
+        index,
+        locked: Array.isArray(locks) && locks[index] === true,
+      });
+    });
+  });
+  return map;
+}
+
+/** Write one chair's pose. False when the chair no longer matches this batch's box. */
+export function writeChairMatrix(
+  mesh: THREE.InstancedMesh,
+  index: number,
+  object: SceneObject,
+): boolean {
+  const size = objectSize(object);
+  const geometry = mesh.geometry;
+  if (!(geometry instanceof THREE.BoxGeometry) || index < 0 || index >= mesh.count) {
+    return false;
+  }
+  const { width, height, depth } = geometry.parameters;
+  if (width !== size.width || height !== size.height || depth !== size.depth) {
+    return false;
+  }
+  chairDummy.position.set(
+    object.transform.position.x,
+    object.transform.position.y + size.height / 2,
+    object.transform.position.z,
+  );
+  chairDummy.rotation.set(
+    object.transform.rotation.x,
+    object.transform.rotation.y,
+    object.transform.rotation.z,
+  );
+  chairDummy.scale.set(1, 1, 1);
+  chairDummy.updateMatrix();
+  mesh.setMatrixAt(index, chairDummy.matrix);
+  mesh.instanceMatrix.needsUpdate = true;
+  return true;
 }
 
 function solidSpans(length: number, openings: readonly Opening[]): { from: number; to: number }[] {
@@ -125,9 +222,7 @@ function addWall(group: THREE.Group, wall: Wall): void {
 
 /** Move an existing furniture box to match the document. Keeps the mesh when the size is unchanged. */
 export function placeObjectMesh(mesh: THREE.Mesh, object: SceneObject): void {
-  const width = (object.dimensions?.width ?? 0.6) * scaleOf(object.transform.scale?.x);
-  const height = (object.dimensions?.height ?? 0.75) * scaleOf(object.transform.scale?.y);
-  const depth = (object.dimensions?.depth ?? 0.6) * scaleOf(object.transform.scale?.z);
+  const { width, height, depth } = objectSize(object);
   mesh.position.set(
     object.transform.position.x,
     object.transform.position.y + height / 2,
@@ -151,6 +246,43 @@ export function placeObjectMesh(mesh: THREE.Mesh, object: SceneObject): void {
   if (!sameSize) {
     geometry.dispose();
     mesh.geometry = new THREE.BoxGeometry(width, height, depth);
+  }
+}
+
+function addChairs(group: THREE.Group, chairs: readonly SceneObject[]): void {
+  const batches = new Map<string, SceneObject[]>();
+  for (const chair of chairs) {
+    const size = objectSize(chair);
+    const key = `${size.width}\0${size.height}\0${size.depth}`;
+    const list = batches.get(key);
+    if (list) {
+      list.push(chair);
+    } else {
+      batches.set(key, [chair]);
+    }
+  }
+  for (const list of batches.values()) {
+    const first = list[0];
+    if (!first) {
+      continue;
+    }
+    const size = objectSize(first);
+    const mesh = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(size.width, size.height, size.depth),
+      materialPreset("wood"),
+      list.length,
+    );
+    mesh.userData.entityIds = list.map((chair) => chair.id);
+    mesh.userData.lockedFlags = list.map(
+      (chair) => (chair as { locked?: unknown }).locked === true,
+    );
+    list.forEach((chair, index) => {
+      writeChairMatrix(mesh, index, chair);
+    });
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.computeBoundingSphere();
+    group.add(mesh);
   }
 }
 
@@ -178,7 +310,7 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
       }
     });
     const footprint = new THREE.ShapeGeometry(shape);
-    const slab = new THREE.Mesh(footprint, floorMaterial);
+    const slab = new THREE.Mesh(footprint, materialPreset(room.floorMaterial));
     slab.rotation.x = -Math.PI / 2;
     slab.position.y = 0.02;
     slab.receiveShadow = true;
@@ -196,19 +328,23 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
     }
   }
 
+  const chairs: SceneObject[] = [];
   for (const object of floor.objects) {
     if (!shown(object)) {
       continue;
     }
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: objectColors[object.type] ?? "#a8a29e" }),
-    );
+    if (object.type === "chair") {
+      chairs.push(object);
+      continue;
+    }
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), furnitureMaterial(object.type));
     placeObjectMesh(mesh, object);
     mesh.castShadow = true;
-    mesh.userData.ownMaterial = true;
+    mesh.receiveShadow = true;
+    mesh.userData.ownMaterial = !sharedSurface(object.type);
     group.add(mesh);
   }
+  addChairs(group, chairs);
 
   for (const spawn of document.venue.spawnPoints) {
     if (!shown(spawn) || spawn.floorId !== floor.id) {
