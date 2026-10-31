@@ -75,6 +75,11 @@ export function createProjectDocument(input: NewProjectInput, now = new Date()):
   return result.document;
 }
 
+function instant(timestamp: string): number {
+  const parsed = Date.parse(timestamp);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export function readProjects(storage: ProjectStorage): VenueDocument[] {
   const raw = storage.getItem(PROJECTS_KEY);
   if (!raw) {
@@ -96,8 +101,8 @@ export function readProjects(storage: ProjectStorage): VenueDocument[] {
       projects.push(result.document);
     }
   }
-  return projects.sort((a, b) =>
-    b.project.metadata.updatedAt.localeCompare(a.project.metadata.updatedAt),
+  return projects.sort(
+    (a, b) => instant(b.project.metadata.updatedAt) - instant(a.project.metadata.updatedAt),
   );
 }
 

@@ -44,7 +44,50 @@ describe("viewport", () => {
     const center = worldToScreen(fitted, { x: 5, z: 4 });
     expect(center.x).toBeCloseTo(100);
     expect(center.y).toBeCloseTo(100);
+    const hall = [
+      { x: 0, z: 0 },
+      { x: 10, z: 0 },
+      { x: 10, z: 8 },
+      { x: 0, z: 8 },
+    ];
+    for (const corner of hall) {
+      const screen = worldToScreen(fitted, corner);
+      expect(screen.x).toBeGreaterThanOrEqual(20 - 1e-6);
+      expect(screen.x).toBeLessThanOrEqual(180 + 1e-6);
+      expect(screen.y).toBeGreaterThanOrEqual(20 - 1e-6);
+      expect(screen.y).toBeLessThanOrEqual(180 + 1e-6);
+    }
     expect(gridLines(fitted, 200, 200, 0.5).lines.length).toBeGreaterThan(4);
+
+    const large = fitViewport(
+      [
+        { x: 0, z: 0 },
+        { x: 1000, z: 0 },
+        { x: 1000, z: 800 },
+        { x: 0, z: 800 },
+      ],
+      200,
+      200,
+      20,
+    );
+    expect(large.scale).toBeLessThan(4);
+    for (const corner of [
+      { x: 0, z: 0 },
+      { x: 1000, z: 0 },
+      { x: 1000, z: 800 },
+      { x: 0, z: 800 },
+    ]) {
+      const screen = worldToScreen(large, corner);
+      expect(screen.x).toBeGreaterThanOrEqual(20 - 1e-6);
+      expect(screen.x).toBeLessThanOrEqual(180 + 1e-6);
+      expect(screen.y).toBeGreaterThanOrEqual(20 - 1e-6);
+      expect(screen.y).toBeLessThanOrEqual(180 + 1e-6);
+    }
+  });
+
+  it("can zoom out below four pixels per metre", () => {
+    const zoomed = zoomViewport({ scale: 1, originX: 0, originY: 0 }, { x: 0, y: 0 }, 0.5);
+    expect(zoomed.scale).toBeCloseTo(0.5);
   });
 
   it("turns a yaw of zero into a width-by-depth rectangle", () => {
