@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import type { CameraMode } from "@openvenue/renderer-3d";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
 import VenueStage from "../components/VenueStage.vue";
@@ -13,6 +14,8 @@ const route = useRoute();
 const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage">("plan");
+const cameraMode = ref<CameraMode>("orbit");
+const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
 
 const projectId = String(route.params.projectId ?? "");
 const opened = library.find(projectId);
@@ -173,6 +176,45 @@ function save() {
           >
             3D
           </button>
+          <template v-if="viewMode === 'stage'">
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                cameraMode === 'orbit' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              @click="cameraMode = 'orbit'"
+            >
+              Orbit
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                cameraMode === 'isometric'
+                  ? 'bg-teal-400 text-zinc-950'
+                  : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="camera-isometric"
+              @click="cameraMode = 'isometric'"
+            >
+              Isometric
+            </button>
+            <button
+              type="button"
+              class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
+              @click="stage?.fit()"
+            >
+              Fit
+            </button>
+            <button
+              type="button"
+              class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
+              @click="stage?.reset()"
+            >
+              Reset
+            </button>
+          </template>
           <button
             v-if="viewMode === 'stage'"
             type="button"
@@ -202,8 +244,10 @@ function save() {
       <PlanEditor v-show="viewMode === 'plan'" class="min-w-0 flex-1" />
       <VenueStage
         v-if="viewMode === 'stage'"
+        ref="stage"
         class="min-h-0 min-w-0 flex-1"
         :document="store.document"
+        :camera-mode="cameraMode"
       />
       <Inspector />
     </section>

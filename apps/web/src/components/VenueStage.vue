@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
+import { mountVenueView, type CameraMode, type VenueView } from "@openvenue/renderer-3d";
 import type { VenueDocument } from "@openvenue/scene-schema";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
   document: VenueDocument;
+  cameraMode: CameraMode;
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -26,6 +27,7 @@ onMounted(() => {
   }
   view = mountVenueView(element);
   view.setDocument(props.document);
+  view.setCameraMode(props.cameraMode);
   const parent = element.parentElement;
   if (parent && typeof ResizeObserver !== "undefined") {
     observer = new ResizeObserver(() => fit());
@@ -39,6 +41,21 @@ watch(
   (document) => view?.setDocument(document),
   { deep: true },
 );
+
+watch(
+  () => props.cameraMode,
+  (mode) => view?.setCameraMode(mode),
+);
+
+function fitView() {
+  view?.fit();
+}
+
+function resetView() {
+  view?.reset();
+}
+
+defineExpose({ fit: fitView, reset: resetView });
 
 onBeforeUnmount(() => {
   observer?.disconnect();
