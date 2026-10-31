@@ -6,6 +6,7 @@ export interface PlanPolygon {
   id: string;
   name: string;
   points: PlanPoint[];
+  color?: string;
 }
 
 export interface PlanWall {
@@ -51,6 +52,11 @@ export interface PlanScene {
   points: PlanPoint[];
 }
 
+function shown(entity: object): boolean {
+  const value = (entity as { visible?: unknown }).visible;
+  return value !== false;
+}
+
 function horizontalScale(value: number | undefined): number {
   if (value === undefined || !Number.isFinite(value) || value === 0) {
     return 1;
@@ -74,13 +80,24 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
   }
 
   for (const room of floor.rooms) {
+    if (!shown(room)) {
+      continue;
+    }
     const polygon = room.boundary.map((point) => ({ x: point.x, z: point.z }));
     rooms.push({ id: room.id, name: room.name, points: polygon });
     points.push(...polygon);
   }
   for (const zone of floor.zones) {
+    if (!shown(zone)) {
+      continue;
+    }
     const polygon = zone.boundary.map((point) => ({ x: point.x, z: point.z }));
-    zones.push({ id: zone.id, name: zone.name, points: polygon });
+    zones.push({
+      id: zone.id,
+      name: zone.name,
+      points: polygon,
+      ...(typeof zone.color === "string" ? { color: zone.color } : {}),
+    });
     points.push(...polygon);
   }
   for (const wall of floor.walls) {
@@ -97,6 +114,9 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
     }
   }
   for (const object of floor.objects) {
+    if (!shown(object)) {
+      continue;
+    }
     const width = (object.dimensions?.width ?? 0.6) * horizontalScale(object.transform.scale?.x);
     const depth = (object.dimensions?.depth ?? 0.6) * horizontalScale(object.transform.scale?.z);
     const center = { x: object.transform.position.x, z: object.transform.position.z };
@@ -115,7 +135,7 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
     points.push(...corners);
   }
   for (const spawn of document.venue.spawnPoints) {
-    if (spawn.floorId !== floor.id) {
+    if (spawn.floorId !== floor.id || !shown(spawn)) {
       continue;
     }
     const point = { x: spawn.position.x, z: spawn.position.z };

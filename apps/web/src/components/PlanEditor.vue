@@ -13,14 +13,17 @@ import {
   groupCommands,
   moveObject,
   planRectangularRoom,
+  resizeObject,
+  rotateObject,
   updateWall,
   type EditorCommand,
 } from "@openvenue/editor-core";
 import { distance, snapPoint, wallLength, type Vec2 } from "@openvenue/geometry";
 import type { PlanPoint } from "@openvenue/renderer-2d";
-import type { Polygon, VenueDocument } from "@openvenue/scene-schema";
+import type { Polygon, SceneObject, VenueDocument, Zone } from "@openvenue/scene-schema";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { commitPolygon, rectangleFromCorners } from "../plan/draw";
+import { hitHandle, idsInsideBox, toLocal } from "../plan/handles";
 import { hitPlan, type PlanHit } from "../plan/hit";
 import { planScene } from "../plan/model";
 import { useVenueStore } from "../stores/venue";
@@ -48,6 +51,8 @@ const draft = ref<PlanPoint[]>([]);
 const preview = ref<PlanPoint | null>(null);
 const movingId = ref<string | null>(null);
 const mergingMove = ref(false);
+const gesture = ref<"move" | "resize" | "rotate" | "box" | null>(null);
+const marquee = ref<PlanPoint[]>([]);
 const note = ref("Middle-drag pans. Scroll zooms. Delete removes the selection.");
 
 const selectionSummary = computed(() => {
@@ -190,18 +195,64 @@ function addRing(kind: "room" | "zone", points: PlanPoint[]) {
   );
 }
 
-function onDown(point: PlanPoint) {
+function isLocked(id: string): boolean {
+  const floor = floorOf(store.document);
+  const entities = [
+    ...(floor?.rooms ?? []),
+    ...(floor?.zones ?? []),
+    ...(floor?.objects ?? []),
+    ...store.document.venue.spawnPoints,
+  ];
+  return entities.find((item) => item.id === id)?.locked === true;
+}
+
+function quantize(value: number): number {
+  return Math.round(value / 0.05) * 0.05;
+}
+
+function onDown(point: PlanPoint, shift = false) {
   const snapped = place(point);
   const floor = floorOf(store.document);
   if (!floor) {
     return;
   }
   if (tool.value === "select") {
-    const hit = hitPlan(planScene(store.document), snapped);
-    store.setSelection(hit ? [hit.id] : []);
-    movingId.value = hit?.kind === "object" ? hit.id : null;
-    mergingMove.value = false;
-    note.value = hit ? `Selected ${hit.kind}` : "Nothing selected";
+    const scene = planScene(store.document);
+    const only =
+      store.selection.length === 1
+        ? scene.objects.find((object) => object.id === store.selection[0])
+        : undefined;
+    const handle = only && !isLocked(only.id) ? hitHandle(only, point) : null;
+    if (handle && only) {
+      gesture.value = handle;
+      movingId.value = only.id;
+      mergingMove.value = false;
+      return;
+    }
+    const hit = hitPlan(scene, snapped);
+    if (shift && hit) {
+      const ids = store.selection.includes(hit.id)
+        ? store.selection.filter((id) => id !== hit.id)
+        : [...store.selection, hit.id];
+      store.setSelection(ids);
+      gesture.value = null;
+      movingId.value = null;
+      note.value = `${ids.length} selected`;
+      return;
+    }
+    if (hit) {
+      store.setSelection([hit.id]);
+      const canMove = hit.kind === "object" && !isLocked(hit.id);
+      movingId.value = canMove ? hit.id : null;
+      gesture.value = canMove ? "move" : null;
+      mergingMove.value = false;
+      note.value = isLocked(hit.id) ? "That item is locked." : `Selected ${hit.kind}`;
+      return;
+    }
+    store.setSelection([]);
+    gesture.value = "box";
+    marquee.value = [point, point];
+    note.value = "Drag a box to select";
     return;
   }
   if (tool.value === "table") {
@@ -307,6 +358,48 @@ function onDown(point: PlanPoint) {
 
 function onMove(point: PlanPoint) {
   const snapped = place(point);
+  if (gesture.value === "box") {
+    const start = marquee.value[0] ?? point;
+    marquee.value = [start, point];
+    return;
+  }
+  if ((gesture.value === "resize" || gesture.value === "rotate") && movingId.value) {
+    const sceneObject = planScene(store.document).objects.find(
+      (item) => item.id === movingId.value,
+    );
+    const source = floorOf(store.document)?.objects.find((item) => item.id === movingId.value);
+    if (!sceneObject || !source) {
+      return;
+    }
+    if (gesture.value === "resize") {
+      const local = toLocal(sceneObject.center, sceneObject.yaw, snapped);
+      store.execute(
+        resizeObject(store.document, source.id, {
+          width: Math.max(0.3, quantize(Math.abs(local.x) * 2)),
+          height: source.dimensions?.height ?? 0.75,
+          depth: Math.max(0.3, quantize(Math.abs(local.z) * 2)),
+        }),
+        { merge: mergingMove.value },
+      );
+    } else {
+      const step = Math.PI / 12;
+      const yaw =
+        Math.round(
+          Math.atan2(snapped.x - sceneObject.center.x, snapped.z - sceneObject.center.z) / step,
+        ) * step;
+      store.execute(
+        rotateObject(store.document, source.id, {
+          x: source.transform.rotation.x,
+          y: yaw,
+          z: source.transform.rotation.z,
+        }),
+        { merge: mergingMove.value },
+      );
+    }
+    mergingMove.value = true;
+    note.value = store.status;
+    return;
+  }
   if (movingId.value) {
     store.execute(
       moveObject(store.document, movingId.value, {
@@ -326,8 +419,60 @@ function onMove(point: PlanPoint) {
 }
 
 function onUp() {
+  if (gesture.value === "box") {
+    const [start, end] = marquee.value;
+    if (start && end) {
+      store.setSelection(idsInsideBox(planScene(store.document), start, end));
+      note.value =
+        store.selection.length > 0 ? `${store.selection.length} selected` : "Nothing selected";
+    }
+  }
   movingId.value = null;
   mergingMove.value = false;
+  gesture.value = null;
+  marquee.value = [];
+}
+
+function duplicateSelection() {
+  const floor = floorOf(store.document);
+  if (!floor) {
+    return;
+  }
+  const created: string[] = [];
+  const commands = [];
+  for (const id of store.selection) {
+    if (isLocked(id)) {
+      continue;
+    }
+    const object = floor.objects.find((item) => item.id === id);
+    if (object) {
+      const copy = JSON.parse(JSON.stringify(object)) as SceneObject;
+      copy.id = crypto.randomUUID();
+      copy.name = `${object.name} copy`.slice(0, 200);
+      copy.transform.position.x += 0.5;
+      copy.transform.position.z += 0.5;
+      created.push(copy.id);
+      commands.push(addObject(floor.id, copy));
+    }
+    const zone = floor.zones.find((item) => item.id === id);
+    if (zone) {
+      const copy = JSON.parse(JSON.stringify(zone)) as Zone;
+      copy.id = crypto.randomUUID();
+      copy.name = `${zone.name} copy`.slice(0, 200);
+      copy.boundary = copy.boundary.map((corner) => ({
+        x: corner.x + 0.5,
+        z: corner.z + 0.5,
+      })) as Polygon;
+      created.push(copy.id);
+      commands.push(addZone(floor.id, copy));
+    }
+  }
+  if (commands.length === 0) {
+    note.value = "Select an unlocked table or zone to duplicate.";
+    return;
+  }
+  run(groupCommands("ADD_OBJECT", commands));
+  store.setSelection(created);
 }
 
 function placeDoor(point: PlanPoint, floorId: string) {
@@ -376,11 +521,7 @@ function placeDoor(point: PlanPoint, floorId: string) {
   );
 }
 
-function removeSelection() {
-  const id = store.selection[0];
-  if (!id) {
-    return;
-  }
+function removeOne(id: string) {
   const scene = planScene(store.document);
   const hit: PlanHit | null = scene.objects.some((item) => item.id === id)
     ? { kind: "object", id }
@@ -411,7 +552,23 @@ function removeSelection() {
   } else {
     run(deleteSpawn(document, id));
   }
-  store.setSelection([]);
+}
+
+function removeSelection() {
+  const ids = [...store.selection];
+  if (ids.length === 0) {
+    return;
+  }
+  const kept: string[] = [];
+  for (const id of ids) {
+    if (isLocked(id)) {
+      kept.push(id);
+      note.value = "That item is locked.";
+      continue;
+    }
+    removeOne(id);
+  }
+  store.setSelection(kept);
 }
 
 function undo() {
@@ -433,6 +590,9 @@ function onKey(event: KeyboardEvent) {
     draft.value = [];
     preview.value = null;
     movingId.value = null;
+  } else if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "d") {
+    event.preventDefault();
+    duplicateSelection();
   } else if (event.key === "Delete" || event.key === "Backspace") {
     event.preventDefault();
     removeSelection();
@@ -491,6 +651,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
       :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
       :draft="shownDraft"
       :selected-ids="[...store.selection]"
+      :marquee="marquee"
       @down="onDown"
       @move="onMove"
       @up="onUp"

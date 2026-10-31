@@ -22,17 +22,19 @@ const props = withDefaults(
     tool?: "pan" | "select" | "wall" | "rect" | "polygon" | "zone" | "door" | "table" | "spawn";
     draft?: PlanPoint[];
     selectedIds?: string[];
+    marquee?: PlanPoint[];
   }>(),
   {
     interactive: true,
     tool: "select",
     draft: () => [],
     selectedIds: () => [],
+    marquee: () => [],
   },
 );
 
 const emit = defineEmits<{
-  down: [point: PlanPoint];
+  down: [point: PlanPoint, shift: boolean];
   move: [point: PlanPoint];
   up: [point: PlanPoint];
 }>();
@@ -125,6 +127,28 @@ function facingEnd(point: { x: number; z: number }, rotationY: number): { x: num
   };
 }
 
+const activeFixture = computed(() => {
+  if (props.selectedIds.length !== 1) {
+    return null;
+  }
+  return scene.value.objects.find((object) => object.id === props.selectedIds[0]) ?? null;
+});
+
+const marqueeRect = computed(() => {
+  const [start, end] = props.marquee;
+  if (!start || !end) {
+    return null;
+  }
+  const a = screenOf(start);
+  const b = screenOf(end);
+  return {
+    x: Math.min(a.x, b.x),
+    y: Math.min(a.y, b.y),
+    width: Math.abs(a.x - b.x),
+    height: Math.abs(a.y - b.y),
+  };
+});
+
 const fixtureFill: Record<string, string> = {
   stage: "#6d28d9",
   booth: "#0f766e",
@@ -180,7 +204,7 @@ function onPointerDown(event: PointerEvent) {
     root.value?.setPointerCapture(event.pointerId);
     return;
   }
-  emit("down", world);
+  emit("down", world, event.shiftKey);
 }
 
 function onPointerMove(event: PointerEvent) {
@@ -272,7 +296,7 @@ watch(
         v-for="zone in scene.zones"
         :key="zone.id"
         :d="path(zone.points)"
-        fill="#6d28d9"
+        :fill="zone.color ?? '#6d28d9'"
         fill-opacity="0.28"
         :stroke="chosen(zone.id) ? '#22d3ee' : '#ddd6fe'"
         stroke-width="1.5"
@@ -427,6 +451,49 @@ watch(
           stroke-width="1"
         />
       </g>
+      <g v-if="activeFixture" :transform="fixtureTransform(activeFixture)">
+        <line
+          x1="0"
+          :y1="metres(-activeFixture.depth / 2)"
+          x2="0"
+          :y2="metres(-(activeFixture.depth / 2 + 0.55))"
+          stroke="#fbbf24"
+          stroke-width="1.5"
+        />
+        <circle
+          cx="0"
+          :cy="metres(-(activeFixture.depth / 2 + 0.55))"
+          r="5"
+          fill="#fbbf24"
+          stroke="#fafafa"
+        />
+        <circle
+          v-for="corner in [
+            [activeFixture.width / 2, activeFixture.depth / 2],
+            [activeFixture.width / 2, -activeFixture.depth / 2],
+            [-activeFixture.width / 2, activeFixture.depth / 2],
+            [-activeFixture.width / 2, -activeFixture.depth / 2],
+          ]"
+          :key="`${corner[0]}-${corner[1]}`"
+          :cx="metres(corner[0] ?? 0)"
+          :cy="metres(-(corner[1] ?? 0))"
+          r="5"
+          fill="#fafafa"
+          stroke="#22d3ee"
+          stroke-width="2"
+        />
+      </g>
+      <rect
+        v-if="marqueeRect"
+        :x="marqueeRect.x"
+        :y="marqueeRect.y"
+        :width="marqueeRect.width"
+        :height="marqueeRect.height"
+        fill="#22d3ee"
+        fill-opacity="0.12"
+        stroke="#22d3ee"
+        stroke-dasharray="4 3"
+      />
       <polyline
         v-if="draftPoints"
         :points="draftPoints"

@@ -11,10 +11,13 @@ export {
   deleteZone,
   groupCommands,
   moveObject,
+  renameEntity,
   resizeObject,
   rotateObject,
+  setEntityFlag,
   updateMaterial,
   updateWall,
+  updateZone,
 } from "./commands.js";
 export { CommandError } from "./errors.js";
 export {
