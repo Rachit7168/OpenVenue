@@ -10,6 +10,7 @@ import {
   addObject,
   addRoom,
   addWall,
+  groupCommands,
   CommandError,
   CommandStack,
   deleteObject,
@@ -178,6 +179,38 @@ describe("commands", () => {
       current = stack.redo(current);
     }
     expect(JSON.stringify(current)).toBe(built);
+  });
+
+  it("undoes a grouped room in one step", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue();
+    const floorId = floorOf(document).id;
+    const planned = planRectangularRoom({
+      name: "Room",
+      width: 4,
+      depth: 3,
+      roomId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      wallIds: [
+        "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+        "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+        "ffffffff-ffff-4fff-8fff-ffffffffffff",
+      ],
+    });
+    document = stack.execute(
+      document,
+      groupCommands("ADD_ROOM", [
+        ...planned.walls.map((wall) => addWall(floorId, wall)),
+        addRoom(floorId, planned.room),
+      ]),
+    );
+    expect(floorOf(document).walls).toHaveLength(4);
+    expect(floorOf(document).rooms).toHaveLength(1);
+    expect(validateVenue(document).valid).toBe(true);
+    const undone = stack.undo(document);
+    expect(floorOf(undone).walls).toHaveLength(0);
+    expect(floorOf(undone).rooms).toHaveLength(0);
+    expect(stack.canRedo).toBe(true);
   });
 
   it("leaves history unchanged when execute, undo, or redo throws", () => {

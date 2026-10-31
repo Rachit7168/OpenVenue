@@ -2,9 +2,11 @@ import type {
   BoxDimensions,
   Room,
   SceneObject,
+  SpawnPoint,
   Vec3,
   VenueDocument,
   Wall,
+  Zone,
 } from "@openvenue/scene-schema";
 import {
   cloneDocument,
@@ -15,7 +17,7 @@ import {
   requireFloor,
 } from "./document.js";
 import { CommandError } from "./errors.js";
-import type { EditorCommand } from "./history.js";
+import type { CommandType, EditorCommand } from "./history.js";
 
 function clone<T>(value: T): T {
   return jsonClone(value);
@@ -362,6 +364,239 @@ export function updateWall(document: VenueDocument, wallId: string, wall: Wall):
 
 export function addRoom(floorId: string, room: Room): EditorCommand {
   return new AddRoomCommand(floorId, clone(room));
+}
+
+class DeleteWallCommand implements EditorCommand {
+  readonly type = "DELETE_WALL" as const;
+
+  constructor(
+    private readonly floorId: string,
+    private readonly index: number,
+    private readonly wall: Wall,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    if (floor.rooms.some((room) => (room.wallIds ?? []).includes(this.wall.id))) {
+      throw new CommandError(`Wall ${this.wall.id} is part of a room`);
+    }
+    const index = floor.walls.findIndex((item) => item.id === this.wall.id);
+    if (index < 0) {
+      throw new CommandError(`Wall ${this.wall.id} is not on the floor`);
+    }
+    floor.walls.splice(index, 1);
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    floor.walls.splice(this.index, 0, clone(this.wall));
+    return next;
+  }
+}
+
+class DeleteRoomCommand implements EditorCommand {
+  readonly type = "DELETE_ROOM" as const;
+
+  constructor(
+    private readonly floorId: string,
+    private readonly index: number,
+    private readonly room: Room,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    const index = floor.rooms.findIndex((item) => item.id === this.room.id);
+    if (index < 0) {
+      throw new CommandError(`Room ${this.room.id} is not on the floor`);
+    }
+    floor.rooms.splice(index, 1);
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    floor.rooms.splice(this.index, 0, clone(this.room));
+    return next;
+  }
+}
+
+class AddZoneCommand implements EditorCommand {
+  readonly type = "ADD_ZONE" as const;
+
+  constructor(
+    private readonly floorId: string,
+    private readonly zone: Zone,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    if (floor.zones.some((item) => item.id === this.zone.id)) {
+      throw new CommandError(`Zone ${this.zone.id} already exists`);
+    }
+    floor.zones.push(clone(this.zone));
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    const index = floor.zones.findIndex((item) => item.id === this.zone.id);
+    if (index < 0) {
+      throw new CommandError(`Zone ${this.zone.id} is not on the floor`);
+    }
+    floor.zones.splice(index, 1);
+    return next;
+  }
+}
+
+class DeleteZoneCommand implements EditorCommand {
+  readonly type = "DELETE_ZONE" as const;
+
+  constructor(
+    private readonly floorId: string,
+    private readonly index: number,
+    private readonly zone: Zone,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    const index = floor.zones.findIndex((item) => item.id === this.zone.id);
+    if (index < 0) {
+      throw new CommandError(`Zone ${this.zone.id} is not on the floor`);
+    }
+    floor.zones.splice(index, 1);
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const floor = requireFloor(next, this.floorId);
+    floor.zones.splice(this.index, 0, clone(this.zone));
+    return next;
+  }
+}
+
+class AddSpawnCommand implements EditorCommand {
+  readonly type = "ADD_SPAWN" as const;
+
+  constructor(private readonly spawn: SpawnPoint) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    if (next.venue.spawnPoints.some((item) => item.id === this.spawn.id)) {
+      throw new CommandError(`Spawn ${this.spawn.id} already exists`);
+    }
+    if (!next.venue.floors.some((floor) => floor.id === this.spawn.floorId)) {
+      throw new CommandError(`Spawn ${this.spawn.id} references a missing floor`);
+    }
+    next.venue.spawnPoints.push(clone(this.spawn));
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const index = next.venue.spawnPoints.findIndex((item) => item.id === this.spawn.id);
+    if (index < 0) {
+      throw new CommandError(`Spawn ${this.spawn.id} is missing`);
+    }
+    next.venue.spawnPoints.splice(index, 1);
+    return next;
+  }
+}
+
+export function deleteWall(document: VenueDocument, wallId: string): EditorCommand {
+  const found = findWall(document, wallId);
+  return new DeleteWallCommand(found.floor.id, found.index, clone(found.wall));
+}
+
+export function deleteRoom(document: VenueDocument, roomId: string): EditorCommand {
+  const found = findRoom(document, roomId);
+  return new DeleteRoomCommand(found.floor.id, found.index, clone(found.room));
+}
+
+export function addZone(floorId: string, zone: Zone): EditorCommand {
+  return new AddZoneCommand(floorId, clone(zone));
+}
+
+export function deleteZone(document: VenueDocument, zoneId: string): EditorCommand {
+  let found: { floorId: string; index: number; zone: Zone } | null = null;
+  for (const floor of document.venue.floors) {
+    const index = floor.zones.findIndex((item) => item.id === zoneId);
+    const zone = index >= 0 ? floor.zones[index] : undefined;
+    if (zone) {
+      found = { floorId: floor.id, index, zone };
+      break;
+    }
+  }
+  if (!found) {
+    throw new CommandError(`Unknown zone ${zoneId}`);
+  }
+  return new DeleteZoneCommand(found.floorId, found.index, clone(found.zone));
+}
+
+export function addSpawn(spawn: SpawnPoint): EditorCommand {
+  return new AddSpawnCommand(clone(spawn));
+}
+
+class DeleteSpawnCommand implements EditorCommand {
+  readonly type = "DELETE_SPAWN" as const;
+
+  constructor(
+    private readonly index: number,
+    private readonly spawn: SpawnPoint,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const index = next.venue.spawnPoints.findIndex((item) => item.id === this.spawn.id);
+    if (index < 0) {
+      throw new CommandError(`Spawn ${this.spawn.id} is missing`);
+    }
+    next.venue.spawnPoints.splice(index, 1);
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    next.venue.spawnPoints.splice(this.index, 0, clone(this.spawn));
+    return next;
+  }
+}
+
+export function deleteSpawn(document: VenueDocument, spawnId: string): EditorCommand {
+  const index = document.venue.spawnPoints.findIndex((item) => item.id === spawnId);
+  const spawn = index >= 0 ? document.venue.spawnPoints[index] : undefined;
+  if (!spawn) {
+    throw new CommandError(`Unknown spawn ${spawnId}`);
+  }
+  return new DeleteSpawnCommand(index, clone(spawn));
+}
+
+class GroupCommand implements EditorCommand {
+  constructor(
+    readonly type: CommandType,
+    private readonly steps: readonly EditorCommand[],
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return this.steps.reduce((current, step) => step.execute(current), document);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return [...this.steps].reverse().reduce((current, step) => step.undo(current), document);
+  }
+}
+
+/** Apply several edits as one undo step. Later steps see the document produced by earlier ones. */
+export function groupCommands(type: CommandType, steps: readonly EditorCommand[]): EditorCommand {
+  return new GroupCommand(type, steps);
 }
 
 export function updateMaterial(

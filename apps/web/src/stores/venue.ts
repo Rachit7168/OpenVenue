@@ -1,3 +1,4 @@
+import { type EditorCommand, type ExecuteOptions } from "@openvenue/editor-core";
 import {
   createEmptyVenue,
   loadVenueJson,
@@ -158,6 +159,20 @@ export const useVenueStore = defineStore("venue", () => {
     status.value = `Saved ${name}`;
   }
 
+  function execute(command: EditorCommand, options?: ExecuteOptions) {
+    try {
+      scene.execute(command, options);
+      issues.value = [];
+      status.value = "Unsaved changes";
+    } catch (error) {
+      status.value = error instanceof Error ? error.message : "That edit could not be applied.";
+    }
+  }
+
+  function setSelection(ids: readonly string[]) {
+    scene.setSelection(ids);
+  }
+
   function undo() {
     scene.undo();
     status.value = scene.canRedo ? "Undone" : status.value;
@@ -186,6 +201,8 @@ export const useVenueStore = defineStore("venue", () => {
     toJson,
     markSaved,
     maxFileChars: MAX_VENUE_JSON_CHARS,
+    execute,
+    setSelection,
     undo,
     redo,
   };

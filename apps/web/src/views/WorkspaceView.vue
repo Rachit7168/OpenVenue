@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
-import FloorPlan from "../components/FloorPlan.vue";
+import PlanEditor from "../components/PlanEditor.vue";
 import { useProjectLibrary } from "../stores/projects";
 import { useVenueStore } from "../stores/venue";
 
@@ -146,14 +146,15 @@ function save() {
         </RouterLink>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight">Workspace</h1>
         <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Drag the plan to pan and scroll to zoom. Lengths are metres, with +Z up the screen.
+          Draw walls, rooms, zones, doors, and tables on the plan. Middle-drag pans and scroll
+          zooms. Lengths are metres, with +Z up the screen.
         </p>
       </div>
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
     </div>
 
     <section class="mt-6 h-[32rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm">
-      <FloorPlan :document="store.document" />
+      <PlanEditor />
     </section>
 
     <section
