@@ -1,4 +1,5 @@
 import type { VenueDocument } from "./generated/venue.js";
+import { createId } from "./id.js";
 
 const COORDINATE_SYSTEM = {
   lengthUnit: "metres",
@@ -9,13 +10,16 @@ const COORDINATE_SYSTEM = {
 
 /** A valid venue with one ground floor and a visitor spawn at the origin. */
 export function createEmptyVenue(name = "Untitled venue", now = new Date()): VenueDocument {
+  if (name.length < 1 || name.length > 200) {
+    throw new Error("Venue name must be between 1 and 200 characters");
+  }
   const timestamp = now.toISOString();
-  const floorId = crypto.randomUUID();
+  const floorId = createId();
 
   return {
     schemaVersion: "1.0.0",
     project: {
-      id: crypto.randomUUID(),
+      id: createId(),
       name,
       metadata: {
         createdAt: timestamp,
@@ -27,7 +31,7 @@ export function createEmptyVenue(name = "Untitled venue", now = new Date()): Ven
     coordinateSystem: COORDINATE_SYSTEM,
     assets: [],
     venue: {
-      id: crypto.randomUUID(),
+      id: createId(),
       name,
       floors: [
         {
@@ -44,7 +48,7 @@ export function createEmptyVenue(name = "Untitled venue", now = new Date()): Ven
       ],
       spawnPoints: [
         {
-          id: crypto.randomUUID(),
+          id: createId(),
           name: "Entrance",
           floorId,
           position: { x: 0, y: 0, z: 0 },

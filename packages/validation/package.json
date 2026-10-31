@@ -15,8 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
-    "pretest": "pnpm --filter @openvenue/geometry --filter @openvenue/scene-schema build",
-    "test": "vitest run"
+    "test": "pnpm --filter @openvenue/geometry --filter @openvenue/scene-schema build && vitest run"
   },
   "dependencies": {
     "@openvenue/geometry": "workspace:*",

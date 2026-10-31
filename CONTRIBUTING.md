@@ -24,12 +24,25 @@ pnpm typecheck
 
 `packages/scene-schema/src/generated/venue.ts` is generated. After a schema change, run `pnpm generate` and commit the result.
 
-The optional API:
+The optional API needs `DJANGO_SECRET_KEY`. Debug stays off unless you set `DJANGO_DEBUG=1`.
+
+Unix:
 
 ```bash
 python3 -m venv apps/api/.venv
 apps/api/.venv/bin/pip install -r apps/api/requirements.txt
-apps/api/.venv/bin/python apps/api/manage.py test
+DJANGO_SECRET_KEY=dev-only-change-me DJANGO_DEBUG=1 apps/api/.venv/bin/python apps/api/manage.py test
+docker compose up --build
+```
+
+Windows (`cmd`):
+
+```bat
+py -3 -m venv apps\api\.venv
+apps\api\.venv\Scripts\pip install -r apps\api\requirements.txt
+set DJANGO_SECRET_KEY=dev-only-change-me
+set DJANGO_DEBUG=1
+apps\api\.venv\Scripts\python apps\api\manage.py test
 docker compose up --build
 ```
 

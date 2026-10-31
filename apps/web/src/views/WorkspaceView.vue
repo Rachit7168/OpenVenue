@@ -42,8 +42,25 @@ function onVenueName(event: Event) {
   }
 }
 
+function confirmReplace() {
+  if (store.status !== "Unsaved changes") {
+    return true;
+  }
+  return window.confirm("This venue has unsaved changes. Replace it?");
+}
+
 function openPicker() {
+  if (!confirmReplace()) {
+    return;
+  }
   fileInput.value?.click();
+}
+
+function requestNew() {
+  if (!confirmReplace()) {
+    return;
+  }
+  store.createNew();
 }
 
 function onFile(event: Event) {
@@ -52,29 +69,43 @@ function onFile(event: Event) {
     return;
   }
   const file = input.files?.[0];
+  input.value = "";
   if (!file) {
     return;
   }
+  if (file.size > store.maxFileChars) {
+    store.reportLoadFailure(`File is larger than ${store.maxFileChars} characters.`);
+    return;
+  }
+  const token = store.startLoad();
   const reader = new FileReader();
   reader.onload = () => {
     if (typeof reader.result === "string") {
-      store.loadJson(reader.result, file.name);
+      store.loadJson(reader.result, file.name, token);
     }
   };
+  reader.onerror = () => {
+    store.reportLoadFailure("Could not read that file.", token);
+  };
+  reader.onabort = () => {
+    store.reportLoadFailure("File read was cancelled.", token);
+  };
   reader.readAsText(file);
-  input.value = "";
 }
 
 function save() {
   const json = store.toJson();
+  if (!json) {
+    return;
+  }
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = store.fileName.endsWith(".json") ? store.fileName : "venue.json";
   link.click();
-  URL.revokeObjectURL(url);
-  store.status = `Saved ${link.download}`;
+  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  store.markSaved(link.download);
 }
 </script>
 
@@ -135,7 +166,7 @@ function save() {
           type="button"
           data-testid="new-venue"
           class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
-          @click="store.createNew()"
+          @click="requestNew"
         >
           New venue
         </button>
@@ -171,7 +202,7 @@ function save() {
         role="alert"
         data-testid="load-errors"
       >
-        <p class="font-medium">This file is not a valid venue.</p>
+        <p class="font-medium">This venue needs a correction.</p>
         <ul class="mt-1 list-disc pl-5">
           <li v-for="issue in store.issues" :key="issue">{{ issue }}</li>
         </ul>
