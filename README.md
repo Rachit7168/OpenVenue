@@ -4,11 +4,11 @@
 
 OpenVenue is a local-first designer for event spaces. You lay out halls, stages, and zones, then later let visitors walk the same file.
 
-The editor, the visitor view, and a future live layer all read one `venue.json`. Phase 1 is that file, plus a shell that can create it, save it, and load it.
+The editor, the visitor view, and a future live layer all read one `venue.json`.
 
 ## Status
 
-Foundation only. You can create, validate, save, and load a venue document. Walls, the 2D canvas, and the 3D view are not built yet. The visitor app (`apps/viewer`) is a placeholder so it stays separate from the editor.
+You can create, validate, save, and load a venue document. Geometry (grid snap, walls, rooms) and undoable commands run from code. The 2D canvas and the 3D view are not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
 
 The roadmap is the [issue list](https://github.com/Rachit7168/OpenVenue/issues).
 
@@ -71,13 +71,15 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 
 ## Layout
 
-| Path                                       | Role                                  |
-| ------------------------------------------ | ------------------------------------- |
-| `apps/web`                                 | Vue 3 editor shell                    |
-| `apps/viewer`                              | Future read-only visitor app          |
-| `apps/api`                                 | Optional Django API                   |
-| `packages/scene-schema`                    | `venue.json` schema, types, validator |
-| `packages/geometry` and the other packages | Reserved for later phases             |
+| Path                    | Role                                  |
+| ----------------------- | ------------------------------------- |
+| `apps/web`              | Vue 3 editor shell                    |
+| `apps/viewer`           | Future read-only visitor app          |
+| `apps/api`              | Optional Django API                   |
+| `packages/scene-schema` | `venue.json` schema, types, validator |
+| `packages/geometry`     | Plan math, snapping, walls, and rooms |
+| `packages/editor-core`  | Undoable commands                     |
+| `packages/scene-engine` | Document store for later 2D and 3D    |
 
 ## License
 
