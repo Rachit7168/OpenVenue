@@ -11,6 +11,7 @@ import {
   type Viewport,
 } from "@openvenue/renderer-2d";
 import type { VenueDocument } from "@openvenue/scene-schema";
+import type { SceneSource } from "@openvenue/scene-engine";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { tableSeats, type Seat } from "../plan/furniture";
 import { planScene, type PlanFixture, type PlanOpening } from "../plan/model";
@@ -18,6 +19,7 @@ import { planScene, type PlanFixture, type PlanOpening } from "../plan/model";
 const props = withDefaults(
   defineProps<{
     document: VenueDocument;
+    source?: SceneSource;
     interactive?: boolean;
     tool?: "pan" | "select" | "wall" | "rect" | "polygon" | "zone" | "door" | "table" | "spawn";
     draft?: PlanPoint[];
@@ -25,6 +27,7 @@ const props = withDefaults(
     marquee?: PlanPoint[];
   }>(),
   {
+    source: undefined,
     interactive: true,
     tool: "select",
     draft: () => [],
@@ -48,8 +51,10 @@ const cursor = ref<PlanPoint | null>(null);
 const dragging = ref(false);
 let last = { x: 0, y: 0 };
 let observer: ResizeObserver | null = null;
+let unsubscribe: (() => void) | null = null;
 
-const scene = computed(() => planScene(props.document));
+const drawing = ref(props.document);
+const scene = computed(() => planScene(drawing.value));
 const grid = computed(() => gridLines(viewport.value, size.value.width, size.value.height, 0.5));
 
 const zoomLabel = computed(() => `${Math.round(viewport.value.scale)} px/m`);
@@ -237,6 +242,14 @@ function onWheel(event: WheelEvent) {
 }
 
 onMounted(() => {
+  if (props.source) {
+    drawing.value = props.source.getDocument();
+    unsubscribe = props.source.subscribe((change) => {
+      if (change.kind === "document") {
+        drawing.value = change.document;
+      }
+    });
+  }
   measure();
   if (root.value && typeof ResizeObserver !== "undefined") {
     observer = new ResizeObserver(() => measure());
@@ -244,10 +257,22 @@ onMounted(() => {
   }
 });
 
-onBeforeUnmount(() => observer?.disconnect());
+onBeforeUnmount(() => {
+  unsubscribe?.();
+  observer?.disconnect();
+});
 
 watch(
-  () => props.document.project.id,
+  () => props.document,
+  (document) => {
+    if (!props.source) {
+      drawing.value = document;
+    }
+  },
+);
+
+watch(
+  () => drawing.value.project.id,
   () => {
     fitted.value = false;
     measure();

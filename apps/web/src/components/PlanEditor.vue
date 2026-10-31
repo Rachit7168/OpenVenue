@@ -648,6 +648,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
     <FloorPlan
       class="min-h-0 flex-1"
       :document="store.document"
+      :source="store.scene"
       :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
       :draft="shownDraft"
       :selected-ids="[...store.selection]"

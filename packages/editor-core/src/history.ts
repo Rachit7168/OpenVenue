@@ -67,6 +67,14 @@ export class CommandStack {
     return next;
   }
 
+  peekUndo(): EditorCommand | null {
+    return this.undoStack[this.undoStack.length - 1] ?? null;
+  }
+
+  peekRedo(): EditorCommand | null {
+    return this.redoStack[this.redoStack.length - 1] ?? null;
+  }
+
   undo(document: VenueDocument): VenueDocument {
     const command = this.undoStack[this.undoStack.length - 1];
     if (!command) {

@@ -201,6 +201,7 @@ export const useVenueStore = defineStore("venue", () => {
     toJson,
     markSaved,
     maxFileChars: MAX_VENUE_JSON_CHARS,
+    scene,
     execute,
     setSelection,
     undo,

@@ -11,11 +11,13 @@ import {
   type ObjectPose,
 } from "./pick.js";
 import { buildVenueGroup } from "./scene.js";
+import { patchVenueGroup } from "./sync.js";
 
 export type { CameraMode, GizmoMode, ObjectPose };
 
 export interface VenueView {
   setDocument(document: VenueDocument): void;
+  applyChange(document: VenueDocument, commandType: string | null): void;
   setCameraMode(mode: CameraMode): void;
   setSelected(id: string | null): void;
   setGizmoMode(mode: GizmoMode): void;
@@ -213,24 +215,33 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
   tick();
 
+  const replaceDocument = (document: VenueDocument) => {
+    gizmo.detach();
+    if (venue) {
+      scene.remove(venue);
+      disposeObject(venue);
+    }
+    venue = buildVenueGroup(document);
+    scene.add(venue);
+    attachSelected();
+    const replace = framedVenueId !== document.venue.id;
+    if (!replace) {
+      return;
+    }
+    aim(true);
+    if (!new THREE.Box3().setFromObject(venue).isEmpty()) {
+      framedVenueId = document.venue.id;
+    }
+  };
+
   return {
-    setDocument(document) {
-      gizmo.detach();
-      if (venue) {
-        scene.remove(venue);
-        disposeObject(venue);
-      }
-      venue = buildVenueGroup(document);
-      scene.add(venue);
-      attachSelected();
-      const replace = framedVenueId !== document.venue.id;
-      if (!replace) {
+    setDocument: replaceDocument,
+    applyChange(document, commandType) {
+      if (venue && patchVenueGroup(venue, document, commandType)) {
+        attachSelected();
         return;
       }
-      aim(true);
-      if (!new THREE.Box3().setFromObject(venue).isEmpty()) {
-        framedVenueId = document.venue.id;
-      }
+      replaceDocument(document);
     },
     setCameraMode(next) {
       if (next === mode) {

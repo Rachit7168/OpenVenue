@@ -14,7 +14,7 @@ const library = useProjectLibrary();
 const route = useRoute();
 const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
-const viewMode = ref<"plan" | "stage">("plan");
+const viewMode = ref<"plan" | "stage" | "both">("plan");
 const cameraMode = ref<CameraMode>("orbit");
 const gizmoMode = ref<GizmoMode>("translate");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
@@ -246,7 +246,16 @@ function save() {
           >
             3D
           </button>
-          <template v-if="viewMode === 'stage'">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium"
+            :class="viewMode === 'both' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+            data-testid="view-both"
+            @click="viewMode = 'both'"
+          >
+            Both
+          </button>
+          <template v-if="viewMode !== 'plan'">
             <button
               type="button"
               class="rounded-md px-3 py-1 text-sm font-medium"
@@ -319,7 +328,7 @@ function save() {
             </button>
           </template>
           <button
-            v-if="viewMode === 'stage'"
+            v-if="viewMode !== 'plan'"
             type="button"
             class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
             :disabled="!store.canUndo"
@@ -328,7 +337,7 @@ function save() {
             Undo
           </button>
           <button
-            v-if="viewMode === 'stage'"
+            v-if="viewMode !== 'plan'"
             type="button"
             class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
             :disabled="!store.canRedo"
@@ -344,12 +353,12 @@ function save() {
     <section
       class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
     >
-      <PlanEditor v-show="viewMode === 'plan'" class="min-w-0 flex-1" />
+      <PlanEditor v-show="viewMode !== 'stage'" class="min-h-0 min-w-0 flex-1" />
       <VenueStage
-        v-if="viewMode === 'stage'"
+        v-show="viewMode !== 'plan'"
         ref="stage"
         class="min-h-0 min-w-0 flex-1"
-        :document="store.document"
+        :scene="store.scene"
         :camera-mode="cameraMode"
         :gizmo-mode="gizmoMode"
         :selected-id="selectedObjectId"
