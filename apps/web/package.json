@@ -10,6 +10,7 @@
     "test": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine build && vitest run"
   },
   "dependencies": {
+    "@openvenue/editor-core": "workspace:*",
     "@openvenue/scene-engine": "workspace:*",
     "@openvenue/scene-schema": "workspace:*",
     "pinia": "^3.0.3",

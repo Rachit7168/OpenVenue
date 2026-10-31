@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { RouterLink } from "vue-router";
 import { useThemeStore } from "../stores/theme";
 
 const theme = useThemeStore();
@@ -28,10 +29,13 @@ const label = computed(() =>
           />
           <rect x="10" y="14" width="8" height="8" class="fill-teal-200" />
         </svg>
-        <div>
+        <RouterLink
+          to="/"
+          class="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:focus-visible:ring-teal-400"
+        >
           <p class="text-sm font-semibold leading-tight tracking-tight">OpenVenue</p>
           <p class="text-xs text-zinc-500 dark:text-zinc-400">Local venue document</p>
-        </div>
+        </RouterLink>
       </div>
       <button
         type="button"

@@ -47,6 +47,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@openvenue/editor-core':
+        specifier: workspace:*
+        version: link:../../packages/editor-core
       '@openvenue/scene-engine':
         specifier: workspace:*
         version: link:../../packages/scene-engine

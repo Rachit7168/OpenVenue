@@ -32,6 +32,16 @@ describe("venue store", () => {
     expect(store.status).toContain("Load failed");
   });
 
+  it("keeps the project id when starting a new venue", () => {
+    const store = useVenueStore();
+    const id = store.document.project.id;
+    store.renameVenue("Hall");
+    store.createNew();
+    expect(store.document.project.id).toBe(id);
+    expect(store.document.venue.name).toBe("Hall");
+    expect(store.document.venue.floors[0]?.rooms).toHaveLength(0);
+  });
+
   it("keeps the current name when a rename is empty or too long", () => {
     const store = useVenueStore();
     store.renameVenue("");

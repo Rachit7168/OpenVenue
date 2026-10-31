@@ -1,9 +1,33 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useProjectLibrary } from "../stores/projects";
 import { useVenueStore } from "../stores/venue";
 
 const store = useVenueStore();
+const library = useProjectLibrary();
+const route = useRoute();
+const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
+
+const projectId = String(route.params.projectId ?? "");
+const opened = library.find(projectId);
+if (opened) {
+  store.openDocument(opened);
+} else {
+  void router.replace("/");
+}
+
+watch(
+  () => store.document,
+  (document) => {
+    library.save(document);
+    if (route.params.projectId !== document.project.id) {
+      void router.replace({ name: "project", params: { projectId: document.project.id } });
+    }
+  },
+  { deep: true },
+);
 
 const preview = computed(() => JSON.stringify(store.document, null, 2));
 
@@ -113,7 +137,13 @@ function save() {
   <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 class="text-2xl font-semibold tracking-tight">Workspace</h1>
+        <RouterLink
+          to="/"
+          class="text-sm font-medium text-teal-800 hover:underline dark:text-teal-300"
+        >
+          All projects
+        </RouterLink>
+        <h1 class="mt-1 text-2xl font-semibold tracking-tight">Workspace</h1>
         <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
           Create an empty venue, save it as JSON, or load a file. Nothing is uploaded. Drawing tools
           come later.
