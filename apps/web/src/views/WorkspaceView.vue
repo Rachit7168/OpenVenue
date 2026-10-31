@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
+import VenueStage from "../components/VenueStage.vue";
 import { useProjectLibrary } from "../stores/projects";
 import { useVenueStore } from "../stores/venue";
 
@@ -11,6 +12,7 @@ const library = useProjectLibrary();
 const route = useRoute();
 const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
+const viewMode = ref<"plan" | "stage">("plan");
 
 const projectId = String(route.params.projectId ?? "");
 const opened = library.find(projectId);
@@ -147,9 +149,49 @@ function save() {
         </RouterLink>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight">Workspace</h1>
         <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Draw walls, rooms, zones, doors, and tables on the plan. Middle-drag pans and scroll
-          zooms. Lengths are metres, with +Z up the screen.
+          Draw walls, rooms, zones, doors, and tables on the plan. The inspector edits the
+          selection. Switch to 3D to walk around the same hall. Lengths are metres, with +Z up the
+          screen.
         </p>
+        <div class="mt-3 flex gap-2">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium"
+            :class="viewMode === 'plan' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+            @click="viewMode = 'plan'"
+          >
+            Plan
+          </button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium"
+            :class="
+              viewMode === 'stage' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="view-3d"
+            @click="viewMode = 'stage'"
+          >
+            3D
+          </button>
+          <button
+            v-if="viewMode === 'stage'"
+            type="button"
+            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
+            :disabled="!store.canUndo"
+            @click="store.undo()"
+          >
+            Undo
+          </button>
+          <button
+            v-if="viewMode === 'stage'"
+            type="button"
+            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
+            :disabled="!store.canRedo"
+            @click="store.redo()"
+          >
+            Redo
+          </button>
+        </div>
       </div>
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
     </div>
@@ -157,7 +199,12 @@ function save() {
     <section
       class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
     >
-      <PlanEditor class="min-w-0 flex-1" />
+      <PlanEditor v-show="viewMode === 'plan'" class="min-w-0 flex-1" />
+      <VenueStage
+        v-if="viewMode === 'stage'"
+        class="min-h-0 min-w-0 flex-1"
+        :document="store.document"
+      />
       <Inspector />
     </section>
 

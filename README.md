@@ -8,7 +8,7 @@ The editor, the visitor view, and a future live layer all read one `venue.json`.
 
 ## Status
 
-You can create a project and draw its floor plan: walls, rooms, zones, doors, tables, entrances, and exits. Select an item to edit its name, size, and rotation in the inspector. Drag the corner handles to resize a table and the amber handle to rotate it. Shift-click or drag a box to select several items. Middle-drag pans and scroll zooms. Undo and redo cover those edits. Projects stay in this browser. The 3D view is not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
+You can create a project and draw its floor plan: walls, rooms, zones, doors, tables, entrances, and exits. Select an item to edit its name, size, and rotation in the inspector. Drag the corner handles to resize a table and the amber handle to rotate it. Shift-click or drag a box to select several items. Middle-drag pans and scroll zooms. The 3D button shows the same hall with walls, a floor, a ceiling, and boxes for the furniture. Undo and redo cover the plan edits. Projects stay in this browser. The visitor app (`apps/viewer`) stays separate from the editor.
 
 The roadmap is the [issue list](https://github.com/Rachit7168/OpenVenue/issues).
 
@@ -81,6 +81,7 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 | `packages/editor-core`  | Undoable commands                           |
 | `packages/scene-engine` | Document store for the 2D plan and later 3D |
 | `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid          |
+| `packages/renderer-3d`  | Three.js hall built from the venue document |
 
 ## License
 
