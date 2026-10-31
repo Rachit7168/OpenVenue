@@ -18,9 +18,23 @@ const props = withDefaults(
   defineProps<{
     document: VenueDocument;
     interactive?: boolean;
+    tool?: "pan" | "select" | "wall" | "rect" | "polygon" | "zone" | "door" | "table" | "spawn";
+    draft?: PlanPoint[];
+    selectedIds?: string[];
   }>(),
-  { interactive: true },
+  {
+    interactive: true,
+    tool: "select",
+    draft: () => [],
+    selectedIds: () => [],
+  },
 );
+
+const emit = defineEmits<{
+  down: [point: PlanPoint];
+  move: [point: PlanPoint];
+  up: [point: PlanPoint];
+}>();
 
 const root = ref<SVGSVGElement | null>(null);
 const viewport = ref<Viewport>({ scale: 40, originX: 0, originY: 0 });
@@ -61,6 +75,19 @@ function screenOf(point: PlanPoint) {
   return worldToScreen(viewport.value, point);
 }
 
+function chosen(id: string): boolean {
+  return props.selectedIds.includes(id);
+}
+
+const draftPoints = computed(() =>
+  props.draft
+    .map((point) => {
+      const screen = screenOf(point);
+      return `${screen.x},${screen.y}`;
+    })
+    .join(" "),
+);
+
 function fit() {
   viewport.value = fitViewport(scene.value.points, size.value.width, size.value.height, 28);
 }
@@ -89,9 +116,15 @@ function onPointerDown(event: PointerEvent) {
   if (!props.interactive || (event.button !== 0 && event.button !== 1)) {
     return;
   }
-  dragging.value = true;
-  last = { x: event.clientX, y: event.clientY };
-  root.value?.setPointerCapture(event.pointerId);
+  const world = screenToWorld(viewport.value, localPoint(event));
+  cursor.value = world;
+  if (event.button === 1 || props.tool === "pan") {
+    dragging.value = true;
+    last = { x: event.clientX, y: event.clientY };
+    root.value?.setPointerCapture(event.pointerId);
+    return;
+  }
+  emit("down", world);
 }
 
 function onPointerMove(event: PointerEvent) {
@@ -99,6 +132,7 @@ function onPointerMove(event: PointerEvent) {
     return;
   }
   cursor.value = screenToWorld(viewport.value, localPoint(event));
+  emit("move", cursor.value);
   if (!dragging.value) {
     return;
   }
@@ -106,8 +140,12 @@ function onPointerMove(event: PointerEvent) {
   last = { x: event.clientX, y: event.clientY };
 }
 
-function onPointerUp() {
+function onPointerUp(event: PointerEvent) {
+  const wasPanning = dragging.value;
   dragging.value = false;
+  if (!wasPanning && props.interactive && event.button === 0 && cursor.value) {
+    emit("up", cursor.value);
+  }
 }
 
 function onWheel(event: WheelEvent) {
@@ -143,7 +181,7 @@ watch(
       ref="root"
       data-testid="floor-plan"
       class="min-h-0 w-full flex-1 touch-none bg-zinc-950"
-      :class="interactive ? 'cursor-grab' : ''"
+      :class="!interactive ? '' : tool === 'pan' ? 'cursor-grab' : 'cursor-crosshair'"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
@@ -166,7 +204,7 @@ watch(
         :d="path(room.points)"
         fill="#115e59"
         fill-opacity="0.55"
-        stroke="#5eead4"
+        :stroke="chosen(room.id) ? '#22d3ee' : '#5eead4'"
         stroke-width="1.5"
       />
       <path
@@ -175,7 +213,7 @@ watch(
         :d="path(zone.points)"
         fill="#6d28d9"
         fill-opacity="0.35"
-        stroke="#c4b5fd"
+        :stroke="chosen(zone.id) ? '#22d3ee' : '#c4b5fd'"
         stroke-width="1.5"
         stroke-dasharray="4 3"
       />
@@ -186,7 +224,7 @@ watch(
         :y1="screenOf(wall.start).y"
         :x2="screenOf(wall.end).x"
         :y2="screenOf(wall.end).y"
-        stroke="#e4e4e7"
+        :stroke="chosen(wall.id) ? '#22d3ee' : '#e4e4e7'"
         stroke-linecap="square"
         :stroke-width="Math.max(2, wall.thickness * viewport.scale)"
       />
@@ -206,8 +244,15 @@ watch(
         :key="object.id"
         :d="path(object.points)"
         fill="#d97706"
-        stroke="#fde68a"
+        :stroke="chosen(object.id) ? '#22d3ee' : '#fde68a'"
         stroke-width="1"
+      />
+      <polyline
+        v-if="draftPoints"
+        :points="draftPoints"
+        fill="none"
+        stroke="#fbbf24"
+        stroke-width="2"
       />
       <g v-for="spawn in scene.spawns" :key="spawn.id">
         <circle
@@ -215,7 +260,7 @@ watch(
           :cy="screenOf(spawn.point).y"
           r="6"
           :fill="spawn.role === 'exit' ? '#fb7185' : '#38bdf8'"
-          stroke="#fafafa"
+          :stroke="chosen(spawn.id) ? '#22d3ee' : '#fafafa'"
           stroke-width="1.5"
         />
         <text

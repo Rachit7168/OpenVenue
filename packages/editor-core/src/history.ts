@@ -9,6 +9,12 @@ export type CommandType =
   | "ADD_WALL"
   | "UPDATE_WALL"
   | "ADD_ROOM"
+  | "DELETE_WALL"
+  | "DELETE_ROOM"
+  | "ADD_ZONE"
+  | "DELETE_ZONE"
+  | "ADD_SPAWN"
+  | "DELETE_SPAWN"
   | "UPDATE_MATERIAL";
 
 export interface EditorCommand {
