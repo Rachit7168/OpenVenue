@@ -599,6 +599,150 @@ export function groupCommands(type: CommandType, steps: readonly EditorCommand[]
   return new GroupCommand(type, steps);
 }
 
+class RenameCommand implements EditorCommand {
+  readonly type = "RENAME" as const;
+
+  constructor(
+    private readonly id: string,
+    private readonly previous: string,
+    private readonly nextName: string,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return setName(document, this.id, this.nextName);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return setName(document, this.id, this.previous);
+  }
+}
+
+class UpdateZoneCommand implements EditorCommand {
+  readonly type = "UPDATE_ZONE" as const;
+
+  constructor(
+    private readonly zoneId: string,
+    private readonly previous: Zone,
+    private readonly nextZone: Zone,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return replaceZone(document, this.zoneId, this.nextZone);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return replaceZone(document, this.zoneId, this.previous);
+  }
+}
+
+class SetFlagCommand implements EditorCommand {
+  readonly type = "SET_FLAG" as const;
+
+  constructor(
+    private readonly id: string,
+    private readonly flag: "locked" | "visible",
+    private readonly previous: boolean,
+    private readonly nextValue: boolean,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return setFlag(document, this.id, this.flag, this.nextValue);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return setFlag(document, this.id, this.flag, this.previous);
+  }
+}
+
+type NamedEntity = { id: string; name: string; [key: string]: unknown };
+
+function namedEntities(document: VenueDocument): NamedEntity[] {
+  return [
+    ...document.venue.floors.flatMap((floor) => [...floor.rooms, ...floor.zones, ...floor.objects]),
+    ...document.venue.spawnPoints,
+  ];
+}
+
+function setName(document: VenueDocument, id: string, name: string): VenueDocument {
+  if (name.length < 1 || name.length > 200) {
+    throw new CommandError("Name must be between 1 and 200 characters");
+  }
+  const next = cloneDocument(document);
+  const found = namedEntities(next).find((item) => item.id === id);
+  if (!found) {
+    throw new CommandError(`Unknown item ${id}`);
+  }
+  found.name = name;
+  return next;
+}
+
+function replaceZone(document: VenueDocument, zoneId: string, zone: Zone): VenueDocument {
+  if (zone.id !== zoneId) {
+    throw new CommandError("Updated zone must keep the same id");
+  }
+  const next = cloneDocument(document);
+  for (const floor of next.venue.floors) {
+    const index = floor.zones.findIndex((item) => item.id === zoneId);
+    if (index >= 0) {
+      floor.zones[index] = clone(zone);
+      return next;
+    }
+  }
+  throw new CommandError(`Unknown zone ${zoneId}`);
+}
+
+function setFlag(
+  document: VenueDocument,
+  id: string,
+  flag: "locked" | "visible",
+  value: boolean,
+): VenueDocument {
+  const next = cloneDocument(document);
+  const found = namedEntities(next).find((item) => item.id === id);
+  if (!found) {
+    throw new CommandError(`Unknown item ${id}`);
+  }
+  found[flag] = value;
+  return next;
+}
+
+export function renameEntity(document: VenueDocument, id: string, name: string): EditorCommand {
+  const found = namedEntities(document).find((item) => item.id === id);
+  if (!found) {
+    throw new CommandError(`Unknown item ${id}`);
+  }
+  return new RenameCommand(id, found.name, name);
+}
+
+export function updateZone(document: VenueDocument, zoneId: string, zone: Zone): EditorCommand {
+  let previous: Zone | undefined;
+  for (const floor of document.venue.floors) {
+    previous = floor.zones.find((item) => item.id === zoneId);
+    if (previous) {
+      break;
+    }
+  }
+  if (!previous) {
+    throw new CommandError(`Unknown zone ${zoneId}`);
+  }
+  return new UpdateZoneCommand(zoneId, clone(previous), clone(zone));
+}
+
+export function setEntityFlag(
+  document: VenueDocument,
+  id: string,
+  flag: "locked" | "visible",
+  value: boolean,
+): EditorCommand {
+  const found = namedEntities(document).find((item) => item.id === id);
+  if (!found) {
+    throw new CommandError(`Unknown item ${id}`);
+  }
+  const current = found[flag];
+  const previous = typeof current === "boolean" ? current : flag === "visible";
+  return new SetFlagCommand(id, flag, previous, value);
+}
+
 export function updateMaterial(
   document: VenueDocument,
   roomId: string,

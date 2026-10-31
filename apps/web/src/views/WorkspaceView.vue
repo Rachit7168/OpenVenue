@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
 import { useProjectLibrary } from "../stores/projects";
 import { useVenueStore } from "../stores/venue";
@@ -153,8 +154,11 @@ function save() {
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
     </div>
 
-    <section class="mt-6 h-[32rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm">
-      <PlanEditor />
+    <section
+      class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
+    >
+      <PlanEditor class="min-w-0 flex-1" />
+      <Inspector />
     </section>
 
     <section

@@ -15,7 +15,10 @@ export type CommandType =
   | "DELETE_ZONE"
   | "ADD_SPAWN"
   | "DELETE_SPAWN"
-  | "UPDATE_MATERIAL";
+  | "UPDATE_MATERIAL"
+  | "RENAME"
+  | "UPDATE_ZONE"
+  | "SET_FLAG";
 
 export interface EditorCommand {
   readonly type: CommandType;

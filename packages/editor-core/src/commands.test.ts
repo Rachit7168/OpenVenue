@@ -10,6 +10,10 @@ import {
   addObject,
   addRoom,
   addWall,
+  addZone,
+  renameEntity,
+  setEntityFlag,
+  updateZone,
   groupCommands,
   CommandError,
   CommandStack,
@@ -211,6 +215,57 @@ describe("commands", () => {
     expect(floorOf(undone).walls).toHaveLength(0);
     expect(floorOf(undone).rooms).toHaveLength(0);
     expect(stack.canRedo).toBe(true);
+  });
+
+  it("undoes a rename, a zone interaction, and a visibility flag", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue();
+    const floorId = floorOf(document).id;
+    const zoneId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    document = stack.execute(
+      document,
+      addZone(floorId, {
+        id: zoneId,
+        type: "zone",
+        name: "Zone",
+        boundary: [
+          { x: 0, z: 0 },
+          { x: 0, z: 2 },
+          { x: 2, z: 2 },
+          { x: 2, z: 0 },
+        ],
+        interaction: { type: "none" },
+      }),
+    );
+    document = stack.execute(document, renameEntity(document, zoneId, "Food court"));
+    expect(floorOf(document).zones[0]?.name).toBe("Food court");
+    document = stack.execute(
+      document,
+      updateZone(document, zoneId, {
+        id: zoneId,
+        type: "zone",
+        name: "Food court",
+        boundary: [
+          { x: 0, z: 0 },
+          { x: 0, z: 2 },
+          { x: 2, z: 2 },
+          { x: 2, z: 0 },
+        ],
+        interaction: { type: "menu", contentRef: "content/food.json" },
+        color: "#7c3aed",
+      }),
+    );
+    expect(floorOf(document).zones[0]?.interaction).toEqual({
+      type: "menu",
+      contentRef: "content/food.json",
+    });
+    expect(validateVenue(document).valid).toBe(true);
+    document = stack.undo(document);
+    expect(floorOf(document).zones[0]?.name).toBe("Food court");
+    expect(floorOf(document).zones[0]?.interaction).toEqual({ type: "none" });
+    document = stack.execute(document, setEntityFlag(document, zoneId, "visible", false));
+    expect(floorOf(document).zones[0]?.visible).toBe(false);
+    expect(stack.undo(document).venue.floors[0]?.zones[0]?.visible).toBe(true);
   });
 
   it("leaves history unchanged when execute, undo, or redo throws", () => {
