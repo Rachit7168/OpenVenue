@@ -6,11 +6,11 @@ import {
   type ObjectPose,
   type VenueView,
 } from "@openvenue/renderer-3d";
-import type { VenueDocument } from "@openvenue/scene-schema";
+import type { SceneSource } from "@openvenue/scene-engine";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
-  document: VenueDocument;
+  scene: SceneSource;
   cameraMode: CameraMode;
   gizmoMode: GizmoMode;
   selectedId: string | null;
@@ -24,6 +24,7 @@ const emit = defineEmits<{
 const canvas = ref<HTMLCanvasElement | null>(null);
 let view: VenueView | null = null;
 let observer: ResizeObserver | null = null;
+let unsubscribe: (() => void) | null = null;
 
 function fit() {
   const parent = canvas.value?.parentElement;
@@ -38,12 +39,21 @@ onMounted(() => {
   if (!element) {
     return;
   }
-  view = mountVenueView(element);
+  try {
+    view = mountVenueView(element);
+  } catch {
+    return;
+  }
   view.setHandlers({
     onSelect: (id) => emit("select", id),
     onTransform: (id, mode, pose) => emit("transform", id, mode, pose),
   });
-  view.setDocument(props.document);
+  view.setDocument(props.scene.getDocument());
+  unsubscribe = props.scene.subscribe((change) => {
+    if (change.kind === "document") {
+      view?.applyChange(change.document, change.commandType);
+    }
+  });
   view.setCameraMode(props.cameraMode);
   view.setGizmoMode(props.gizmoMode);
   view.setSelected(props.selectedId);
@@ -54,12 +64,6 @@ onMounted(() => {
   }
   fit();
 });
-
-watch(
-  () => props.document,
-  (document) => view?.setDocument(document),
-  { deep: true },
-);
 
 watch(
   () => props.cameraMode,
@@ -87,6 +91,7 @@ function resetView() {
 defineExpose({ fit: fitView, reset: resetView });
 
 onBeforeUnmount(() => {
+  unsubscribe?.();
   observer?.disconnect();
   view?.dispose();
   view = null;

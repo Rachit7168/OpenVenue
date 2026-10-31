@@ -19,6 +19,12 @@ export interface SelectionChange {
 
 export type SceneChange = DocumentChange | SelectionChange;
 
+/** The part of the scene store a renderer is allowed to watch. */
+export interface SceneSource {
+  getDocument(): VenueDocument;
+  subscribe(listener: (change: SceneChange) => void): () => void;
+}
+
 /**
  * Canonical venue document and selection.
  * A Vue layer should subscribe and copy these into editor state.
@@ -68,19 +74,21 @@ export class SceneStore {
   }
 
   undo(): void {
-    if (!this.history.canUndo) {
+    const command = this.history.peekUndo();
+    if (!command) {
       return;
     }
     this.document = this.history.undo(this.document);
-    this.emitDocument("undo", null);
+    this.emitDocument("undo", command.type);
   }
 
   redo(): void {
-    if (!this.history.canRedo) {
+    const command = this.history.peekRedo();
+    if (!command) {
       return;
     }
     this.document = this.history.redo(this.document);
-    this.emitDocument("redo", null);
+    this.emitDocument("redo", command.type);
   }
 
   replaceDocument(document: VenueDocument): void {

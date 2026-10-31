@@ -1,4 +1,4 @@
-import type { Opening, VenueDocument, Wall } from "@openvenue/scene-schema";
+import type { Opening, SceneObject, VenueDocument, Wall } from "@openvenue/scene-schema";
 import * as THREE from "three";
 
 const floorMaterial = new THREE.MeshStandardMaterial({ color: "#166534", roughness: 0.95 });
@@ -123,6 +123,37 @@ function addWall(group: THREE.Group, wall: Wall): void {
   }
 }
 
+/** Move an existing furniture box to match the document. Keeps the mesh when the size is unchanged. */
+export function placeObjectMesh(mesh: THREE.Mesh, object: SceneObject): void {
+  const width = (object.dimensions?.width ?? 0.6) * scaleOf(object.transform.scale?.x);
+  const height = (object.dimensions?.height ?? 0.75) * scaleOf(object.transform.scale?.y);
+  const depth = (object.dimensions?.depth ?? 0.6) * scaleOf(object.transform.scale?.z);
+  mesh.position.set(
+    object.transform.position.x,
+    object.transform.position.y + height / 2,
+    object.transform.position.z,
+  );
+  mesh.rotation.set(
+    object.transform.rotation.x,
+    object.transform.rotation.y,
+    object.transform.rotation.z,
+  );
+  mesh.scale.set(1, 1, 1);
+  mesh.userData.entityId = object.id;
+  mesh.userData.locked = (object as { locked?: unknown }).locked === true;
+  mesh.userData.base = { width, height, depth };
+  const geometry = mesh.geometry;
+  const sameSize =
+    geometry instanceof THREE.BoxGeometry &&
+    geometry.parameters.width === width &&
+    geometry.parameters.height === height &&
+    geometry.parameters.depth === depth;
+  if (!sameSize) {
+    geometry.dispose();
+    mesh.geometry = new THREE.BoxGeometry(width, height, depth);
+  }
+}
+
 /** Meshes for the ground floor: floors, ceilings, walls with openings, and object boxes. */
 export function buildVenueGroup(document: VenueDocument): THREE.Group {
   const group = new THREE.Group();
@@ -169,28 +200,13 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
     if (!shown(object)) {
       continue;
     }
-    const width = (object.dimensions?.width ?? 0.6) * scaleOf(object.transform.scale?.x);
-    const height = (object.dimensions?.height ?? 0.75) * scaleOf(object.transform.scale?.y);
-    const depth = (object.dimensions?.depth ?? 0.6) * scaleOf(object.transform.scale?.z);
     const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(width, height, depth),
+      new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshStandardMaterial({ color: objectColors[object.type] ?? "#a8a29e" }),
     );
-    mesh.position.set(
-      object.transform.position.x,
-      object.transform.position.y + height / 2,
-      object.transform.position.z,
-    );
-    mesh.rotation.set(
-      object.transform.rotation.x,
-      object.transform.rotation.y,
-      object.transform.rotation.z,
-    );
+    placeObjectMesh(mesh, object);
     mesh.castShadow = true;
     mesh.userData.ownMaterial = true;
-    mesh.userData.entityId = object.id;
-    mesh.userData.locked = (object as { locked?: unknown }).locked === true;
-    mesh.userData.base = { width, height, depth };
     group.add(mesh);
   }
 
