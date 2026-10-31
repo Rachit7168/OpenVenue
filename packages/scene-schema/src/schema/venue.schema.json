@@ -1,0 +1,402 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Rachit7168/OpenVenue/schema/venue-1.0.0.json",
+  "title": "VenueDocument",
+  "description": "OpenVenue venue document v1.0.0. Lengths are metres. World space is right-handed with +Y up. Angles are radians. The floor plan uses X and Z. Unknown properties must be preserved on save. Content referenced by interaction.contentRef lives outside this file.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schemaVersion", "project", "coordinateSystem", "assets", "venue"],
+  "properties": {
+    "schemaVersion": {
+      "description": "Schema version of this document. Loaders migrate older versions before validation.",
+      "const": "1.0.0"
+    },
+    "project": { "$ref": "#/$defs/Project" },
+    "coordinateSystem": { "$ref": "#/$defs/CoordinateSystem" },
+    "assets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Asset" }
+    },
+    "venue": { "$ref": "#/$defs/Venue" }
+  },
+  "$defs": {
+    "Project": {
+      "title": "Project",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "metadata"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "Metadata": {
+      "title": "Metadata",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["createdAt", "updatedAt"],
+      "properties": {
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "description": { "type": "string" },
+        "author": { "type": "string" },
+        "generator": {
+          "type": "string",
+          "description": "Tool that last wrote this file, for example openvenue-web."
+        }
+      }
+    },
+    "CoordinateSystem": {
+      "title": "CoordinateSystem",
+      "description": "v1.0.0 allows only this coordinate system. The object is stored so later versions can migrate rather than guess.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["lengthUnit", "upAxis", "handedness", "angleUnit"],
+      "properties": {
+        "lengthUnit": { "const": "metres" },
+        "upAxis": { "const": "Y" },
+        "handedness": { "const": "right" },
+        "angleUnit": { "const": "radians" }
+      }
+    },
+    "Asset": {
+      "title": "Asset",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "format", "uri"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "format": { "enum": ["glb", "image", "audio"] },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Relative path or URI. Prefer compressed GLB (Draco or meshopt) for visitor devices."
+        },
+        "license": { "type": "string" },
+        "polygonBudget": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum triangles for this model. Used by asset guidelines, not enforced by the schema."
+        }
+      }
+    },
+    "Venue": {
+      "title": "Venue",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "floors", "spawnPoints"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "floors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Floor" }
+        },
+        "spawnPoints": {
+          "type": "array",
+          "description": "Where visitors and the editor camera start. Also used later for entrance and exit checks.",
+          "items": { "$ref": "#/$defs/SpawnPoint" }
+        },
+        "navigation": { "$ref": "#/$defs/Navigation" }
+      }
+    },
+    "Floor": {
+      "title": "Floor",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "name",
+        "level",
+        "elevation",
+        "height",
+        "rooms",
+        "walls",
+        "objects",
+        "zones"
+      ],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "level": {
+          "type": "integer",
+          "description": "0 is ground. Negative values are below ground."
+        },
+        "elevation": {
+          "type": "number",
+          "description": "World Y of the floor surface, in metres."
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Floor-to-floor height in metres."
+        },
+        "rooms": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Room" }
+        },
+        "walls": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Wall" }
+        },
+        "objects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SceneObject" }
+        },
+        "zones": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Zone" }
+        }
+      }
+    },
+    "Room": {
+      "title": "Room",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "boundary"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "boundary": { "$ref": "#/$defs/Polygon" },
+        "wallIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "floorMaterial": { "type": "string" }
+      }
+    },
+    "Wall": {
+      "title": "Wall",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "start", "end", "thickness", "height"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "start": { "$ref": "#/$defs/PlanPoint" },
+        "end": { "$ref": "#/$defs/PlanPoint" },
+        "thickness": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "openings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Opening" }
+        }
+      }
+    },
+    "Opening": {
+      "title": "Opening",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "kind", "offset", "width", "height"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "kind": { "enum": ["door", "window", "opening"] },
+        "offset": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Distance in metres from the wall start to the near edge of the opening."
+        },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "sill": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Height of the opening base above the floor, in metres."
+        }
+      }
+    },
+    "SceneObject": {
+      "title": "SceneObject",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "type", "name", "transform"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": {
+          "enum": [
+            "generic",
+            "stage",
+            "chair",
+            "table",
+            "booth",
+            "screen",
+            "podium",
+            "sign",
+            "custom"
+          ]
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "assetId": { "type": "string", "format": "uuid" },
+        "transform": { "$ref": "#/$defs/Transform" },
+        "dimensions": { "$ref": "#/$defs/BoxDimensions" },
+        "subtype": {
+          "type": "string",
+          "description": "Free-form subtype when type is custom."
+        },
+        "interaction": { "$ref": "#/$defs/Interaction" }
+      }
+    },
+    "Zone": {
+      "title": "Zone",
+      "description": "Named area such as a food court or sponsor booth. The viewer raycasts this boundary and opens the interaction overlay. The menu or booth copy is not stored here.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "type", "name", "boundary"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": { "const": "zone" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "boundary": { "$ref": "#/$defs/Polygon" },
+        "interaction": { "$ref": "#/$defs/Interaction" }
+      }
+    },
+    "Interaction": {
+      "title": "Interaction",
+      "description": "What a visitor click should open. contentRef points at a separate content file or, later, an API resource.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "none" },
+            "contentRef": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path or URI kept outside venue.json, for example content/food-court.json."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["type", "contentRef"],
+          "properties": {
+            "type": { "enum": ["info-panel", "link", "menu", "session-list"] },
+            "contentRef": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path or URI kept outside venue.json, for example content/food-court.json."
+            }
+          }
+        }
+      ]
+    },
+    "SpawnPoint": {
+      "title": "SpawnPoint",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "floorId", "position", "rotationY", "role"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "floorId": { "type": "string", "format": "uuid" },
+        "position": { "$ref": "#/$defs/Vec3" },
+        "rotationY": {
+          "type": "number",
+          "description": "Yaw around +Y, in radians."
+        },
+        "role": { "enum": ["visitor", "staff", "exit"] }
+      }
+    },
+    "Navigation": {
+      "title": "Navigation",
+      "description": "Optional walkable areas and waypoints. Present so later pathfinding does not require a schema migration.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "walkableAreas": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/WalkableArea" }
+        },
+        "waypoints": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Waypoint" }
+        }
+      }
+    },
+    "WalkableArea": {
+      "title": "WalkableArea",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "floorId", "boundary"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "floorId": { "type": "string", "format": "uuid" },
+        "boundary": { "$ref": "#/$defs/Polygon" }
+      }
+    },
+    "Waypoint": {
+      "title": "Waypoint",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "floorId", "position", "links"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "floorId": { "type": "string", "format": "uuid" },
+        "position": { "$ref": "#/$defs/Vec3" },
+        "links": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "PlanPoint": {
+      "title": "PlanPoint",
+      "description": "Point on the floor plan. x is world X and z is world Z. Y is up and is not stored on plan points.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["x", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+    "Vec3": {
+      "title": "Vec3",
+      "description": "World-space vector in metres, or Euler angles in radians (XYZ order) when used as a rotation.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+    "Polygon": {
+      "title": "Polygon",
+      "description": "Open ring of plan points in metres. Do not repeat the first point. Winding is counter-clockwise when viewed from +Y.",
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/PlanPoint" }
+    },
+    "Transform": {
+      "title": "Transform",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["position", "rotation"],
+      "properties": {
+        "position": { "$ref": "#/$defs/Vec3" },
+        "rotation": {
+          "allOf": [{ "$ref": "#/$defs/Vec3" }],
+          "description": "Euler angles in radians, XYZ order, matching Three.js Euler order XYZ."
+        },
+        "scale": { "$ref": "#/$defs/Vec3" }
+      }
+    },
+    "BoxDimensions": {
+      "title": "BoxDimensions",
+      "description": "Placeholder box size in metres before a GLB is bound. width is X, height is Y, depth is Z.",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["width", "height", "depth"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "depth": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

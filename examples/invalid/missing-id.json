@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Untitled venue",
+    "metadata": {
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [],
+  "venue": {
+    "id": "22222222-2222-4222-8222-222222222222",
+    "name": "Untitled venue",
+    "floors": [],
+    "spawnPoints": []
+  }
+}

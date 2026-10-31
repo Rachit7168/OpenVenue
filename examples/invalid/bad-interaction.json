@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "name": "Untitled venue",
+    "metadata": {
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [],
+  "venue": {
+    "id": "22222222-2222-4222-8222-222222222222",
+    "name": "Untitled venue",
+    "floors": [
+      {
+        "id": "33333333-3333-4333-8333-333333333333",
+        "name": "Ground floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 3,
+        "rooms": [],
+        "walls": [],
+        "objects": [],
+        "zones": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "type": "zone",
+            "name": "Food Court",
+            "boundary": [
+              { "x": 0, "z": 0 },
+              { "x": 4, "z": 0 },
+              { "x": 4, "z": 4 }
+            ],
+            "interaction": { "type": "info-panel" }
+          }
+        ]
+      }
+    ],
+    "spawnPoints": []
+  }
+}

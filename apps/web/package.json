@@ -1,0 +1,34 @@
+{
+  "name": "@openvenue/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "pnpm --filter @openvenue/scene-schema build",
+    "prebuild": "pnpm --filter @openvenue/scene-schema build",
+    "pretest": "pnpm --filter @openvenue/scene-schema build",
+    "pretypecheck": "pnpm --filter @openvenue/scene-schema build",
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@openvenue/scene-schema": "workspace:*",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.21",
+    "jsdom": "^27.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
+    "typescript": "catalog:",
+    "vite": "^7.1.12",
+    "vitest": "catalog:",
+    "vue-tsc": "^3.1.1"
+  }
+}
