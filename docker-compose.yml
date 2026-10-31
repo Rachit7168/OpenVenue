@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: openvenue
       POSTGRES_PASSWORD: openvenue
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -19,8 +19,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -31,7 +29,7 @@ services:
     build:
       context: ./apps/api
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       DJANGO_SECRET_KEY: dev-only-change-me
       DJANGO_DEBUG: "1"
@@ -45,8 +43,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     command: >
       sh -c "python manage.py migrate &&
              gunicorn config.wsgi:application --bind 0.0.0.0:8000"
@@ -57,7 +53,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
 
 volumes:
   pgdata:

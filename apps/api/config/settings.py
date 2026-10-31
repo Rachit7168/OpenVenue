@@ -5,14 +5,11 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = "dev-only-insecure-key"
-    else:
-        raise ImproperlyConfigured("Set DJANGO_SECRET_KEY when DJANGO_DEBUG is 0.")
+    raise ImproperlyConfigured("Set DJANGO_SECRET_KEY.")
 
 ALLOWED_HOSTS = [
     host.strip()

@@ -2,7 +2,9 @@ import Ajv2020, { type ErrorObject, type ValidateFunction } from "ajv/dist/2020"
 import addFormats from "ajv-formats";
 import schema from "./schema/venue.schema.json" with { type: "json" };
 import { VenueValidationError } from "./errors.js";
+import { jsonNestingExceeds, MAX_JSON_DEPTH, MAX_VENUE_JSON_CHARS } from "./limits.js";
 import { migrateVenueDocument } from "./migrate.js";
+import { venueReferenceIssues } from "./references.js";
 import type { VenueDocument } from "./generated/venue.js";
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
@@ -45,11 +47,16 @@ export function validateVenue(input: unknown): VenueValidationResult {
     throw error;
   }
 
-  if (validateSchema(migrated)) {
-    return { valid: true, document: migrated };
+  if (!validateSchema(migrated)) {
+    return { valid: false, issues: formatSchemaErrors(validateSchema.errors) };
   }
 
-  return { valid: false, issues: formatSchemaErrors(validateSchema.errors) };
+  const references = venueReferenceIssues(migrated);
+  if (references.length > 0) {
+    return { valid: false, issues: references };
+  }
+
+  return { valid: true, document: migrated };
 }
 
 export function assertVenueDocument(input: unknown): VenueDocument {
@@ -61,6 +68,13 @@ export function assertVenueDocument(input: unknown): VenueDocument {
 }
 
 export function loadVenueJson(text: string): VenueDocument {
+  if (text.length > MAX_VENUE_JSON_CHARS) {
+    throw new VenueValidationError([`Document is larger than ${MAX_VENUE_JSON_CHARS} characters`]);
+  }
+  if (jsonNestingExceeds(text, MAX_JSON_DEPTH)) {
+    throw new VenueValidationError([`Document nesting is deeper than ${MAX_JSON_DEPTH} levels`]);
+  }
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(text) as unknown;

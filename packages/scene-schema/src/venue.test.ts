@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { createEmptyVenue } from "./create-empty-venue.js";
 import { VenueValidationError } from "./errors.js";
+import { createId, formatUuid } from "./id.js";
+import { MAX_JSON_DEPTH, MAX_VENUE_JSON_CHARS } from "./limits.js";
 import { loadVenueJson, saveVenueJson, validateVenue } from "./validate.js";
 import type { VenueDocument, Zone } from "./generated/venue.js";
 
@@ -113,5 +115,52 @@ describe("venue schema", () => {
 
   it("rejects text that is not JSON", () => {
     expect(() => loadVenueJson("{")).toThrow(VenueValidationError);
+  });
+
+  it("rejects duplicate ids and dangling references", () => {
+    const duplicate = readExample("empty-venue.json") as {
+      project: { id: string };
+      venue: { id: string; spawnPoints: { floorId: string }[] };
+    };
+    duplicate.venue.id = duplicate.project.id;
+    const duplicateResult = validateVenue(duplicate);
+    expect(duplicateResult.valid).toBe(false);
+    if (!duplicateResult.valid) {
+      expect(duplicateResult.issues.some((issue) => issue.includes("Duplicate id"))).toBe(true);
+    }
+
+    const dangling = readExample("empty-venue.json") as {
+      venue: { spawnPoints: { floorId: string }[] };
+    };
+    const spawn = dangling.venue.spawnPoints[0];
+    if (!spawn) {
+      throw new Error("expected a spawn point");
+    }
+    spawn.floorId = "99999999-9999-4999-8999-999999999999";
+    const danglingResult = validateVenue(dangling);
+    expect(danglingResult.valid).toBe(false);
+    if (!danglingResult.valid) {
+      expect(danglingResult.issues.some((issue) => issue.includes("missing floor"))).toBe(true);
+    }
+  });
+
+  it("rejects oversized or deeply nested JSON before parsing the document", () => {
+    expect(() => loadVenueJson(" ".repeat(MAX_VENUE_JSON_CHARS + 1))).toThrow(/larger than/);
+    let nested = "0";
+    for (let level = 0; level < MAX_JSON_DEPTH + 2; level += 1) {
+      nested = `{"a":${nested}}`;
+    }
+    expect(() => loadVenueJson(nested)).toThrow(/nesting/);
+  });
+
+  it("creates uuid ids without requiring randomUUID", () => {
+    const bytes = new Uint8Array(16);
+    bytes[6] = 0x4a;
+    bytes[8] = 0x8b;
+    expect(formatUuid(bytes)).toBe("00000000-0000-4a00-8b00-000000000000");
+    expect(createId()).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
+    expect(() => createEmptyVenue("")).toThrow(/1 and 200/);
   });
 });

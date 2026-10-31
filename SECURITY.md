@@ -10,6 +10,6 @@ Include what you can do, which version or commit you used, and whether the optio
 
 ## Notes for operators
 
-The Docker Compose file ships a development database password and a development Django secret. Do not expose that stack on a public network, and do not reuse those values in production. Set `DJANGO_SECRET_KEY` and `DJANGO_DEBUG=0` for any shared deployment.
+The Docker Compose file ships a development database password and a development Django secret, and it publishes Postgres and the API on localhost only. Redis is not published to the host. Do not reuse those values in production. Set `DJANGO_SECRET_KEY` and leave `DJANGO_DEBUG` unset or `0` for any shared deployment.
 
 Imported `venue.json` files are untrusted. The schema package validates them with Ajv before the editor accepts them. Do not skip that check when you add a new import path.
