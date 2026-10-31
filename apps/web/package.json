@@ -4,15 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d build && vite",
+    "dev": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d --filter @openvenue/renderer-3d build && vite",
     "build": "vite build",
-    "typecheck": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d build && vue-tsc --noEmit",
-    "test": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d build && vitest run"
+    "typecheck": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d --filter @openvenue/renderer-3d build && vue-tsc --noEmit",
+    "test": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine --filter @openvenue/renderer-2d --filter @openvenue/renderer-3d build && vitest run"
   },
   "dependencies": {
     "@openvenue/editor-core": "workspace:*",
     "@openvenue/geometry": "workspace:*",
     "@openvenue/renderer-2d": "workspace:*",
+    "@openvenue/renderer-3d": "workspace:*",
     "@openvenue/scene-engine": "workspace:*",
     "@openvenue/scene-schema": "workspace:*",
     "pinia": "^3.0.3",
