@@ -51,6 +51,13 @@ describe("project library", () => {
     });
     expect(hall.venue.floors[0]?.walls).toHaveLength(4);
     expect(hall.venue.floors[0]?.rooms).toHaveLength(1);
+    const boundary = hall.venue.floors[0]?.rooms[0]?.boundary ?? [];
+    const xs = boundary.map((point) => point.x);
+    const zs = boundary.map((point) => point.z);
+    expect(Math.max(...xs) - Math.min(...xs)).toBeCloseTo(10);
+    expect(Math.max(...zs) - Math.min(...zs)).toBeCloseTo(8);
+    expect(hall.project.metadata.planWidth).toBe(10);
+    expect(hall.project.metadata.planDepth).toBe(8);
     expect(() =>
       createProjectDocument({
         name: " ",
@@ -73,6 +80,25 @@ describe("project library", () => {
     });
     writeProjects(storage, upsertProject([], created));
     expect(readProjects(storage)).toHaveLength(1);
+
+    const earlier = createProjectDocument({
+      name: "Earlier",
+      width: 10,
+      depth: 8,
+      ceilingHeight: 3,
+      template: "empty",
+    });
+    const later = createProjectDocument({
+      name: "Later",
+      width: 10,
+      depth: 8,
+      ceilingHeight: 3,
+      template: "empty",
+    });
+    earlier.project.metadata.updatedAt = "2026-10-31T12:00:00+05:30";
+    later.project.metadata.updatedAt = "2026-10-31T07:00:00Z";
+    writeProjects(storage, [earlier, later]);
+    expect(readProjects(storage).map((item) => item.project.name)).toEqual(["Later", "Earlier"]);
 
     const copy = duplicateProject(created);
     expect(copy.project.id).not.toBe(created.project.id);
