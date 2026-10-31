@@ -8,7 +8,7 @@ The editor, the visitor view, and a future live layer all read one `venue.json`.
 
 ## Status
 
-You can create a project, see it in the list after a reload, and edit that venue. Projects stay in this browser. Geometry (grid snap, walls, rooms) and undoable commands run from code. The 2D canvas and the 3D view are not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
+You can create a project and see its floor plan: rooms, walls, objects, zones, and the entrance. Drag to pan and scroll to zoom. Projects stay in this browser. The 3D view is not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
 
 The roadmap is the [issue list](https://github.com/Rachit7168/OpenVenue/issues).
 
@@ -71,15 +71,16 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 
 ## Layout
 
-| Path                    | Role                                  |
-| ----------------------- | ------------------------------------- |
-| `apps/web`              | Vue 3 editor shell                    |
-| `apps/viewer`           | Future read-only visitor app          |
-| `apps/api`              | Optional Django API                   |
-| `packages/scene-schema` | `venue.json` schema, types, validator |
-| `packages/geometry`     | Plan math, snapping, walls, and rooms |
-| `packages/editor-core`  | Undoable commands                     |
-| `packages/scene-engine` | Document store for later 2D and 3D    |
+| Path                    | Role                                        |
+| ----------------------- | ------------------------------------------- |
+| `apps/web`              | Vue 3 editor shell                          |
+| `apps/viewer`           | Future read-only visitor app                |
+| `apps/api`              | Optional Django API                         |
+| `packages/scene-schema` | `venue.json` schema, types, validator       |
+| `packages/geometry`     | Plan math, snapping, walls, and rooms       |
+| `packages/editor-core`  | Undoable commands                           |
+| `packages/scene-engine` | Document store for the 2D plan and later 3D |
+| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid          |
 
 ## License
 

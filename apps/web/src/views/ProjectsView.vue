@@ -2,8 +2,9 @@
 import { MAX_VENUE_JSON_CHARS, saveVenueJson } from "@openvenue/scene-schema";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useProjectLibrary } from "../stores/projects";
+import FloorPlan from "../components/FloorPlan.vue";
 import type { ProjectTemplate } from "../project-library";
+import { useProjectLibrary } from "../stores/projects";
 
 const library = useProjectLibrary();
 const router = useRouter();
@@ -270,11 +271,8 @@ function importFile(event: Event) {
         data-testid="project-card"
         class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <div
-          data-testid="project-thumbnail"
-          class="flex h-24 items-center justify-center rounded-md bg-zinc-100 text-xs text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400"
-        >
-          No preview
+        <div data-testid="project-thumbnail" class="h-24 overflow-hidden rounded-md">
+          <FloorPlan :document="card.document" :interactive="false" />
         </div>
         <h2 class="mt-3 font-medium">{{ card.name }}</h2>
         <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
