@@ -3,7 +3,18 @@ import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createMemoryHistory, createRouter } from "vue-router";
 import App from "./App.vue";
-import WorkspaceView from "./views/WorkspaceView.vue";
+import { routes } from "./router";
+
+function mountApp() {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes,
+  });
+  const wrapper = mount(App, {
+    global: { plugins: [createPinia(), router] },
+  });
+  return { wrapper, router };
+}
 
 describe("app shell", () => {
   beforeEach(() => {
@@ -11,24 +22,31 @@ describe("app shell", () => {
     document.documentElement.classList.remove("dark");
   });
 
-  it("shows the workspace and toggles color mode", async () => {
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [{ path: "/", component: WorkspaceView }],
-    });
-    const wrapper = mount(App, {
-      global: { plugins: [createPinia(), router] },
-    });
-    await router.isReady();
+  it("lists a new project after reload and toggles color mode", async () => {
+    const first = mountApp();
+    await first.router.isReady();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("OpenVenue");
-    expect(wrapper.get("[data-testid=venue-json]").text()).toContain("Untitled venue");
+    expect(first.wrapper.text()).toContain("No projects yet");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-
-    await wrapper.get("[data-testid=theme-toggle]").trigger("click");
+    await first.wrapper.get("[data-testid=theme-toggle]").trigger("click");
     expect(document.documentElement.classList.contains("dark")).toBe(false);
     expect(localStorage.getItem("openvenue-theme")).toBe("light");
-    expect(wrapper.get("[data-testid=theme-toggle]").text()).toBe("Dark");
+
+    await first.wrapper.get("[data-testid=new-project]").trigger("click");
+    await first.wrapper.get("[data-testid=project-name]").setValue("Main hall");
+    await first.wrapper.get("[data-testid=project-template]").setValue("rectangular-hall");
+    await first.wrapper.get("form").trigger("submit");
+    await flushPromises();
+
+    expect(first.wrapper.get("[data-testid=venue-json]").text()).toContain("Main hall");
+    expect(first.wrapper.get("[data-testid=venue-json]").text()).toContain("Hall");
+    first.wrapper.unmount();
+
+    const second = mountApp();
+    await second.router.isReady();
+    await flushPromises();
+    expect(second.wrapper.get("[data-testid=project-card]").text()).toContain("Main hall");
+    expect(second.wrapper.get("[data-testid=project-thumbnail]").text()).toContain("No preview");
   });
 });

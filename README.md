@@ -8,7 +8,7 @@ The editor, the visitor view, and a future live layer all read one `venue.json`.
 
 ## Status
 
-You can create, validate, save, and load a venue document. Geometry (grid snap, walls, rooms) and undoable commands run from code. The 2D canvas and the 3D view are not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
+You can create a project, see it in the list after a reload, and edit that venue. Projects stay in this browser. Geometry (grid snap, walls, rooms) and undoable commands run from code. The 2D canvas and the 3D view are not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
 
 The roadmap is the [issue list](https://github.com/Rachit7168/OpenVenue/issues).
 
@@ -23,7 +23,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173. The workspace starts from an empty venue (one ground floor and an entrance spawn). **Save JSON** downloads the file. **Open JSON** checks it against the schema and keeps the current venue if the file is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
+Open http://localhost:5173. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
 
 ```bash
 pnpm build
