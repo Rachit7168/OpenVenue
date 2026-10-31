@@ -1,0 +1,19 @@
+name: Bug report
+description: Something in OpenVenue does not behave as it should.
+title: ""
+labels: []
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version and environment
+      description: Commit, browser, or Docker setup.
+    validations:
+      required: false

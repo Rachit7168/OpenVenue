@@ -1,0 +1,22 @@
+{
+  "name": "@openvenue/viewer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only visitor app. Separate from the editor so it can be embedded on an event site.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}
