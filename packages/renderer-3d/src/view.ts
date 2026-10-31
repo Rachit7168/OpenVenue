@@ -38,7 +38,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   controls.target.set(0, 0, 0);
 
   let venue: THREE.Group | null = null;
-  let framed = false;
+  let framedVenueId: string | null = null;
   let stopped = false;
   let frameId = 0;
 
@@ -60,7 +60,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       }
       venue = buildVenueGroup(document);
       scene.add(venue);
-      if (framed) {
+      if (framedVenueId === document.venue.id) {
         return;
       }
       const box = new THREE.Box3().setFromObject(venue);
@@ -73,7 +73,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       controls.target.copy(center);
       camera.position.set(center.x + radius * 0.9, center.y + radius * 0.75, center.z + radius);
       camera.lookAt(center);
-      framed = true;
+      framedVenueId = document.venue.id;
     },
     resize(width, height) {
       if (width < 2 || height < 2) {

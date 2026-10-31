@@ -173,6 +173,24 @@ function save() {
           >
             3D
           </button>
+          <button
+            v-if="viewMode === 'stage'"
+            type="button"
+            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
+            :disabled="!store.canUndo"
+            @click="store.undo()"
+          >
+            Undo
+          </button>
+          <button
+            v-if="viewMode === 'stage'"
+            type="button"
+            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
+            :disabled="!store.canRedo"
+            @click="store.redo()"
+          >
+            Redo
+          </button>
         </div>
       </div>
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
@@ -181,8 +199,12 @@ function save() {
     <section
       class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
     >
-      <PlanEditor v-if="viewMode === 'plan'" class="min-w-0 flex-1" />
-      <VenueStage v-else class="min-h-0 min-w-0 flex-1" :document="store.document" />
+      <PlanEditor v-show="viewMode === 'plan'" class="min-w-0 flex-1" />
+      <VenueStage
+        v-if="viewMode === 'stage'"
+        class="min-h-0 min-w-0 flex-1"
+        :document="store.document"
+      />
       <Inspector />
     </section>
 

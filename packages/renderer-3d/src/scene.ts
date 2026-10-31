@@ -81,6 +81,19 @@ function addSpan(
   group.add(mesh);
 }
 
+function clippedSpan(
+  length: number,
+  offset: number,
+  width: number,
+): { from: number; to: number } | null {
+  const from = Math.max(0, offset);
+  const to = Math.min(length, offset + width);
+  if (to - from < 1e-3) {
+    return null;
+  }
+  return { from, to };
+}
+
 function addWall(group: THREE.Group, wall: Wall): void {
   const dx = wall.end.x - wall.start.x;
   const dz = wall.end.z - wall.start.z;
@@ -95,21 +108,17 @@ function addWall(group: THREE.Group, wall: Wall): void {
     addSpan(group, wall, direction, yaw, span.from, span.to, 0, wall.height);
   }
   for (const opening of openings) {
-    const sill = opening.sill ?? 0;
-    if (sill > 0) {
-      addSpan(group, wall, direction, yaw, opening.offset, opening.offset + opening.width, 0, sill);
+    const span = clippedSpan(length, opening.offset, opening.width);
+    if (!span) {
+      continue;
     }
-    if (opening.height < wall.height) {
-      addSpan(
-        group,
-        wall,
-        direction,
-        yaw,
-        opening.offset,
-        opening.offset + opening.width,
-        opening.height,
-        wall.height,
-      );
+    const sill = Math.min(wall.height, Math.max(0, opening.sill ?? 0));
+    const head = Math.min(wall.height, sill + opening.height);
+    if (sill > 1e-3) {
+      addSpan(group, wall, direction, yaw, span.from, span.to, 0, sill);
+    }
+    if (head < wall.height - 1e-3) {
+      addSpan(group, wall, direction, yaw, span.from, span.to, head, wall.height);
     }
   }
 }
@@ -186,7 +195,7 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
       new THREE.SphereGeometry(0.22, 16, 12),
       new THREE.MeshStandardMaterial({ color: spawn.role === "exit" ? "#fb7185" : "#38bdf8" }),
     );
-    marker.position.set(spawn.position.x, 0.22, spawn.position.z);
+    marker.position.set(spawn.position.x, spawn.position.y + 0.22, spawn.position.z);
     marker.userData.ownMaterial = true;
     group.add(marker);
   }
