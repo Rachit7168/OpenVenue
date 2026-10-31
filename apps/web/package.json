@@ -4,16 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "pnpm --filter @openvenue/scene-schema build",
-    "prebuild": "pnpm --filter @openvenue/scene-schema build",
-    "pretest": "pnpm --filter @openvenue/scene-schema build",
-    "pretypecheck": "pnpm --filter @openvenue/scene-schema build",
+    "predev": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine build",
+    "prebuild": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine build",
+    "pretest": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine build",
+    "pretypecheck": "pnpm --filter @openvenue/scene-schema --filter @openvenue/geometry --filter @openvenue/editor-core --filter @openvenue/scene-engine build",
     "dev": "vite",
     "build": "vite build",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@openvenue/scene-engine": "workspace:*",
     "@openvenue/scene-schema": "workspace:*",
     "pinia": "^3.0.3",
     "vue": "^3.5.22",

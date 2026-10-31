@@ -47,6 +47,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@openvenue/scene-engine':
+        specifier: workspace:*
+        version: link:../../packages/scene-engine
       '@openvenue/scene-schema':
         specifier: workspace:*
         version: link:../../packages/scene-schema
@@ -98,10 +101,20 @@ importers:
         version: 5.9.3
 
   packages/editor-core:
+    dependencies:
+      '@openvenue/geometry':
+        specifier: workspace:*
+        version: link:../geometry
+      '@openvenue/scene-schema':
+        specifier: workspace:*
+        version: link:../scene-schema
     devDependencies:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.7(@types/node@22.20.5)(jiti@1.21.7)(jsdom@27.4.0)
 
   packages/export-engine:
     devDependencies:
@@ -114,6 +127,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.7(@types/node@22.20.5)(jiti@1.21.7)(jsdom@27.4.0)
 
   packages/renderer-2d:
     devDependencies:
@@ -128,10 +144,20 @@ importers:
         version: 5.9.3
 
   packages/scene-engine:
+    dependencies:
+      '@openvenue/editor-core':
+        specifier: workspace:*
+        version: link:../editor-core
+      '@openvenue/scene-schema':
+        specifier: workspace:*
+        version: link:../scene-schema
     devDependencies:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.7(@types/node@22.20.5)(jiti@1.21.7)(jsdom@27.4.0)
 
   packages/scene-schema:
     dependencies:
@@ -157,6 +183,9 @@ importers:
 
   packages/validation:
     dependencies:
+      '@openvenue/geometry':
+        specifier: workspace:*
+        version: link:../geometry
       '@openvenue/scene-schema':
         specifier: workspace:*
         version: link:../scene-schema
@@ -164,6 +193,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.7(@types/node@22.20.5)(jiti@1.21.7)(jsdom@27.4.0)
 
 packages:
 
