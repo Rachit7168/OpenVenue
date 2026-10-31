@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
-import type { CameraMode } from "@openvenue/renderer-3d";
+import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
+import type { CameraMode, GizmoMode, ObjectPose } from "@openvenue/renderer-3d";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
 import VenueStage from "../components/VenueStage.vue";
@@ -15,7 +16,76 @@ const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage">("plan");
 const cameraMode = ref<CameraMode>("orbit");
+const gizmoMode = ref<GizmoMode>("translate");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
+
+const selectedObjectId = computed(() => {
+  if (store.selection.length !== 1) {
+    return null;
+  }
+  const id = store.selection[0] ?? null;
+  const objects = store.document.venue.floors[0]?.objects ?? [];
+  return id && objects.some((object) => object.id === id) ? id : null;
+});
+
+function nearly(a: number, b: number): boolean {
+  return Math.abs(a - b) < 1e-4;
+}
+
+function onObjectTransform(id: string, mode: GizmoMode, pose: ObjectPose) {
+  const object = store.document.venue.floors[0]?.objects.find((item) => item.id === id);
+  if (!object || (object as { locked?: unknown }).locked === true) {
+    return;
+  }
+  if (mode === "translate") {
+    const position = object.transform.position;
+    if (
+      nearly(position.x, pose.position.x) &&
+      nearly(position.y, pose.position.y) &&
+      nearly(position.z, pose.position.z)
+    ) {
+      return;
+    }
+    store.execute(moveObject(store.document, id, pose.position));
+    return;
+  }
+  if (mode === "rotate") {
+    const rotation = object.transform.rotation;
+    if (
+      nearly(rotation.x, pose.rotation.x) &&
+      nearly(rotation.y, pose.rotation.y) &&
+      nearly(rotation.z, pose.rotation.z)
+    ) {
+      return;
+    }
+    store.execute(rotateObject(store.document, id, pose.rotation));
+    return;
+  }
+  const current = object.dimensions;
+  const sizeChanged =
+    !current ||
+    !nearly(current.width, pose.dimensions.width) ||
+    !nearly(current.height, pose.dimensions.height) ||
+    !nearly(current.depth, pose.dimensions.depth);
+  const position = object.transform.position;
+  const positionChanged =
+    !nearly(position.x, pose.position.x) ||
+    !nearly(position.y, pose.position.y) ||
+    !nearly(position.z, pose.position.z);
+  const steps = [];
+  if (sizeChanged) {
+    steps.push(resizeObject(store.document, id, pose.dimensions));
+  }
+  if (positionChanged) {
+    steps.push(moveObject(store.document, id, pose.position));
+  }
+  const command = steps.length === 1 ? steps[0] : null;
+  if (command) {
+    store.execute(command);
+  } else if (steps.length > 1) {
+    store.execute(groupCommands("RESIZE_OBJECT", steps));
+  }
+}
 
 const projectId = String(route.params.projectId ?? "");
 const opened = library.find(projectId);
@@ -202,6 +272,39 @@ function save() {
             </button>
             <button
               type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                gizmoMode === 'translate'
+                  ? 'bg-teal-400 text-zinc-950'
+                  : 'bg-zinc-800 text-zinc-100'
+              "
+              @click="gizmoMode = 'translate'"
+            >
+              Move
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                gizmoMode === 'rotate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              @click="gizmoMode = 'rotate'"
+            >
+              Rotate
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
+                gizmoMode === 'scale' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="gizmo-scale"
+              @click="gizmoMode = 'scale'"
+            >
+              Scale
+            </button>
+            <button
+              type="button"
               class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
               @click="stage?.fit()"
             >
@@ -248,6 +351,10 @@ function save() {
         class="min-h-0 min-w-0 flex-1"
         :document="store.document"
         :camera-mode="cameraMode"
+        :gizmo-mode="gizmoMode"
+        :selected-id="selectedObjectId"
+        @select="store.setSelection($event ? [$event] : [])"
+        @transform="onObjectTransform"
       />
       <Inspector />
     </section>
