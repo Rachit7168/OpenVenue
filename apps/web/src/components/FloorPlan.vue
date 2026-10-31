@@ -98,12 +98,12 @@ function onPointerMove(event: PointerEvent) {
   if (!props.interactive) {
     return;
   }
-  cursor.value = screenToWorld(viewport.value, localPoint(event));
-  if (!dragging.value) {
-    return;
+  const screen = localPoint(event);
+  if (dragging.value) {
+    viewport.value = panViewport(viewport.value, event.clientX - last.x, event.clientY - last.y);
+    last = { x: event.clientX, y: event.clientY };
   }
-  viewport.value = panViewport(viewport.value, event.clientX - last.x, event.clientY - last.y);
-  last = { x: event.clientX, y: event.clientY };
+  cursor.value = screenToWorld(viewport.value, screen);
 }
 
 function onPointerUp() {

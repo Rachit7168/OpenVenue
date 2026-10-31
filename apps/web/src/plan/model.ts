@@ -38,6 +38,13 @@ export interface PlanScene {
   points: PlanPoint[];
 }
 
+function horizontalScale(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value) || value === 0) {
+    return 1;
+  }
+  return Math.abs(value);
+}
+
 /** Drawable plan for the first floor, plus spawns on that floor. */
 export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
   const floor = document.venue.floors[floorIndex];
@@ -77,8 +84,8 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
     }
   }
   for (const object of floor.objects) {
-    const width = object.dimensions?.width ?? 0.6;
-    const depth = object.dimensions?.depth ?? 0.6;
+    const width = (object.dimensions?.width ?? 0.6) * horizontalScale(object.transform.scale?.x);
+    const depth = (object.dimensions?.depth ?? 0.6) * horizontalScale(object.transform.scale?.z);
     const corners = footprintCorners(
       { x: object.transform.position.x, z: object.transform.position.z },
       width,

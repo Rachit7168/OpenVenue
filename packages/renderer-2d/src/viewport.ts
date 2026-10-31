@@ -25,7 +25,7 @@ export interface ScreenLine {
   major: boolean;
 }
 
-const MIN_SCALE = 4;
+const MIN_SCALE = 0.02;
 const MAX_SCALE = 400;
 
 export function defaultViewport(width: number, height: number): Viewport {
