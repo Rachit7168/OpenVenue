@@ -1,10 +1,16 @@
 import type { VenueDocument } from "@openvenue/scene-schema";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { applyOrthoFrustum, frameVenue, type CameraMode } from "./camera.js";
 import { buildVenueGroup } from "./scene.js";
+
+export type { CameraMode };
 
 export interface VenueView {
   setDocument(document: VenueDocument): void;
+  setCameraMode(mode: CameraMode): void;
+  fit(): void;
+  reset(): void;
   resize(width: number, height: number): void;
   dispose(): void;
 }
@@ -31,16 +37,46 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   const sun = new THREE.DirectionalLight("#fff7ed", 1.15);
   sun.position.set(14, 22, 8);
   scene.add(sun);
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.05, 500);
-  camera.position.set(16, 12, 18);
-  const controls = new OrbitControls(camera, canvas);
+  const perspective = new THREE.PerspectiveCamera(45, 1, 0.05, 500);
+  perspective.position.set(16, 12, 18);
+  const orthographic = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 500);
+  const controls = new OrbitControls(perspective, canvas);
   controls.enableDamping = true;
   controls.target.set(0, 0, 0);
 
   let venue: THREE.Group | null = null;
   let framedVenueId: string | null = null;
+  let mode: CameraMode = "orbit";
+  let active: THREE.Camera = perspective;
+  let orthoHalf = 4;
+  let viewWidth = 1;
+  let viewHeight = 1;
   let stopped = false;
   let frameId = 0;
+
+  const aspect = () => (viewHeight < 2 ? 1 : viewWidth / viewHeight);
+
+  const aim = (resetDirection: boolean) => {
+    if (!venue) {
+      return;
+    }
+    const framed = frameVenue({
+      mode,
+      box: new THREE.Box3().setFromObject(venue),
+      aspect: aspect(),
+      perspective,
+      orthographic,
+      resetDirection,
+    });
+    if (!framed) {
+      return;
+    }
+    controls.target.copy(framed.target);
+    orthoHalf = framed.orthoHalf;
+    active = mode === "orbit" ? perspective : orthographic;
+    controls.object = active;
+    controls.update();
+  };
 
   const tick = () => {
     if (stopped) {
@@ -48,7 +84,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     }
     frameId = requestAnimationFrame(tick);
     controls.update();
-    renderer.render(scene, camera);
+    renderer.render(scene, active);
   };
   tick();
 
@@ -60,27 +96,37 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       }
       venue = buildVenueGroup(document);
       scene.add(venue);
-      if (framedVenueId === document.venue.id) {
+      const replace = framedVenueId !== document.venue.id;
+      if (!replace) {
         return;
       }
-      const box = new THREE.Box3().setFromObject(venue);
-      if (box.isEmpty()) {
+      aim(true);
+      if (!new THREE.Box3().setFromObject(venue).isEmpty()) {
+        framedVenueId = document.venue.id;
+      }
+    },
+    setCameraMode(next) {
+      if (next === mode) {
         return;
       }
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      const radius = Math.max(size.x, size.y, size.z, 4);
-      controls.target.copy(center);
-      camera.position.set(center.x + radius * 0.9, center.y + radius * 0.75, center.z + radius);
-      camera.lookAt(center);
-      framedVenueId = document.venue.id;
+      mode = next;
+      aim(true);
+    },
+    fit() {
+      aim(false);
+    },
+    reset() {
+      aim(true);
     },
     resize(width, height) {
       if (width < 2 || height < 2) {
         return;
       }
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+      viewWidth = width;
+      viewHeight = height;
+      perspective.aspect = width / height;
+      perspective.updateProjectionMatrix();
+      applyOrthoFrustum(orthographic, orthoHalf, width / height);
       renderer.setSize(width, height, false);
     },
     dispose() {
