@@ -17,6 +17,7 @@ export interface PlanWall {
 
 export interface PlanOpening {
   id: string;
+  kind: string;
   start: PlanPoint;
   end: PlanPoint;
 }
@@ -26,6 +27,18 @@ export interface PlanSpawn {
   name: string;
   role: string;
   point: PlanPoint;
+  rotationY: number;
+}
+
+export interface PlanFixture {
+  id: string;
+  name: string;
+  type: string;
+  center: PlanPoint;
+  width: number;
+  depth: number;
+  yaw: number;
+  points: PlanPoint[];
 }
 
 export interface PlanScene {
@@ -33,7 +46,7 @@ export interface PlanScene {
   zones: PlanPolygon[];
   walls: PlanWall[];
   openings: PlanOpening[];
-  objects: PlanPolygon[];
+  objects: PlanFixture[];
   spawns: PlanSpawn[];
   points: PlanPoint[];
 }
@@ -52,7 +65,7 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
   const zones: PlanPolygon[] = [];
   const walls: PlanWall[] = [];
   const openings: PlanOpening[] = [];
-  const objects: PlanPolygon[] = [];
+  const objects: PlanFixture[] = [];
   const spawns: PlanSpawn[] = [];
   const points: PlanPoint[] = [];
 
@@ -80,19 +93,25 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
       if (!span.valid) {
         continue;
       }
-      openings.push({ id: opening.id, start: span.start, end: span.end });
+      openings.push({ id: opening.id, kind: opening.kind, start: span.start, end: span.end });
     }
   }
   for (const object of floor.objects) {
     const width = (object.dimensions?.width ?? 0.6) * horizontalScale(object.transform.scale?.x);
     const depth = (object.dimensions?.depth ?? 0.6) * horizontalScale(object.transform.scale?.z);
-    const corners = footprintCorners(
-      { x: object.transform.position.x, z: object.transform.position.z },
+    const center = { x: object.transform.position.x, z: object.transform.position.z };
+    const yaw = object.transform.rotation.y;
+    const corners = footprintCorners(center, width, depth, yaw);
+    objects.push({
+      id: object.id,
+      name: object.name,
+      type: object.type,
+      center,
       width,
       depth,
-      object.transform.rotation.y,
-    );
-    objects.push({ id: object.id, name: object.name, points: corners });
+      yaw,
+      points: corners,
+    });
     points.push(...corners);
   }
   for (const spawn of document.venue.spawnPoints) {
@@ -100,7 +119,13 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
       continue;
     }
     const point = { x: spawn.position.x, z: spawn.position.z };
-    spawns.push({ id: spawn.id, name: spawn.name, role: spawn.role, point });
+    spawns.push({
+      id: spawn.id,
+      name: spawn.name,
+      role: spawn.role,
+      point,
+      rotationY: spawn.rotationY,
+    });
     points.push(point);
   }
 

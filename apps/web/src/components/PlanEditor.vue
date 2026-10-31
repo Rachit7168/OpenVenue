@@ -50,6 +50,40 @@ const movingId = ref<string | null>(null);
 const mergingMove = ref(false);
 const note = ref("Middle-drag pans. Scroll zooms. Delete removes the selection.");
 
+const selectionSummary = computed(() => {
+  const id = store.selection[0];
+  if (!id) {
+    return "";
+  }
+  const scene = planScene(store.document);
+  const object = scene.objects.find((item) => item.id === id);
+  if (object) {
+    return `${object.name} · ${object.type} · ${object.width.toFixed(2)} × ${object.depth.toFixed(2)} m`;
+  }
+  const room = scene.rooms.find((item) => item.id === id);
+  if (room) {
+    return `${room.name} · room · ${spanLabel(room.points)}`;
+  }
+  const zone = scene.zones.find((item) => item.id === id);
+  if (zone) {
+    return `${zone.name} · zone · ${spanLabel(zone.points)}`;
+  }
+  if (scene.walls.some((item) => item.id === id)) {
+    const wall = scene.walls.find((item) => item.id === id);
+    return wall ? `Wall · ${wallLength({ start: wall.start, end: wall.end }).toFixed(2)} m` : "";
+  }
+  const spawn = scene.spawns.find((item) => item.id === id);
+  return spawn ? `${spawn.name} · ${spawn.role}` : "";
+});
+
+function spanLabel(points: PlanPoint[]): string {
+  const xs = points.map((point) => point.x);
+  const zs = points.map((point) => point.z);
+  const width = Math.max(...xs) - Math.min(...xs);
+  const depth = Math.max(...zs) - Math.min(...zs);
+  return `${width.toFixed(1)} × ${depth.toFixed(1)} m`;
+}
+
 const shownDraft = computed(() => {
   const start = draft.value[0];
   if (!preview.value || !start) {
@@ -461,6 +495,11 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
       @move="onMove"
       @up="onUp"
     />
-    <p class="border-t border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400">{{ note }}</p>
+    <p
+      class="flex justify-between gap-3 border-t border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400"
+    >
+      <span class="text-zinc-200">{{ selectionSummary || "Nothing selected" }}</span>
+      <span>{{ note }}</span>
+    </p>
   </div>
 </template>

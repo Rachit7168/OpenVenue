@@ -12,7 +12,8 @@ import {
 } from "@openvenue/renderer-2d";
 import type { VenueDocument } from "@openvenue/scene-schema";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { planScene } from "../plan/model";
+import { tableSeats, type Seat } from "../plan/furniture";
+import { planScene, type PlanFixture, type PlanOpening } from "../plan/model";
 
 const props = withDefaults(
   defineProps<{
@@ -37,6 +38,7 @@ const emit = defineEmits<{
 }>();
 
 const root = ref<SVGSVGElement | null>(null);
+const floorPatternId = `floor-${Math.random().toString(36).slice(2, 8)}`;
 const viewport = ref<Viewport>({ scale: 40, originX: 0, originY: 0 });
 const size = ref({ width: 1, height: 1 });
 const fitted = ref(false);
@@ -78,6 +80,60 @@ function screenOf(point: PlanPoint) {
 function chosen(id: string): boolean {
   return props.selectedIds.includes(id);
 }
+
+function metres(value: number): number {
+  return value * viewport.value.scale;
+}
+
+function fixtureTransform(object: PlanFixture): string {
+  const center = screenOf(object.center);
+  const degrees = (object.yaw * 180) / Math.PI;
+  return `translate(${center.x} ${center.y}) rotate(${degrees})`;
+}
+
+function seatTransform(seat: Seat): string {
+  const degrees = (seat.yaw * 180) / Math.PI;
+  return `translate(${metres(seat.x)} ${-metres(seat.z)}) rotate(${degrees})`;
+}
+
+function labelWidth(name: string): number {
+  return Math.max(28, name.length * 6.4 + 16);
+}
+
+function swingPath(opening: PlanOpening): string {
+  const hinge = screenOf(opening.start);
+  const latched = screenOf(opening.end);
+  const dx = latched.x - hinge.x;
+  const dy = latched.y - hinge.y;
+  const radius = Math.hypot(dx, dy);
+  if (radius < 1 || opening.kind === "opening") {
+    return "";
+  }
+  if (opening.kind === "window") {
+    return `M ${hinge.x} ${hinge.y} L ${latched.x} ${latched.y}`;
+  }
+  const openX = hinge.x - dy;
+  const openY = hinge.y + dx;
+  return `M ${latched.x} ${latched.y} A ${radius} ${radius} 0 0 0 ${openX} ${openY} M ${hinge.x} ${hinge.y} L ${openX} ${openY}`;
+}
+
+function facingEnd(point: { x: number; z: number }, rotationY: number): { x: number; y: number } {
+  const center = screenOf(point);
+  return {
+    x: center.x + Math.sin(rotationY) * 16,
+    y: center.y - Math.cos(rotationY) * 16,
+  };
+}
+
+const fixtureFill: Record<string, string> = {
+  stage: "#6d28d9",
+  booth: "#0f766e",
+  screen: "#0f172a",
+  podium: "#57534e",
+  sign: "#d97706",
+  generic: "#a8a29e",
+  custom: "#a8a29e",
+};
 
 const draftPoints = computed(() =>
   props.draft
@@ -188,6 +244,12 @@ watch(
       @pointerleave="onPointerUp"
       @wheel.prevent="onWheel"
     >
+      <defs>
+        <pattern :id="floorPatternId" width="32" height="12" patternUnits="userSpaceOnUse">
+          <rect width="32" height="12" fill="#166534" />
+          <path d="M0 12 H32" stroke="#14532d" stroke-width="2" />
+        </pattern>
+      </defs>
       <line
         v-for="(line, index) in grid.lines"
         :key="`grid-${index}`"
@@ -202,9 +264,8 @@ watch(
         v-for="room in scene.rooms"
         :key="room.id"
         :d="path(room.points)"
-        fill="#115e59"
-        fill-opacity="0.55"
-        :stroke="chosen(room.id) ? '#22d3ee' : '#5eead4'"
+        :fill="`url(#${floorPatternId})`"
+        :stroke="chosen(room.id) ? '#22d3ee' : '#86efac'"
         stroke-width="1.5"
       />
       <path
@@ -212,41 +273,160 @@ watch(
         :key="zone.id"
         :d="path(zone.points)"
         fill="#6d28d9"
-        fill-opacity="0.35"
-        :stroke="chosen(zone.id) ? '#22d3ee' : '#c4b5fd'"
+        fill-opacity="0.28"
+        :stroke="chosen(zone.id) ? '#22d3ee' : '#ddd6fe'"
         stroke-width="1.5"
-        stroke-dasharray="4 3"
+        stroke-dasharray="5 4"
       />
-      <line
-        v-for="wall in scene.walls"
-        :key="wall.id"
-        :x1="screenOf(wall.start).x"
-        :y1="screenOf(wall.start).y"
-        :x2="screenOf(wall.end).x"
-        :y2="screenOf(wall.end).y"
-        :stroke="chosen(wall.id) ? '#22d3ee' : '#e4e4e7'"
-        stroke-linecap="square"
-        :stroke-width="Math.max(2, wall.thickness * viewport.scale)"
-      />
-      <line
-        v-for="opening in scene.openings"
-        :key="opening.id"
-        :x1="screenOf(opening.start).x"
-        :y1="screenOf(opening.start).y"
-        :x2="screenOf(opening.end).x"
-        :y2="screenOf(opening.end).y"
-        stroke="#09090b"
-        stroke-linecap="butt"
-        :stroke-width="Math.max(3, viewport.scale * 0.24)"
-      />
-      <path
-        v-for="object in scene.objects"
-        :key="object.id"
-        :d="path(object.points)"
-        fill="#d97706"
-        :stroke="chosen(object.id) ? '#22d3ee' : '#fde68a'"
-        stroke-width="1"
-      />
+      <g v-for="wall in scene.walls" :key="wall.id">
+        <line
+          :x1="screenOf(wall.start).x"
+          :y1="screenOf(wall.start).y"
+          :x2="screenOf(wall.end).x"
+          :y2="screenOf(wall.end).y"
+          stroke="#292524"
+          stroke-linecap="square"
+          :stroke-width="Math.max(6, wall.thickness * viewport.scale + 3)"
+        />
+        <line
+          :x1="screenOf(wall.start).x"
+          :y1="screenOf(wall.start).y"
+          :x2="screenOf(wall.end).x"
+          :y2="screenOf(wall.end).y"
+          :stroke="chosen(wall.id) ? '#22d3ee' : '#fafaf9'"
+          stroke-linecap="square"
+          :stroke-width="Math.max(3, wall.thickness * viewport.scale)"
+        />
+      </g>
+      <g v-for="opening in scene.openings" :key="opening.id">
+        <line
+          :x1="screenOf(opening.start).x"
+          :y1="screenOf(opening.start).y"
+          :x2="screenOf(opening.end).x"
+          :y2="screenOf(opening.end).y"
+          stroke="#166534"
+          stroke-linecap="butt"
+          :stroke-width="Math.max(5, viewport.scale * 0.28)"
+        />
+        <path
+          v-if="swingPath(opening)"
+          :d="swingPath(opening)"
+          fill="none"
+          :stroke="opening.kind === 'window' ? '#7dd3fc' : '#fcd34d'"
+          stroke-width="1.5"
+        />
+      </g>
+      <g v-for="object in scene.objects" :key="object.id" :transform="fixtureTransform(object)">
+        <rect
+          v-if="chosen(object.id)"
+          :x="metres(-object.width / 2 - 0.08)"
+          :y="metres(-object.depth / 2 - 0.08)"
+          :width="metres(object.width + 0.16)"
+          :height="metres(object.depth + 0.16)"
+          fill="none"
+          stroke="#22d3ee"
+          stroke-width="2"
+        />
+        <template v-if="object.type === 'table'">
+          <g
+            v-for="(seat, index) in viewport.scale >= 10
+              ? tableSeats(object.width, object.depth)
+              : []"
+            :key="`${object.id}-seat-${index}`"
+            :transform="seatTransform(seat)"
+          >
+            <rect
+              :x="metres(-0.18)"
+              :y="metres(-0.16)"
+              :width="metres(0.36)"
+              :height="metres(0.32)"
+              rx="2"
+              fill="#e7e5e4"
+              stroke="#44403c"
+              stroke-width="1"
+            />
+            <line
+              :x1="metres(-0.14)"
+              :y1="metres(-0.16)"
+              :x2="metres(0.14)"
+              :y2="metres(-0.16)"
+              stroke="#292524"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+          </g>
+          <rect
+            :x="metres(-object.width / 2)"
+            :y="metres(-object.depth / 2)"
+            :width="metres(object.width)"
+            :height="metres(object.depth)"
+            :rx="Math.min(7, metres(0.08))"
+            fill="#d4b483"
+            stroke="#78350f"
+            stroke-width="1.25"
+          />
+          <rect
+            :x="metres(-object.width / 2 + 0.07)"
+            :y="metres(-object.depth / 2 + 0.07)"
+            :width="metres(Math.max(object.width - 0.14, 0.08))"
+            :height="metres(Math.max(object.depth - 0.14, 0.08))"
+            rx="3"
+            fill="#f3e0c0"
+          />
+        </template>
+        <template v-else-if="object.type === 'chair'">
+          <rect
+            :x="metres(-object.width / 2)"
+            :y="metres(-object.depth / 2)"
+            :width="metres(object.width)"
+            :height="metres(object.depth)"
+            rx="3"
+            fill="#e7e5e4"
+            stroke="#44403c"
+            stroke-width="1"
+          />
+          <line
+            :x1="metres(-object.width / 2 + 0.04)"
+            :y1="metres(-object.depth / 2)"
+            :x2="metres(object.width / 2 - 0.04)"
+            :y2="metres(-object.depth / 2)"
+            stroke="#292524"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+        </template>
+        <template v-else-if="object.type === 'screen'">
+          <line
+            x1="0"
+            :y1="metres(object.depth / 2)"
+            x2="0"
+            :y2="metres(object.depth / 2 + 0.25)"
+            stroke="#334155"
+            stroke-width="3"
+          />
+          <rect
+            :x="metres(-object.width / 2)"
+            :y="metres(-object.depth / 2)"
+            :width="metres(object.width)"
+            :height="metres(object.depth)"
+            rx="3"
+            fill="#0f172a"
+            stroke="#38bdf8"
+            stroke-width="2"
+          />
+        </template>
+        <rect
+          v-else
+          :x="metres(-object.width / 2)"
+          :y="metres(-object.depth / 2)"
+          :width="metres(object.width)"
+          :height="metres(object.depth)"
+          :rx="Math.min(6, metres(0.08))"
+          :fill="fixtureFill[object.type] ?? '#d6d3d1'"
+          stroke="#fafaf9"
+          stroke-width="1"
+        />
+      </g>
       <polyline
         v-if="draftPoints"
         :points="draftPoints"
@@ -255,34 +435,69 @@ watch(
         stroke-width="2"
       />
       <g v-for="spawn in scene.spawns" :key="spawn.id">
+        <line
+          :x1="screenOf(spawn.point).x"
+          :y1="screenOf(spawn.point).y"
+          :x2="facingEnd(spawn.point, spawn.rotationY).x"
+          :y2="facingEnd(spawn.point, spawn.rotationY).y"
+          :stroke="spawn.role === 'exit' ? '#fb7185' : '#38bdf8'"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
         <circle
           :cx="screenOf(spawn.point).x"
           :cy="screenOf(spawn.point).y"
-          r="6"
+          r="8"
           :fill="spawn.role === 'exit' ? '#fb7185' : '#38bdf8'"
           :stroke="chosen(spawn.id) ? '#22d3ee' : '#fafafa'"
           stroke-width="1.5"
         />
+        <circle
+          :cx="screenOf(spawn.point).x"
+          :cy="screenOf(spawn.point).y"
+          r="2.5"
+          fill="#fafafa"
+        />
         <text
-          :x="screenOf(spawn.point).x + 8"
-          :y="screenOf(spawn.point).y - 8"
+          :x="screenOf(spawn.point).x + 12"
+          :y="screenOf(spawn.point).y + 4"
           fill="#e4e4e7"
           font-size="11"
         >
           {{ spawn.name }}
         </text>
       </g>
-      <text
-        v-for="room in scene.rooms"
-        :key="`${room.id}-label`"
-        :x="screenOf(labelAt(room.points)).x"
-        :y="screenOf(labelAt(room.points)).y"
-        fill="#ccfbf1"
-        font-size="12"
-        text-anchor="middle"
-      >
-        {{ room.name }}
-      </text>
+      <g v-for="room in scene.rooms" :key="`${room.id}-label`">
+        <rect
+          :x="screenOf(labelAt(room.points)).x - labelWidth(room.name) / 2"
+          :y="screenOf(labelAt(room.points)).y - 11"
+          :width="labelWidth(room.name)"
+          height="20"
+          rx="6"
+          fill="#052e16"
+          fill-opacity="0.88"
+        />
+        <text
+          :x="screenOf(labelAt(room.points)).x"
+          :y="screenOf(labelAt(room.points)).y + 3"
+          fill="#dcfce7"
+          font-size="12"
+          text-anchor="middle"
+        >
+          {{ room.name }}
+        </text>
+      </g>
+      <g v-for="zone in scene.zones" :key="`${zone.id}-label`">
+        <text
+          :x="screenOf(labelAt(zone.points)).x"
+          :y="screenOf(labelAt(zone.points)).y"
+          fill="#ede9fe"
+          font-size="11"
+          text-anchor="middle"
+        >
+          {{ zone.name }}
+        </text>
+      </g>
     </svg>
     <p
       v-if="interactive"
