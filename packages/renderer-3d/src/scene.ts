@@ -181,9 +181,16 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
       object.transform.position.y + height / 2,
       object.transform.position.z,
     );
-    mesh.rotation.y = object.transform.rotation.y;
+    mesh.rotation.set(
+      object.transform.rotation.x,
+      object.transform.rotation.y,
+      object.transform.rotation.z,
+    );
     mesh.castShadow = true;
     mesh.userData.ownMaterial = true;
+    mesh.userData.entityId = object.id;
+    mesh.userData.locked = (object as { locked?: unknown }).locked === true;
+    mesh.userData.base = { width, height, depth };
     group.add(mesh);
   }
 
