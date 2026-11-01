@@ -12,6 +12,7 @@ import {
   type ObjectPose,
 } from "./pick.js";
 import { qualityOptions, type QualityMode } from "./quality.js";
+import { onModelsChanged } from "./glb.js";
 import { buildVenueGroup, indexChairs, type ChairSlot } from "./scene.js";
 import { patchVenueGroup } from "./sync.js";
 
@@ -30,6 +31,7 @@ export interface VenueView {
   }): void;
   fit(): void;
   reset(): void;
+  floorPoint(clientX: number, clientY: number): { x: number; z: number } | null;
   resize(width: number, height: number): void;
   dispose(): void;
 }
@@ -48,7 +50,7 @@ function isObjectBase(value: unknown): value is ObjectBase {
 
 function disposeObject(object: THREE.Object3D): void {
   object.traverse((child) => {
-    if (!(child instanceof THREE.Mesh)) {
+    if (!(child instanceof THREE.Mesh) || child.userData.sharedGeometry === true) {
       return;
     }
     child.geometry.dispose();
@@ -85,6 +87,8 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   scene.add(gizmoHelper);
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
+  const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const floorHit = new THREE.Vector3();
 
   let venue: THREE.Group | null = null;
   let framedVenueId: string | null = null;
@@ -101,6 +105,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let viewHeight = 1;
   let chairHandle: THREE.Object3D | null = null;
   let chairSlot: ChairSlot | null = null;
+  let lastDocument: VenueDocument | null = null;
   let stopped = false;
   let frameId = 0;
 
@@ -316,8 +321,14 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
 
   applyQuality("high");
   tick();
+  const stopModels = onModelsChanged(() => {
+    if (lastDocument) {
+      replaceDocument(lastDocument);
+    }
+  });
 
   const replaceDocument = (document: VenueDocument) => {
+    lastDocument = document;
     chairSlot = null;
     gizmo.detach();
     if (venue) {
@@ -362,6 +373,19 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     reset() {
       aim(true);
     },
+    floorPoint(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) {
+        return null;
+      }
+      pointer.set(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(pointer, active);
+      const hit = raycaster.ray.intersectPlane(floorPlane, floorHit);
+      return hit ? { x: hit.x, z: hit.z } : null;
+    },
     setSelected(id) {
       selectedId = id;
       attachSelected();
@@ -387,6 +411,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     },
     dispose() {
       stopped = true;
+      stopModels();
       cancelAnimationFrame(frameId);
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointerup", onPointerUp);

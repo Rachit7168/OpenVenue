@@ -10,6 +10,7 @@ export default tseslint.config(
       "**/node_modules/**",
       "**/coverage/**",
       "apps/api/**",
+      "apps/web/public/draco/**",
       "pnpm-lock.yaml",
     ],
   },

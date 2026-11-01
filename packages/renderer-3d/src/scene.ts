@@ -1,5 +1,6 @@
 import type { Opening, SceneObject, VenueDocument, Wall } from "@openvenue/scene-schema";
 import * as THREE from "three";
+import { modelTemplate } from "./glb.js";
 import { materialPreset } from "./materials.js";
 
 const ceilingMaterial = new THREE.MeshStandardMaterial({
@@ -220,6 +221,40 @@ function addWall(group: THREE.Group, wall: Wall): void {
   }
 }
 
+/** Move a loaded GLB. Scale maps the model's own size onto the object's dimensions. */
+export function placeModel(node: THREE.Object3D, object: SceneObject): void {
+  const size = objectSize(object);
+  const base = node.userData.base as { width?: number; height?: number; depth?: number };
+  const width = typeof base.width === "number" && base.width > 0 ? base.width : size.width;
+  const height = typeof base.height === "number" && base.height > 0 ? base.height : size.height;
+  const depth = typeof base.depth === "number" && base.depth > 0 ? base.depth : size.depth;
+  node.scale.set(size.width / width, size.height / height, size.depth / depth);
+  node.position.set(
+    object.transform.position.x,
+    object.transform.position.y + size.height / 2,
+    object.transform.position.z,
+  );
+  node.rotation.set(
+    object.transform.rotation.x,
+    object.transform.rotation.y,
+    object.transform.rotation.z,
+  );
+  node.userData.entityId = object.id;
+  node.userData.locked = (object as { locked?: unknown }).locked === true;
+  node.userData.model = true;
+  node.userData.base = { width, height, depth };
+}
+
+function fittedModel(object: SceneObject): THREE.Object3D | null {
+  const template = modelTemplate(object.assetId);
+  if (!template) {
+    return null;
+  }
+  const clone = template.clone(true);
+  placeModel(clone, object);
+  return clone;
+}
+
 /** Move an existing furniture box to match the document. Keeps the mesh when the size is unchanged. */
 export function placeObjectMesh(mesh: THREE.Mesh, object: SceneObject): void {
   const { width, height, depth } = objectSize(object);
@@ -333,8 +368,13 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
     if (!shown(object)) {
       continue;
     }
-    if (object.type === "chair") {
+    if (object.type === "chair" && !modelTemplate(object.assetId)) {
       chairs.push(object);
+      continue;
+    }
+    const model = fittedModel(object);
+    if (model) {
+      group.add(model);
       continue;
     }
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), furnitureMaterial(object.type));
