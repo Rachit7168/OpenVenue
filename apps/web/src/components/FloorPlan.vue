@@ -14,6 +14,7 @@ import type { VenueDocument } from "@openvenue/scene-schema";
 import type { SceneSource } from "@openvenue/scene-engine";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { tableSeats, type Seat } from "../plan/furniture";
+import { objectAnnotations, openingAnnotations, wallAnnotations } from "../plan/labels";
 import { planScene, type PlanFixture, type PlanOpening } from "../plan/model";
 
 const props = withDefaults(
@@ -56,6 +57,9 @@ let unsubscribe: (() => void) | null = null;
 
 const drawing = ref(props.document);
 const scene = computed(() => planScene(drawing.value));
+const wallLabels = computed(() => wallAnnotations(scene.value.walls));
+const openingLabels = computed(() => openingAnnotations(scene.value.openings));
+const objectLabels = computed(() => objectAnnotations(scene.value.objects));
 const grid = computed(() => gridLines(viewport.value, size.value.width, size.value.height, 0.5));
 
 const zoomLabel = computed(() => `${Math.round(viewport.value.scale)} px/m`);
@@ -603,6 +607,53 @@ watch(
           text-anchor="middle"
         >
           {{ room.name }}
+        </text>
+      </g>
+      <g v-if="interactive" data-testid="plan-annotations">
+        <text
+          v-for="label in wallLabels"
+          :key="`dim-${label.id}`"
+          data-testid="wall-dimension"
+          :x="screenOf(label.point).x"
+          :y="screenOf(label.point).y"
+          fill="#fde68a"
+          stroke="#09090b"
+          stroke-width="3"
+          paint-order="stroke"
+          font-size="11"
+          text-anchor="middle"
+        >
+          {{ label.text }}
+        </text>
+        <text
+          v-for="label in openingLabels"
+          :key="`open-${label.id}`"
+          data-testid="opening-dimension"
+          :x="screenOf(label.point).x"
+          :y="screenOf(label.point).y - 10"
+          fill="#fcd34d"
+          stroke="#09090b"
+          stroke-width="3"
+          paint-order="stroke"
+          font-size="11"
+          text-anchor="middle"
+        >
+          {{ label.text }}
+        </text>
+        <text
+          v-for="label in objectLabels"
+          :key="`name-${label.id}`"
+          data-testid="object-label"
+          :x="screenOf(label.point).x"
+          :y="screenOf(label.point).y"
+          fill="#e4e4e7"
+          stroke="#09090b"
+          stroke-width="3"
+          paint-order="stroke"
+          font-size="11"
+          text-anchor="middle"
+        >
+          {{ label.text }}
         </text>
       </g>
       <g v-for="zone in scene.zones" :key="`${zone.id}-label`">
