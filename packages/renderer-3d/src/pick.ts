@@ -16,6 +16,18 @@ export interface ObjectPose {
 
 const MIN_SIZE = 0.3;
 
+/** Furniture id from a raycast hit, including one chair inside an instanced batch. */
+export function entityIdFromHit(object: Object3D, instanceId?: number): string | null {
+  if (typeof instanceId === "number") {
+    const ids = object.userData.entityIds;
+    if (Array.isArray(ids)) {
+      const id = ids[instanceId];
+      return typeof id === "string" && id.length > 0 ? id : null;
+    }
+  }
+  return entityIdOf(object);
+}
+
 /** Furniture id stored on a mesh, walking up to the venue group. */
 export function entityIdOf(object: Object3D): string | null {
   let current: Object3D | null = object;

@@ -1,6 +1,7 @@
 import { createEmptyVenue } from "@openvenue/scene-schema";
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
+import { materialPreset } from "./materials.js";
 import { buildVenueGroup } from "./scene.js";
 
 describe("buildVenueGroup", () => {
@@ -82,5 +83,67 @@ describe("buildVenueGroup", () => {
       (child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry,
     );
     expect(marker?.position.y).toBeCloseTo(2.22);
+  });
+
+  it("uses the room floor material and one batch for repeated chairs", () => {
+    const document = createEmptyVenue();
+    const floor = document.venue.floors[0];
+    if (!floor) {
+      throw new Error("missing floor");
+    }
+    floor.rooms.push({
+      id: "room",
+      name: "Hall",
+      floorMaterial: "wood",
+      boundary: [
+        { x: 0, z: 0 },
+        { x: 0, z: 8 },
+        { x: 12, z: 8 },
+        { x: 12, z: 0 },
+      ],
+    });
+    for (let index = 0; index < 200; index += 1) {
+      floor.objects.push({
+        id: `chair-${index}`,
+        type: "chair",
+        name: "Chair",
+        transform: {
+          position: { x: (index % 20) * 0.6, y: 0, z: Math.floor(index / 20) * 0.6 },
+          rotation: { x: 0, y: 0, z: 0 },
+        },
+        dimensions: { width: 0.45, height: 0.9, depth: 0.45 },
+      });
+    }
+    floor.objects.push({
+      id: "wide-chair",
+      type: "chair",
+      name: "Wide",
+      transform: {
+        position: { x: 1, y: 0, z: 1 },
+        rotation: { x: 0, y: 0, z: 0 },
+      },
+      dimensions: { width: 0.7, height: 0.9, depth: 0.45 },
+    });
+
+    const group = buildVenueGroup(document);
+    const slabs = group.children.filter(
+      (child) =>
+        child instanceof THREE.Mesh &&
+        !(child instanceof THREE.InstancedMesh) &&
+        child.material === materialPreset("wood"),
+    );
+    expect(slabs.length).toBeGreaterThan(0);
+    const batches = group.children.filter((child) => child instanceof THREE.InstancedMesh);
+    expect(batches).toHaveLength(2);
+    const crowd = batches.find(
+      (child) => child instanceof THREE.InstancedMesh && child.count === 200,
+    );
+    if (!(crowd instanceof THREE.InstancedMesh)) {
+      throw new Error("missing chair batch");
+    }
+    expect(crowd.material).toBe(materialPreset("wood"));
+    crowd.computeBoundingSphere();
+    expect(crowd.boundingSphere?.radius ?? 0).toBeGreaterThan(2);
+    expect(group.children.some((child) => child.userData.entityId === "chair-0")).toBe(false);
   });
 });

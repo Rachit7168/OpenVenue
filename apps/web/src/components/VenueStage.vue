@@ -4,6 +4,7 @@ import {
   type CameraMode,
   type GizmoMode,
   type ObjectPose,
+  type QualityMode,
   type VenueView,
 } from "@openvenue/renderer-3d";
 import type { SceneSource } from "@openvenue/scene-engine";
@@ -13,6 +14,7 @@ const props = defineProps<{
   scene: SceneSource;
   cameraMode: CameraMode;
   gizmoMode: GizmoMode;
+  qualityMode: QualityMode;
   selectedId: string | null;
 }>();
 
@@ -56,6 +58,7 @@ onMounted(() => {
   });
   view.setCameraMode(props.cameraMode);
   view.setGizmoMode(props.gizmoMode);
+  view.setQuality(props.qualityMode);
   view.setSelected(props.selectedId);
   const parent = element.parentElement;
   if (parent && typeof ResizeObserver !== "undefined") {
@@ -73,6 +76,11 @@ watch(
 watch(
   () => props.gizmoMode,
   (mode) => view?.setGizmoMode(mode),
+);
+
+watch(
+  () => props.qualityMode,
+  (mode) => view?.setQuality(mode),
 );
 
 watch(

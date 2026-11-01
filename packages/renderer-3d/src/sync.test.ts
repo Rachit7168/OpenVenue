@@ -38,4 +38,39 @@ describe("patchVenueGroup", () => {
     expect(mesh.geometry).toBe(geometry);
     expect(patchVenueGroup(group, moved, "ADD_WALL")).toBe(false);
   });
+
+  it("moves one chair inside its batch", () => {
+    const document = createEmptyVenue();
+    const floor = document.venue.floors[0];
+    if (!floor) {
+      throw new Error("missing floor");
+    }
+    floor.objects.push({
+      id: "chair-1",
+      type: "chair",
+      name: "Chair",
+      transform: {
+        position: { x: 1, y: 0, z: 2 },
+        rotation: { x: 0, y: 0, z: 0 },
+      },
+      dimensions: { width: 0.45, height: 0.9, depth: 0.45 },
+    });
+    const group = buildVenueGroup(document);
+    const batch = group.children.find((child) => child instanceof THREE.InstancedMesh);
+    if (!(batch instanceof THREE.InstancedMesh)) {
+      throw new Error("missing chair batch");
+    }
+    const moved = structuredClone(document);
+    const chair = moved.venue.floors[0]?.objects[0];
+    if (!chair) {
+      throw new Error("missing chair document");
+    }
+    chair.transform.position = { x: 4, y: 0, z: 2 };
+    expect(patchVenueGroup(group, moved, "MOVE_OBJECT")).toBe(true);
+    const matrix = new THREE.Matrix4();
+    batch.getMatrixAt(0, matrix);
+    expect(new THREE.Vector3().setFromMatrixPosition(matrix).x).toBeCloseTo(4);
+    chair.dimensions = { width: 0.8, height: 0.9, depth: 0.45 };
+    expect(patchVenueGroup(group, moved, "RESIZE_OBJECT")).toBe(false);
+  });
 });

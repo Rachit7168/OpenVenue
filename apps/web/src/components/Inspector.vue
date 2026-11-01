@@ -45,6 +45,8 @@ const hidden = computed(() => {
   ].filter((item) => item.visible === false);
 });
 
+const floorMaterials = ["concrete", "wood", "carpet", "glass"];
+
 const yawDegrees = computed(() =>
   object.value ? Math.round((object.value.transform.rotation.y * 180) / Math.PI) : 0,
 );
@@ -271,12 +273,19 @@ function distribute() {
 
       <label v-if="room" class="block text-xs text-zinc-400">
         Floor material
-        <input
+        <select
           class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
-          :value="room.floorMaterial ?? ''"
-          placeholder="oak"
+          :value="room.floorMaterial ?? 'carpet'"
           @change="commitMaterial"
-        />
+        >
+          <option v-for="name in floorMaterials" :key="name" :value="name">{{ name }}</option>
+          <option
+            v-if="room.floorMaterial && !floorMaterials.includes(room.floorMaterial)"
+            :value="room.floorMaterial"
+          >
+            {{ room.floorMaterial }}
+          </option>
+        </select>
       </label>
 
       <template v-if="object">
