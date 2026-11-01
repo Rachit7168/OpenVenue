@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
 import {
@@ -31,6 +31,12 @@ const eyeHeight = ref(1.6);
 const gizmoMode = ref<GizmoMode>("translate");
 const qualityMode = ref<QualityMode>("high");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
+
+watch(viewMode, (mode) => {
+  if (mode !== "plan") {
+    void nextTick(() => stage.value?.fit());
+  }
+});
 
 const selectedObjectId = computed(() => {
   if (store.selection.length !== 1) {
@@ -109,7 +115,7 @@ const opened = library.find(projectId);
 if (opened) {
   store.openDocument(opened);
 } else {
-  void router.replace("/");
+  void router.replace({ name: "projects" });
 }
 
 watch(
@@ -288,385 +294,375 @@ async function saveGlb() {
 </script>
 
 <template>
-  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <RouterLink
-          to="/"
-          class="text-sm font-medium text-teal-800 hover:underline dark:text-teal-300"
+  <main class="mx-auto flex max-w-[90rem] flex-col gap-4 px-4 py-4 sm:px-6">
+    <div class="flex flex-wrap items-center gap-2">
+      <RouterLink
+        to="/projects"
+        class="inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium text-teal-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300 dark:focus-visible:ring-teal-400"
+      >
+        All projects
+      </RouterLink>
+      <h1 class="text-lg font-semibold tracking-tight">{{ store.document.project.name }}</h1>
+      <div class="flex gap-1">
+        <button
+          type="button"
+          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          :class="viewMode === 'plan' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          @click="viewMode = 'plan'"
         >
-          All projects
-        </RouterLink>
-        <h1 class="mt-1 text-2xl font-semibold tracking-tight">Workspace</h1>
-        <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Draw walls, rooms, zones, doors, and tables on the plan. The inspector edits the
-          selection. Switch to 3D to walk around the same hall. Lengths are metres, with +Z up the
-          screen.
+          Plan
+        </button>
+        <button
+          type="button"
+          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          :class="viewMode === 'stage' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          data-testid="view-3d"
+          @click="viewMode = 'stage'"
+        >
+          3D
+        </button>
+        <button
+          type="button"
+          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          :class="viewMode === 'both' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          data-testid="view-both"
+          @click="viewMode = 'both'"
+        >
+          Both
+        </button>
+      </div>
+      <div class="ml-auto flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          class="min-h-10 rounded-md border border-zinc-300 px-3 text-sm font-medium hover:bg-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:focus-visible:ring-teal-400"
+          :disabled="!store.canUndo"
+          @click="store.undo()"
+        >
+          Undo
+        </button>
+        <button
+          type="button"
+          class="min-h-10 rounded-md border border-zinc-300 px-3 text-sm font-medium hover:bg-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:focus-visible:ring-teal-400"
+          :disabled="!store.canRedo"
+          @click="store.redo()"
+        >
+          Redo
+        </button>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">
+          {{ store.status }}
+          <span v-if="saveLabel" data-testid="save-status"> · {{ saveLabel }}</span>
         </p>
-        <div class="mt-3 flex gap-2">
+      </div>
+    </div>
+
+    <section class="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div class="flex min-h-[36rem] flex-col overflow-hidden rounded-xl border border-zinc-800">
+        <div
+          v-if="viewMode !== 'plan'"
+          class="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-900 p-2"
+        >
           <button
             type="button"
-            class="rounded-md px-3 py-1 text-sm font-medium"
-            :class="viewMode === 'plan' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
-            @click="viewMode = 'plan'"
-          >
-            Plan
-          </button>
-          <button
-            type="button"
-            class="rounded-md px-3 py-1 text-sm font-medium"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
-              viewMode === 'stage' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              cameraMode === 'orbit' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
-            data-testid="view-3d"
-            @click="viewMode = 'stage'"
+            @click="cameraMode = 'orbit'"
           >
-            3D
+            Orbit
           </button>
           <button
             type="button"
-            class="rounded-md px-3 py-1 text-sm font-medium"
-            :class="viewMode === 'both' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
-            data-testid="view-both"
-            @click="viewMode = 'both'"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              cameraMode === 'isometric' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="camera-isometric"
+            @click="cameraMode = 'isometric'"
           >
-            Both
-          </button>
-          <template v-if="viewMode !== 'plan'">
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                cameraMode === 'orbit' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              @click="cameraMode = 'orbit'"
-            >
-              Orbit
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                cameraMode === 'isometric'
-                  ? 'bg-teal-400 text-zinc-950'
-                  : 'bg-zinc-800 text-zinc-100'
-              "
-              data-testid="camera-isometric"
-              @click="cameraMode = 'isometric'"
-            >
-              Isometric
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                cameraMode === 'walk' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              data-testid="camera-walk"
-              @click="cameraMode = 'walk'"
-            >
-              Walk
-            </button>
-            <label
-              v-if="cameraMode === 'walk'"
-              class="flex items-center gap-1 text-xs text-zinc-300"
-            >
-              Eye
-              <input
-                v-model.number="eyeHeight"
-                class="w-16 rounded-md border border-zinc-700 bg-zinc-950 px-1 py-1 text-sm text-zinc-100"
-                type="number"
-                min="0.4"
-                max="2.4"
-                step="0.1"
-                data-testid="eye-height"
-                aria-label="Eye height in metres"
-              />
-            </label>
-            <button
-              v-if="cameraMode !== 'walk'"
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                gizmoMode === 'translate'
-                  ? 'bg-teal-400 text-zinc-950'
-                  : 'bg-zinc-800 text-zinc-100'
-              "
-              @click="gizmoMode = 'translate'"
-            >
-              Move
-            </button>
-            <button
-              v-if="cameraMode !== 'walk'"
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                gizmoMode === 'rotate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              @click="gizmoMode = 'rotate'"
-            >
-              Rotate
-            </button>
-            <button
-              v-if="cameraMode !== 'walk'"
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                gizmoMode === 'scale' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              data-testid="gizmo-scale"
-              @click="gizmoMode = 'scale'"
-            >
-              Scale
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                qualityMode === 'simple' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              data-testid="quality-simple"
-              @click="qualityMode = 'simple'"
-            >
-              Simple
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-3 py-1 text-sm font-medium"
-              :class="
-                qualityMode === 'high' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
-              "
-              data-testid="quality-high"
-              @click="qualityMode = 'high'"
-            >
-              High
-            </button>
-            <button
-              type="button"
-              class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
-              @click="stage?.fit()"
-            >
-              Fit
-            </button>
-            <button
-              type="button"
-              class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100"
-              @click="stage?.reset()"
-            >
-              Reset
-            </button>
-          </template>
-          <button
-            v-if="viewMode !== 'plan'"
-            type="button"
-            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
-            :disabled="!store.canUndo"
-            @click="store.undo()"
-          >
-            Undo
+            Isometric
           </button>
           <button
-            v-if="viewMode !== 'plan'"
             type="button"
-            class="rounded-md bg-zinc-800 px-3 py-1 text-sm font-medium text-zinc-100 disabled:opacity-40"
-            :disabled="!store.canRedo"
-            @click="store.redo()"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              cameraMode === 'walk' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="camera-walk"
+            @click="cameraMode = 'walk'"
           >
-            Redo
+            Walk
           </button>
+          <label v-if="cameraMode === 'walk'" class="flex items-center gap-1 text-xs text-zinc-300">
+            Eye
+            <input
+              v-model.number="eyeHeight"
+              class="w-16 rounded-md border border-zinc-700 bg-zinc-950 px-1 py-1 text-sm text-zinc-100"
+              type="number"
+              min="0.4"
+              max="2.4"
+              step="0.1"
+              data-testid="eye-height"
+              aria-label="Eye height in metres"
+            />
+          </label>
+          <button
+            v-if="cameraMode !== 'walk'"
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              gizmoMode === 'translate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            @click="gizmoMode = 'translate'"
+          >
+            Move
+          </button>
+          <button
+            v-if="cameraMode !== 'walk'"
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              gizmoMode === 'rotate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            @click="gizmoMode = 'rotate'"
+          >
+            Rotate
+          </button>
+          <button
+            v-if="cameraMode !== 'walk'"
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              gizmoMode === 'scale' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="gizmo-scale"
+            @click="gizmoMode = 'scale'"
+          >
+            Scale
+          </button>
+          <button
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              qualityMode === 'simple' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="quality-simple"
+            @click="qualityMode = 'simple'"
+          >
+            Simple
+          </button>
+          <button
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              qualityMode === 'high' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="quality-high"
+            @click="qualityMode = 'high'"
+          >
+            High
+          </button>
+          <button
+            type="button"
+            class="min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
+            @click="stage?.fit()"
+          >
+            Fit
+          </button>
+          <button
+            type="button"
+            class="min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
+            @click="stage?.reset()"
+          >
+            Reset
+          </button>
+        </div>
+        <div class="flex min-h-0 flex-1">
+          <PlanEditor v-show="viewMode !== 'stage'" class="min-h-0 min-w-0 flex-1" />
+          <VenueStage
+            v-show="viewMode !== 'plan'"
+            ref="stage"
+            class="min-h-0 min-w-0 flex-1"
+            :scene="store.scene"
+            :camera-mode="cameraMode"
+            :eye-height="eyeHeight"
+            :gizmo-mode="gizmoMode"
+            :quality-mode="qualityMode"
+            :selected-id="selectedObjectId"
+            @exit-walk="cameraMode = 'orbit'"
+            @select="store.setSelection($event ? [$event] : [])"
+            @transform="onObjectTransform"
+            @place="onPlaceAsset"
+          />
         </div>
         <p
           v-if="cameraMode === 'walk'"
-          class="mt-2 text-xs text-zinc-500 dark:text-zinc-400"
+          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-400"
           data-testid="walk-hint"
         >
           Click the hall to look. WASD walks. Escape returns to orbit.
         </p>
       </div>
-      <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">
-        {{ store.status }}
-        <span v-if="saveLabel" data-testid="save-status"> · {{ saveLabel }}</span>
-      </p>
-    </div>
-
-    <AssetLibrary class="mt-4" />
-
-    <section
-      class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
-    >
-      <PlanEditor v-show="viewMode !== 'stage'" class="min-h-0 min-w-0 flex-1" />
-      <VenueStage
-        v-show="viewMode !== 'plan'"
-        ref="stage"
-        class="min-h-0 min-w-0 flex-1"
-        :scene="store.scene"
-        :camera-mode="cameraMode"
-        :eye-height="eyeHeight"
-        :gizmo-mode="gizmoMode"
-        :quality-mode="qualityMode"
-        :selected-id="selectedObjectId"
-        @exit-walk="cameraMode = 'orbit'"
-        @select="store.setSelection($event ? [$event] : [])"
-        @transform="onObjectTransform"
-        @place="onPlaceAsset"
-      />
       <Inspector />
     </section>
 
-    <VenueCapacity />
-    <VenueChecks />
-
-    <section
-      class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-    >
-      <div class="grid gap-4 sm:grid-cols-2">
-        <label class="block text-sm font-medium">
-          Project name
-          <input
-            data-testid="project-name"
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base font-normal text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-teal-400"
-            :value="store.document.project.name"
-            @input="onProjectName"
-          />
-        </label>
-        <label class="block text-sm font-medium">
-          Venue name
-          <input
-            data-testid="venue-name"
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base font-normal text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-teal-400"
-            :value="store.document.venue.name"
-            @input="onVenueName"
-          />
-        </label>
-      </div>
-
-      <dl class="mt-5 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
-        <div
-          v-for="item in stats"
-          :key="item.label"
-          class="rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-950"
-        >
-          <dt class="text-xs uppercase tracking-wide text-zinc-500">{{ item.label }}</dt>
-          <dd class="mt-1 font-medium">{{ item.value }}</dd>
+    <section class="grid gap-4 lg:grid-cols-2">
+      <AssetLibrary />
+      <VenueCapacity />
+      <VenueChecks />
+      <section
+        class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+      >
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block text-sm font-medium">
+            Project name
+            <input
+              data-testid="project-name"
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base font-normal text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-teal-400"
+              :value="store.document.project.name"
+              @input="onProjectName"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Venue name
+            <input
+              data-testid="venue-name"
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base font-normal text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-teal-400"
+              :value="store.document.venue.name"
+              @input="onVenueName"
+            />
+          </label>
         </div>
-      </dl>
-      <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-        {{ counts.spawns }} spawn point{{ counts.spawns === 1 ? "" : "s" }}. Schema
-        {{ store.document.schemaVersion }}, metres, +Y up.
-      </p>
 
-      <div class="mt-5 flex flex-wrap gap-2">
-        <button
-          type="button"
-          data-testid="new-venue"
-          class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
-          @click="requestNew"
-        >
-          New venue
-        </button>
-        <button
-          type="button"
-          data-testid="save-json"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-          @click="save"
-        >
-          Save JSON
-        </button>
-        <button
-          type="button"
-          data-testid="export-menu"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-          :aria-expanded="exportOpen"
-          @click="exportOpen = !exportOpen"
-        >
-          Export
-        </button>
-        <button
-          type="button"
-          data-testid="open-json"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-          @click="openPicker"
-        >
-          Open JSON
-        </button>
-        <input
-          ref="fileInput"
-          data-testid="file-input"
-          class="sr-only"
-          type="file"
-          accept="application/json,.json"
-          @change="onFile"
-        />
-      </div>
-      <div
-        v-if="exportOpen"
-        data-testid="export-dialog"
-        role="dialog"
-        aria-label="Export venue"
-        class="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
-      >
-        <button
-          type="button"
-          data-testid="export-json"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          @click="save"
-        >
-          JSON
-        </button>
-        <button
-          type="button"
-          data-testid="export-svg"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          @click="saveSvg"
-        >
-          SVG
-        </button>
-        <button
-          type="button"
-          data-testid="export-png"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          @click="savePng"
-        >
-          PNG
-        </button>
-        <button
-          type="button"
-          data-testid="export-pdf"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          @click="savePdf"
-        >
-          PDF
-        </button>
-        <button
-          type="button"
-          data-testid="export-glb"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          @click="saveGlb"
-        >
-          GLB
-        </button>
-        <p v-if="exportError" class="text-sm text-red-700 dark:text-red-300">{{ exportError }}</p>
-      </div>
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
+          <div
+            v-for="item in stats"
+            :key="item.label"
+            class="rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-950"
+          >
+            <dt class="text-xs uppercase tracking-wide text-zinc-500">{{ item.label }}</dt>
+            <dd class="mt-1 font-medium">{{ item.value }}</dd>
+          </div>
+        </dl>
+        <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+          {{ counts.spawns }} spawn point{{ counts.spawns === 1 ? "" : "s" }}. Schema
+          {{ store.document.schemaVersion }}, metres, +Y up.
+        </p>
 
-      <div
-        v-if="store.issues.length > 0"
-        class="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-100"
-        role="alert"
-        data-testid="load-errors"
-      >
-        <p class="font-medium">This venue needs a correction.</p>
-        <ul class="mt-1 list-disc pl-5">
-          <li v-for="issue in store.issues" :key="issue">{{ issue }}</li>
-        </ul>
-      </div>
-    </section>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="new-venue"
+            class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
+            @click="requestNew"
+          >
+            New venue
+          </button>
+          <button
+            type="button"
+            data-testid="save-json"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            @click="save"
+          >
+            Save JSON
+          </button>
+          <button
+            type="button"
+            data-testid="export-menu"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            :aria-expanded="exportOpen"
+            @click="exportOpen = !exportOpen"
+          >
+            Export
+          </button>
+          <button
+            type="button"
+            data-testid="open-json"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            @click="openPicker"
+          >
+            Open JSON
+          </button>
+          <input
+            ref="fileInput"
+            data-testid="file-input"
+            class="sr-only"
+            type="file"
+            accept="application/json,.json"
+            @change="onFile"
+          />
+        </div>
+        <div
+          v-if="exportOpen"
+          data-testid="export-dialog"
+          role="dialog"
+          aria-label="Export venue"
+          class="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+        >
+          <button
+            type="button"
+            data-testid="export-json"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="save"
+          >
+            JSON
+          </button>
+          <button
+            type="button"
+            data-testid="export-svg"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="saveSvg"
+          >
+            SVG
+          </button>
+          <button
+            type="button"
+            data-testid="export-png"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="savePng"
+          >
+            PNG
+          </button>
+          <button
+            type="button"
+            data-testid="export-pdf"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="savePdf"
+          >
+            PDF
+          </button>
+          <button
+            type="button"
+            data-testid="export-glb"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="saveGlb"
+          >
+            GLB
+          </button>
+          <p v-if="exportError" class="text-sm text-red-700 dark:text-red-300">{{ exportError }}</p>
+        </div>
 
-    <section class="mt-6">
-      <h2 class="text-sm font-medium text-zinc-500 dark:text-zinc-400">venue.json</h2>
-      <pre
-        data-testid="venue-json"
-        class="mt-2 max-h-96 overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100 dark:border-zinc-800"
-        >{{ preview }}</pre>
+        <div
+          v-if="store.issues.length > 0"
+          class="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-100"
+          role="alert"
+          data-testid="load-errors"
+        >
+          <p class="font-medium">This venue needs a correction.</p>
+          <ul class="mt-1 list-disc pl-5">
+            <li v-for="issue in store.issues" :key="issue">{{ issue }}</li>
+          </ul>
+        </div>
+        <details class="mt-4">
+          <summary class="cursor-pointer text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            venue.json
+          </summary>
+          <pre
+            data-testid="venue-json"
+            class="mt-2 max-h-96 overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100 dark:border-zinc-800"
+            >{{ preview }}</pre>
+        </details>
+      </section>
     </section>
   </main>
 </template>

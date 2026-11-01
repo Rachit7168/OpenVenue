@@ -26,6 +26,7 @@ const props = withDefaults(
     draft?: PlanPoint[];
     selectedIds?: string[];
     marquee?: PlanPoint[];
+    message?: string;
   }>(),
   {
     source: undefined,
@@ -34,6 +35,7 @@ const props = withDefaults(
     draft: () => [],
     selectedIds: () => [],
     marquee: () => [],
+    message: "",
   },
 );
 
@@ -673,7 +675,7 @@ watch(
       data-testid="plan-status"
       class="flex justify-between gap-3 border-t border-zinc-800 bg-zinc-900 px-3 py-1.5 font-mono text-xs text-zinc-300"
     >
-      <span>{{ cursorLabel }}</span>
+      <span>{{ message || cursorLabel }}</span>
       <span>grid {{ grid.step }} m · {{ zoomLabel }} · metres</span>
     </p>
   </div>

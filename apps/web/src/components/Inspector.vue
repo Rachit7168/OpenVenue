@@ -234,7 +234,7 @@ function distribute() {
 
 <template>
   <aside
-    class="flex h-full w-72 shrink-0 flex-col overflow-y-auto border-l border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200"
+    class="flex h-full w-full flex-col overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200"
   >
     <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-400">Inspector</h2>
     <p v-if="store.selection.length === 0" class="mt-3 text-zinc-400">

@@ -135,7 +135,7 @@ function importFile(event: Event) {
 </script>
 
 <template>
-  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-2xl font-semibold tracking-tight">Projects</h1>
@@ -178,93 +178,98 @@ function importFile(event: Event) {
       </div>
     </div>
 
-    <form
+    <div v-if="wizardOpen" class="fixed inset-0 z-20 bg-zinc-950/40" @click="wizardOpen = false" />
+    <dialog
       v-if="wizardOpen"
-      class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-      @submit.prevent="createProject"
+      open
+      class="fixed left-1/2 top-1/2 z-30 w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-5 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+      aria-label="New project"
+      @keydown.esc="wizardOpen = false"
     >
-      <h2 class="text-sm font-medium">New venue</h2>
-      <div class="mt-4 grid gap-4 sm:grid-cols-2">
-        <label class="block text-sm font-medium sm:col-span-2">
-          Name
-          <input
-            v-model="name"
-            data-testid="project-name"
-            required
-            maxlength="200"
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
-          />
-        </label>
-        <label class="block text-sm font-medium">
-          Width (m)
-          <input
-            v-model.number="width"
-            data-testid="project-width"
-            type="number"
-            min="0.1"
-            max="1000"
-            step="0.1"
-            required
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
-          />
-        </label>
-        <label class="block text-sm font-medium">
-          Depth (m)
-          <input
-            v-model.number="depth"
-            data-testid="project-depth"
-            type="number"
-            min="0.1"
-            max="1000"
-            step="0.1"
-            required
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
-          />
-        </label>
-        <label class="block text-sm font-medium">
-          Ceiling height (m)
-          <input
-            v-model.number="ceilingHeight"
-            data-testid="project-height"
-            type="number"
-            min="0.1"
-            max="1000"
-            step="0.1"
-            required
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
-          />
-        </label>
-        <label class="block text-sm font-medium">
-          Units
-          <input
-            value="Metres"
-            readonly
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-zinc-50 px-3 py-2 font-normal text-zinc-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300"
-          />
-        </label>
-        <label class="block text-sm font-medium sm:col-span-2">
-          Template
-          <select
-            v-model="template"
-            data-testid="project-template"
-            class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
-          >
-            <option value="empty">Empty hall</option>
-            <option value="rectangular-hall">Rectangular hall</option>
-          </select>
-        </label>
-      </div>
-      <p v-if="formError" class="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">
-        {{ formError }}
-      </p>
-      <button
-        type="submit"
-        data-testid="create-project"
-        class="mt-4 rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
-      >
-        Create project
-      </button>
-    </form>
+      <form @submit.prevent="createProject">
+        <h2 class="text-sm font-medium">New venue</h2>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <label class="block text-sm font-medium sm:col-span-2">
+            Name
+            <input
+              v-model="name"
+              data-testid="project-name"
+              required
+              maxlength="200"
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Width (m)
+            <input
+              v-model.number="width"
+              data-testid="project-width"
+              type="number"
+              min="0.1"
+              max="1000"
+              step="0.1"
+              required
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Depth (m)
+            <input
+              v-model.number="depth"
+              data-testid="project-depth"
+              type="number"
+              min="0.1"
+              max="1000"
+              step="0.1"
+              required
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Ceiling height (m)
+            <input
+              v-model.number="ceilingHeight"
+              data-testid="project-height"
+              type="number"
+              min="0.1"
+              max="1000"
+              step="0.1"
+              required
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Units
+            <input
+              value="Metres"
+              readonly
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-zinc-50 px-3 py-2 font-normal text-zinc-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300"
+            />
+          </label>
+          <label class="block text-sm font-medium sm:col-span-2">
+            Template
+            <select
+              v-model="template"
+              data-testid="project-template"
+              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+            >
+              <option value="empty">Empty hall</option>
+              <option value="rectangular-hall">Rectangular hall</option>
+            </select>
+          </label>
+        </div>
+        <p v-if="formError" class="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">
+          {{ formError }}
+        </p>
+        <button
+          type="submit"
+          data-testid="create-project"
+          class="mt-4 rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
+        >
+          Create project
+        </button>
+      </form>
+    </dialog>
 
     <p
       v-if="library.error"
@@ -283,20 +288,20 @@ function importFile(event: Event) {
     </p>
     <p
       v-else-if="cards.length === 0"
-      class="mt-8 text-sm text-zinc-500 dark:text-zinc-400"
+      class="mt-8 rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400"
       data-testid="empty-projects"
     >
       No projects yet.
     </p>
 
-    <ul v-else class="mt-6 grid gap-4 sm:grid-cols-2">
+    <ul v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <li
         v-for="card in cards"
         :key="card.id"
         data-testid="project-card"
         class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <div data-testid="project-thumbnail" class="h-24 overflow-hidden rounded-md">
+        <div data-testid="project-thumbnail" class="h-40 overflow-hidden rounded-md">
           <FloorPlan :document="card.document" :interactive="false" />
         </div>
         <h2 class="mt-3 font-medium">{{ card.name }}</h2>

@@ -54,7 +54,8 @@ const movingId = ref<string | null>(null);
 const mergingMove = ref(false);
 const gesture = ref<"move" | "resize" | "rotate" | "box" | null>(null);
 const marquee = ref<PlanPoint[]>([]);
-const note = ref("Middle-drag pans. Scroll zooms. Delete removes the selection.");
+const hint = "Middle-drag pans. Scroll zooms. Delete removes the selection.";
+const note = ref(hint);
 
 const selectionSummary = computed(() => {
   const id = store.selection[0];
@@ -81,6 +82,8 @@ const selectionSummary = computed(() => {
   const spawn = scene.spawns.find((item) => item.id === id);
   return spawn ? `${spawn.name} · ${spawn.role}` : "";
 });
+
+const statusMessage = computed(() => (note.value === hint ? selectionSummary.value : note.value));
 
 function spanLabel(points: PlanPoint[]): string {
   const xs = points.map((point) => point.x);
@@ -625,58 +628,43 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col">
-    <div class="flex flex-wrap items-center gap-1 border-b border-zinc-800 bg-zinc-900 px-2 py-2">
+  <div class="flex h-full min-h-0 flex-col lg:flex-row">
+    <div
+      class="flex shrink-0 gap-1 overflow-x-auto border-b border-zinc-800 bg-zinc-900 p-2 lg:w-36 lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r"
+    >
       <button
         v-for="[id, label] in tools"
         :key="id"
         type="button"
-        class="rounded-md px-2 py-1 text-xs font-medium"
+        class="min-h-10 shrink-0 rounded-md px-3 text-left text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
         :class="tool === id ? 'bg-teal-400 text-zinc-950' : 'text-zinc-200 hover:bg-zinc-800'"
         :data-testid="`tool-${id}`"
         @click="tool = id"
       >
         {{ label }}
       </button>
-      <span class="mx-1 h-4 w-px bg-zinc-700" />
-      <button
-        type="button"
-        class="rounded-md px-2 py-1 text-xs font-medium text-zinc-200 hover:bg-zinc-800 disabled:opacity-40"
-        :disabled="!store.canUndo"
-        @click="undo()"
-      >
-        Undo
-      </button>
-      <button
-        type="button"
-        class="rounded-md px-2 py-1 text-xs font-medium text-zinc-200 hover:bg-zinc-800 disabled:opacity-40"
-        :disabled="!store.canRedo"
-        @click="redo()"
-      >
-        Redo
-      </button>
-      <span v-if="lengthLabel" class="ml-auto font-mono text-xs text-amber-200">{{
-        lengthLabel
-      }}</span>
     </div>
-    <FloorPlan
-      class="min-h-0 flex-1"
-      :document="store.document"
-      :source="store.scene"
-      :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
-      :draft="shownDraft"
-      :selected-ids="[...store.selection]"
-      :marquee="marquee"
-      @down="onDown"
-      @move="onMove"
-      @up="onUp"
-      @drop="onAssetDrop"
-    />
-    <p
-      class="flex justify-between gap-3 border-t border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400"
-    >
-      <span class="text-zinc-200">{{ selectionSummary || "Nothing selected" }}</span>
-      <span>{{ note }}</span>
-    </p>
+    <div class="relative flex min-h-0 min-w-0 flex-1 flex-col">
+      <FloorPlan
+        class="min-h-0 flex-1"
+        :document="store.document"
+        :source="store.scene"
+        :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
+        :draft="shownDraft"
+        :selected-ids="[...store.selection]"
+        :marquee="marquee"
+        :message="statusMessage"
+        @down="onDown"
+        @move="onMove"
+        @up="onUp"
+        @drop="onAssetDrop"
+      />
+      <p
+        v-if="lengthLabel"
+        class="pointer-events-none absolute right-3 top-3 rounded-md bg-zinc-950/80 px-2 py-1 font-mono text-xs text-amber-200"
+      >
+        {{ lengthLabel }}
+      </p>
+    </div>
   </div>
 </template>

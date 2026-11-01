@@ -27,6 +27,7 @@ describe("app shell", () => {
   it("lists a new project after reload and toggles color mode", async () => {
     const first = mountApp();
     await first.router.isReady();
+    await first.router.push("/projects");
     await flushPromises();
 
     await vi.waitUntil(() => first.wrapper.text().includes("No projects yet"));
@@ -49,6 +50,7 @@ describe("app shell", () => {
 
     const second = mountApp();
     await second.router.isReady();
+    await second.router.push("/projects");
     await flushPromises();
     await vi.waitUntil(() => second.wrapper.text().includes("Main hall"));
     expect(second.wrapper.get("[data-testid=project-card]").text()).toContain("Main hall");
