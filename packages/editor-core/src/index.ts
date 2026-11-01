@@ -25,6 +25,7 @@ export {
   capacityOf,
   type CapacityReport,
 } from "./capacity.js";
+export { benchmarkVenue, type BenchmarkKind } from "./benchmark-scene.js";
 export { CHECK_NOTE, checkVenue, type SceneLocation, type VenueWarning } from "./checks.js";
 export { CommandError } from "./errors.js";
 export {

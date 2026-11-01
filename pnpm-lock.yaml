@@ -161,6 +161,9 @@ importers:
         specifier: ^0.187.0
         version: 0.187.0
     devDependencies:
+      '@openvenue/editor-core':
+        specifier: workspace:*
+        version: link:../editor-core
       '@types/three':
         specifier: 0.170.0
         version: 0.170.0
