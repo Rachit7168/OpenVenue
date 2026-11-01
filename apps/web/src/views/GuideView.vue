@@ -21,9 +21,9 @@ import { RouterLink } from "vue-router";
       >
         <h2 class="font-semibold">Map</h2>
         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Choose Map to draw the floors apart. Drag to rotate and right-drag to pan. Click a floor
-          name to open that level. Find lists rooms and tables. Escape closes Find or the selected
-          place card first, then shows every floor again.
+          Switch to 3D or Both, then choose Map to draw the floors apart. Drag to rotate and
+          right-drag to pan. Click a floor name to open that level. Find lists rooms and tables.
+          Escape closes Find or the selected place card first, then shows every floor again.
         </p>
       </article>
       <article
@@ -53,4 +53,3 @@ import { RouterLink } from "vue-router";
     </RouterLink>
   </main>
 </template>
-

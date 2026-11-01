@@ -41,14 +41,6 @@ function onMapKey(event: KeyboardEvent) {
   if (cameraMode.value !== "map") {
     return;
   }
-  const target = event.target;
-  if (
-    target instanceof HTMLInputElement ||
-    target instanceof HTMLTextAreaElement ||
-    target instanceof HTMLSelectElement
-  ) {
-    return;
-  }
   if (event.key === "Escape") {
     if (mapFindOpen.value) {
       mapFindOpen.value = false;
@@ -59,6 +51,14 @@ function onMapKey(event: KeyboardEvent) {
       return;
     }
     mapFloorId.value = null;
+    return;
+  }
+  const target = event.target;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  ) {
     return;
   }
   if (!/^[0-9]$/.test(event.key)) {

@@ -6,13 +6,17 @@ import App from "./App.vue";
 import { deleteVenueDatabase } from "./persistence";
 import { routes } from "./router";
 
-function mountApp() {
+function mountApp(attachTo?: HTMLElement) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes,
   });
   const wrapper = mount(App, {
-    global: { plugins: [createPinia(), router] },
+    attachTo,
+    global: {
+      plugins: [createPinia(), router],
+      stubs: { VenueStage: { template: "<div />", methods: { fit() {} } } },
+    },
   });
   return { wrapper, router };
 }
@@ -22,6 +26,32 @@ describe("app shell", () => {
     localStorage.clear();
     await deleteVenueDatabase();
     document.documentElement.classList.remove("dark");
+  });
+
+  it("closes Map Find with Escape while its search input has focus", async () => {
+    const { wrapper, router } = mountApp(document.body);
+    try {
+      await router.isReady();
+      await router.push("/projects");
+      await flushPromises();
+      await vi.waitUntil(() => wrapper.text().includes("No projects yet"));
+      await wrapper.get("[data-testid=new-project]").trigger("click");
+      await wrapper.get("[data-testid=project-name]").setValue("Map keyboard test");
+      await wrapper.get("[data-testid=project-template]").setValue("rectangular-hall");
+      await wrapper.get("form").trigger("submit");
+      await flushPromises();
+      await wrapper.get("[data-testid=view-3d]").trigger("click");
+      await wrapper.get("[data-testid=camera-map]").trigger("click");
+      await wrapper.get("[data-testid=map-find-toggle]").trigger("click");
+
+      const search = wrapper.get("[data-testid=map-find-query]");
+      (search.element as HTMLInputElement).focus();
+      expect(document.activeElement).toBe(search.element);
+      await search.trigger("keydown", { key: "Escape" });
+      expect(wrapper.find("[data-testid=map-find]").exists()).toBe(false);
+    } finally {
+      wrapper.unmount();
+    }
   });
 
   it("lists a new project after reload and toggles color mode", async () => {
