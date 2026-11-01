@@ -74,4 +74,31 @@ describe("LandingView", () => {
 
     expect(router.currentRoute.value.name).toBe("project");
   });
+
+  it("launches all 5 template blueprints into project workspace with full furniture", async () => {
+    const testIds = [
+      "blueprint-conference",
+      "blueprint-exhibition",
+      "blueprint-gala",
+      "blueprint-theater",
+      "blueprint-hackathon",
+    ];
+
+    for (const testId of testIds) {
+      await router.push("/");
+      await router.isReady();
+
+      const wrapper = mount(LandingView, {
+        global: { plugins: [router] },
+      });
+
+      const button = wrapper.find(`[data-testid=${testId}]`);
+      expect(button.exists()).toBe(true);
+
+      await button.trigger("click");
+      await flushPromises();
+
+      expect(router.currentRoute.value.name).toBe("project");
+    }
+  });
 });

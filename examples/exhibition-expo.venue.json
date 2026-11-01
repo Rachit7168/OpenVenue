@@ -1,0 +1,1440 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "ee000000-0000-4000-8000-000000000001",
+    "name": "Exhibition Trade Fair",
+    "metadata": {
+      "createdAt": "2026-11-01T00:00:00.000Z",
+      "updatedAt": "2026-11-01T00:00:00.000Z",
+      "description": "30x20m trade expo hall with 10 exhibitor shell booths, demo counters, registration desk, and networking lounge.",
+      "generator": "openvenue",
+      "planWidth": 30,
+      "planDepth": 20
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+      "name": "Side chair",
+      "format": "glb",
+      "uri": "/assets/side-chair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e02",
+      "name": "Banquet table",
+      "format": "glb",
+      "uri": "/assets/banquet-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+      "name": "Podium",
+      "format": "glb",
+      "uri": "/assets/podium.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+      "name": "Armchair",
+      "format": "glb",
+      "uri": "/assets/armchair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e05",
+      "name": "Stool",
+      "format": "glb",
+      "uri": "/assets/stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e06",
+      "name": "Bench",
+      "format": "glb",
+      "uri": "/assets/bench.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+      "name": "Bar stool",
+      "format": "glb",
+      "uri": "/assets/bar-stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e08",
+      "name": "Cocktail table",
+      "format": "glb",
+      "uri": "/assets/cocktail-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+      "name": "Conference table",
+      "format": "glb",
+      "uri": "/assets/conference-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0a",
+      "name": "Coffee table",
+      "format": "glb",
+      "uri": "/assets/coffee-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0b",
+      "name": "Platform",
+      "format": "glb",
+      "uri": "/assets/platform.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0c",
+      "name": "Riser",
+      "format": "glb",
+      "uri": "/assets/riser.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+      "name": "Shell booth",
+      "format": "glb",
+      "uri": "/assets/shell-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+      "name": "Counter booth",
+      "format": "glb",
+      "uri": "/assets/counter-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11",
+      "name": "Info desk",
+      "format": "glb",
+      "uri": "/assets/info-desk.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+      "name": "Display screen",
+      "format": "glb",
+      "uri": "/assets/display-screen.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13",
+      "name": "Speaker",
+      "format": "glb",
+      "uri": "/assets/speaker.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a",
+      "name": "Exit sign",
+      "format": "glb",
+      "uri": "/assets/exit-sign.glb",
+      "license": "Apache-2.0"
+    }
+  ],
+  "venue": {
+    "id": "ee000000-0000-4000-8000-000000000002",
+    "name": "Exhibition Trade Fair",
+    "floors": [
+      {
+        "id": "ee000000-0000-4000-8000-000000000003",
+        "name": "Main Expo Floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 4.5,
+        "rooms": [
+          {
+            "id": "ee000000-0000-4000-8000-000000000004",
+            "name": "Exhibition Pavilion",
+            "boundary": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 20
+              },
+              {
+                "x": 30,
+                "z": 20
+              },
+              {
+                "x": 30,
+                "z": 0
+              }
+            ],
+            "wallIds": [
+              "ee000000-0000-4000-8000-00000000000a",
+              "ee000000-0000-4000-8000-00000000000b",
+              "ee000000-0000-4000-8000-00000000000c",
+              "ee000000-0000-4000-8000-00000000000d"
+            ],
+            "floorMaterial": "concrete"
+          }
+        ],
+        "walls": [
+          {
+            "id": "ee000000-0000-4000-8000-00000000000a",
+            "start": {
+              "x": 0,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 20
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "ee000000-0000-4000-8000-00000000001e",
+                "kind": "door",
+                "offset": 9.2,
+                "width": 1.6,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000000b",
+            "start": {
+              "x": 0,
+              "z": 20
+            },
+            "end": {
+              "x": 30,
+              "z": 20
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "ee000000-0000-4000-8000-000000000022",
+                "kind": "door",
+                "offset": 14.1,
+                "width": 1.8,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000000c",
+            "start": {
+              "x": 30,
+              "z": 20
+            },
+            "end": {
+              "x": 30,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "ee000000-0000-4000-8000-000000000026",
+                "kind": "door",
+                "offset": 9.2,
+                "width": 1.6,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000000d",
+            "start": {
+              "x": 30,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "ee000000-0000-4000-8000-00000000002a",
+                "kind": "door",
+                "offset": 13.8,
+                "width": 2.4,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "id": "ee000000-0000-4000-8000-000000000064",
+            "type": "booth",
+            "name": "Registration Desk A",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0,
+                "z": 2.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.8,
+              "height": 1.05,
+              "depth": 0.7
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000065",
+            "type": "booth",
+            "name": "Registration Desk B",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11",
+            "transform": {
+              "position": {
+                "x": 18,
+                "y": 0,
+                "z": 2.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.8,
+              "height": 1.05,
+              "depth": 0.7
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000066",
+            "type": "booth",
+            "name": "Booth 1 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000067",
+            "type": "booth",
+            "name": "Booth 1 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 6.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000068",
+            "type": "screen",
+            "name": "Booth 1 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 3.7,
+                "y": 0,
+                "z": 8.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000069",
+            "type": "chair",
+            "name": "Booth 1 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 5.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006a",
+            "type": "booth",
+            "name": "Booth 2 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 9.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006b",
+            "type": "booth",
+            "name": "Booth 2 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 9.5,
+                "y": 0,
+                "z": 6.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006c",
+            "type": "screen",
+            "name": "Booth 2 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 8.7,
+                "y": 0,
+                "z": 8.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006d",
+            "type": "chair",
+            "name": "Booth 2 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 10.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006e",
+            "type": "booth",
+            "name": "Booth 3 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000006f",
+            "type": "booth",
+            "name": "Booth 3 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 6.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000070",
+            "type": "screen",
+            "name": "Booth 3 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 14.2,
+                "y": 0,
+                "z": 8.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000071",
+            "type": "chair",
+            "name": "Booth 3 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 15.6,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000072",
+            "type": "booth",
+            "name": "Booth 4 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 20.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000073",
+            "type": "booth",
+            "name": "Booth 4 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 20.5,
+                "y": 0,
+                "z": 6.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000074",
+            "type": "screen",
+            "name": "Booth 4 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 19.7,
+                "y": 0,
+                "z": 8.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000075",
+            "type": "chair",
+            "name": "Booth 4 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 21.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000076",
+            "type": "booth",
+            "name": "Booth 5 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 25.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000077",
+            "type": "booth",
+            "name": "Booth 5 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 25.5,
+                "y": 0,
+                "z": 6.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000078",
+            "type": "screen",
+            "name": "Booth 5 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 24.7,
+                "y": 0,
+                "z": 8.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000079",
+            "type": "chair",
+            "name": "Booth 5 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 26.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007a",
+            "type": "booth",
+            "name": "Booth 6 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007b",
+            "type": "booth",
+            "name": "Booth 6 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 13.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007c",
+            "type": "screen",
+            "name": "Booth 6 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 3.7,
+                "y": 0,
+                "z": 15.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007d",
+            "type": "chair",
+            "name": "Booth 6 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 5.1,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007e",
+            "type": "booth",
+            "name": "Booth 7 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 9.5,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000007f",
+            "type": "booth",
+            "name": "Booth 7 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 9.5,
+                "y": 0,
+                "z": 13.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000080",
+            "type": "screen",
+            "name": "Booth 7 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 8.7,
+                "y": 0,
+                "z": 15.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000081",
+            "type": "chair",
+            "name": "Booth 7 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 10.1,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000082",
+            "type": "booth",
+            "name": "Booth 8 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000083",
+            "type": "booth",
+            "name": "Booth 8 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 13.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000084",
+            "type": "screen",
+            "name": "Booth 8 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 14.2,
+                "y": 0,
+                "z": 15.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000085",
+            "type": "chair",
+            "name": "Booth 8 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 15.6,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000086",
+            "type": "booth",
+            "name": "Booth 9 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 20.5,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000087",
+            "type": "booth",
+            "name": "Booth 9 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 20.5,
+                "y": 0,
+                "z": 13.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000088",
+            "type": "screen",
+            "name": "Booth 9 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 19.7,
+                "y": 0,
+                "z": 15.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000089",
+            "type": "chair",
+            "name": "Booth 9 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 21.1,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008a",
+            "type": "booth",
+            "name": "Booth 10 Shell",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+            "transform": {
+              "position": {
+                "x": 25.5,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 3.5,
+              "height": 2.5,
+              "depth": 3
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008b",
+            "type": "booth",
+            "name": "Booth 10 Counter",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+            "transform": {
+              "position": {
+                "x": 25.5,
+                "y": 0,
+                "z": 13.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 1,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008c",
+            "type": "screen",
+            "name": "Booth 10 Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 24.7,
+                "y": 0,
+                "z": 15.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.2,
+              "height": 1.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008d",
+            "type": "chair",
+            "name": "Booth 10 Stool",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+            "transform": {
+              "position": {
+                "x": 26.1,
+                "y": 0,
+                "z": 14.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.45,
+              "height": 0.95,
+              "depth": 0.45
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008e",
+            "type": "table",
+            "name": "Lounge Coffee Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0a",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 17.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.4,
+              "height": 0.45,
+              "depth": 0.8
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-00000000008f",
+            "type": "chair",
+            "name": "Lounge Armchair 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+            "transform": {
+              "position": {
+                "x": 13.5,
+                "y": 0,
+                "z": 17.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.85,
+              "height": 0.82,
+              "depth": 0.85
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000090",
+            "type": "chair",
+            "name": "Lounge Armchair 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+            "transform": {
+              "position": {
+                "x": 16.5,
+                "y": 0,
+                "z": 17.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.85,
+              "height": 0.82,
+              "depth": 0.85
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000091",
+            "type": "sign",
+            "name": "Exit Sign South",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 2.4,
+                "z": 0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.4,
+              "height": 0.2,
+              "depth": 0.05
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000092",
+            "type": "sign",
+            "name": "Exit Sign North",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 2.4,
+                "z": 19.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.4,
+              "height": 0.2,
+              "depth": 0.05
+            }
+          }
+        ],
+        "zones": [
+          {
+            "id": "ee000000-0000-4000-8000-000000000032",
+            "type": "zone",
+            "name": "Registration & Welcome",
+            "boundary": [
+              {
+                "x": 10,
+                "z": 1
+              },
+              {
+                "x": 10,
+                "z": 4
+              },
+              {
+                "x": 20,
+                "z": 4
+              },
+              {
+                "x": 20,
+                "z": 1
+              }
+            ],
+            "interaction": {
+              "type": "info-panel",
+              "contentRef": "content/registration.json"
+            }
+          },
+          {
+            "id": "ee000000-0000-4000-8000-000000000033",
+            "type": "zone",
+            "name": "VIP Networking Hub",
+            "boundary": [
+              {
+                "x": 11,
+                "z": 16
+              },
+              {
+                "x": 11,
+                "z": 19
+              },
+              {
+                "x": 19,
+                "z": 19
+              },
+              {
+                "x": 19,
+                "z": 16
+              }
+            ],
+            "interaction": {
+              "type": "menu",
+              "contentRef": "content/networking.json"
+            }
+          }
+        ]
+      }
+    ],
+    "spawnPoints": [
+      {
+        "id": "ee000000-0000-4000-8000-000000000005",
+        "name": "Main Entrance",
+        "floorId": "ee000000-0000-4000-8000-000000000003",
+        "position": {
+          "x": 15,
+          "y": 0,
+          "z": 1.2
+        },
+        "rotationY": 3.141592653589793,
+        "role": "visitor"
+      }
+    ]
+  }
+}

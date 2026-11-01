@@ -1,0 +1,1738 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "dd000000-0000-4000-8000-000000000001",
+    "name": "Hackathon & Esports Arena",
+    "metadata": {
+      "createdAt": "2026-11-01T00:00:00.000Z",
+      "updatedAt": "2026-11-01T00:00:00.000Z",
+      "description": "26x18m tech arena with 8 team hack pods (48 developer seats), central pitch stage, LED wall, and mentor lounge.",
+      "generator": "openvenue",
+      "planWidth": 26,
+      "planDepth": 18
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+      "name": "Side chair",
+      "format": "glb",
+      "uri": "/assets/side-chair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e02",
+      "name": "Banquet table",
+      "format": "glb",
+      "uri": "/assets/banquet-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+      "name": "Podium",
+      "format": "glb",
+      "uri": "/assets/podium.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+      "name": "Armchair",
+      "format": "glb",
+      "uri": "/assets/armchair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e05",
+      "name": "Stool",
+      "format": "glb",
+      "uri": "/assets/stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e06",
+      "name": "Bench",
+      "format": "glb",
+      "uri": "/assets/bench.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+      "name": "Bar stool",
+      "format": "glb",
+      "uri": "/assets/bar-stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e08",
+      "name": "Cocktail table",
+      "format": "glb",
+      "uri": "/assets/cocktail-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+      "name": "Conference table",
+      "format": "glb",
+      "uri": "/assets/conference-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0a",
+      "name": "Coffee table",
+      "format": "glb",
+      "uri": "/assets/coffee-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0b",
+      "name": "Platform",
+      "format": "glb",
+      "uri": "/assets/platform.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0c",
+      "name": "Riser",
+      "format": "glb",
+      "uri": "/assets/riser.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+      "name": "Shell booth",
+      "format": "glb",
+      "uri": "/assets/shell-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+      "name": "Counter booth",
+      "format": "glb",
+      "uri": "/assets/counter-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11",
+      "name": "Info desk",
+      "format": "glb",
+      "uri": "/assets/info-desk.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+      "name": "Display screen",
+      "format": "glb",
+      "uri": "/assets/display-screen.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13",
+      "name": "Speaker",
+      "format": "glb",
+      "uri": "/assets/speaker.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a",
+      "name": "Exit sign",
+      "format": "glb",
+      "uri": "/assets/exit-sign.glb",
+      "license": "Apache-2.0"
+    }
+  ],
+  "venue": {
+    "id": "dd000000-0000-4000-8000-000000000002",
+    "name": "Hackathon & Esports Arena",
+    "floors": [
+      {
+        "id": "dd000000-0000-4000-8000-000000000003",
+        "name": "Arena Floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 4.5,
+        "rooms": [
+          {
+            "id": "dd000000-0000-4000-8000-000000000004",
+            "name": "Hacking Mainspace",
+            "boundary": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 18
+              },
+              {
+                "x": 26,
+                "z": 18
+              },
+              {
+                "x": 26,
+                "z": 0
+              }
+            ],
+            "wallIds": [
+              "dd000000-0000-4000-8000-00000000000a",
+              "dd000000-0000-4000-8000-00000000000b",
+              "dd000000-0000-4000-8000-00000000000c",
+              "dd000000-0000-4000-8000-00000000000d"
+            ],
+            "floorMaterial": "concrete"
+          }
+        ],
+        "walls": [
+          {
+            "id": "dd000000-0000-4000-8000-00000000000a",
+            "start": {
+              "x": 0,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 18
+            },
+            "thickness": 0.25,
+            "height": 4.5
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000000b",
+            "start": {
+              "x": 0,
+              "z": 18
+            },
+            "end": {
+              "x": 26,
+              "z": 18
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "dd000000-0000-4000-8000-000000000022",
+                "kind": "door",
+                "offset": 12.1,
+                "width": 1.8,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000000c",
+            "start": {
+              "x": 26,
+              "z": 18
+            },
+            "end": {
+              "x": 26,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.5
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000000d",
+            "start": {
+              "x": 26,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.5,
+            "openings": [
+              {
+                "id": "dd000000-0000-4000-8000-00000000002a",
+                "kind": "door",
+                "offset": 11.9,
+                "width": 2.2,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "id": "dd000000-0000-4000-8000-000000000064",
+            "type": "stage",
+            "name": "Hackathon Pitch Stage",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0b",
+            "transform": {
+              "position": {
+                "x": 13,
+                "y": 0,
+                "z": 15.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 7,
+              "height": 0.4,
+              "depth": 3
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000065",
+            "type": "podium",
+            "name": "Pitch Stage Podium",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+            "transform": {
+              "position": {
+                "x": 11,
+                "y": 0.4,
+                "z": 15.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.6,
+              "height": 1.06,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000066",
+            "type": "screen",
+            "name": "Main Arena Projector Screen",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 13,
+                "y": 0.4,
+                "z": 14.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 4.5,
+              "height": 2.5,
+              "depth": 0.3
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000067",
+            "type": "table",
+            "name": "Team Pod 1 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 4.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000068",
+            "type": "chair",
+            "name": "Pod 1 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 3.8,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000069",
+            "type": "chair",
+            "name": "Pod 1 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006a",
+            "type": "chair",
+            "name": "Pod 1 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006b",
+            "type": "chair",
+            "name": "Pod 1 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 3.8,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006c",
+            "type": "chair",
+            "name": "Pod 1 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006d",
+            "type": "chair",
+            "name": "Pod 1 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006e",
+            "type": "table",
+            "name": "Team Pod 2 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 9.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000006f",
+            "type": "chair",
+            "name": "Pod 2 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 3.8,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000070",
+            "type": "chair",
+            "name": "Pod 2 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000071",
+            "type": "chair",
+            "name": "Pod 2 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000072",
+            "type": "chair",
+            "name": "Pod 2 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 3.8,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000073",
+            "type": "chair",
+            "name": "Pod 2 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.5,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000074",
+            "type": "chair",
+            "name": "Pod 2 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000075",
+            "type": "table",
+            "name": "Team Pod 3 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 4.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000076",
+            "type": "chair",
+            "name": "Pod 3 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000077",
+            "type": "chair",
+            "name": "Pod 3 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000078",
+            "type": "chair",
+            "name": "Pod 3 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000079",
+            "type": "chair",
+            "name": "Pod 3 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007a",
+            "type": "chair",
+            "name": "Pod 3 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007b",
+            "type": "chair",
+            "name": "Pod 3 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007c",
+            "type": "table",
+            "name": "Team Pod 4 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 9.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007d",
+            "type": "chair",
+            "name": "Pod 4 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007e",
+            "type": "chair",
+            "name": "Pod 4 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000007f",
+            "type": "chair",
+            "name": "Pod 4 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000080",
+            "type": "chair",
+            "name": "Pod 4 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000081",
+            "type": "chair",
+            "name": "Pod 4 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000082",
+            "type": "chair",
+            "name": "Pod 4 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000083",
+            "type": "table",
+            "name": "Team Pod 5 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 4.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000084",
+            "type": "chair",
+            "name": "Pod 5 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.3,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000085",
+            "type": "chair",
+            "name": "Pod 5 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000086",
+            "type": "chair",
+            "name": "Pod 5 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.7,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000087",
+            "type": "chair",
+            "name": "Pod 5 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.3,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000088",
+            "type": "chair",
+            "name": "Pod 5 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000089",
+            "type": "chair",
+            "name": "Pod 5 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.7,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008a",
+            "type": "table",
+            "name": "Team Pod 6 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 9.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008b",
+            "type": "chair",
+            "name": "Pod 6 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.3,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008c",
+            "type": "chair",
+            "name": "Pod 6 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008d",
+            "type": "chair",
+            "name": "Pod 6 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.7,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008e",
+            "type": "chair",
+            "name": "Pod 6 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.3,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000008f",
+            "type": "chair",
+            "name": "Pod 6 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000090",
+            "type": "chair",
+            "name": "Pod 6 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.7,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000091",
+            "type": "table",
+            "name": "Team Pod 7 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 4.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000092",
+            "type": "chair",
+            "name": "Pod 7 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 20.8,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000093",
+            "type": "chair",
+            "name": "Pod 7 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000094",
+            "type": "chair",
+            "name": "Pod 7 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 22.2,
+                "y": 0,
+                "z": 3.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000095",
+            "type": "chair",
+            "name": "Pod 7 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 20.8,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000096",
+            "type": "chair",
+            "name": "Pod 7 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000097",
+            "type": "chair",
+            "name": "Pod 7 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 22.2,
+                "y": 0,
+                "z": 5.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000098",
+            "type": "table",
+            "name": "Team Pod 8 Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 9.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.4,
+              "height": 0.75,
+              "depth": 1
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-000000000099",
+            "type": "chair",
+            "name": "Pod 8 Seat 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 20.8,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009a",
+            "type": "chair",
+            "name": "Pod 8 Seat 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009b",
+            "type": "chair",
+            "name": "Pod 8 Seat 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 22.2,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009c",
+            "type": "chair",
+            "name": "Pod 8 Seat 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 20.8,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009d",
+            "type": "chair",
+            "name": "Pod 8 Seat 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 21.5,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009e",
+            "type": "chair",
+            "name": "Pod 8 Seat 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 22.2,
+                "y": 0,
+                "z": 10.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-00000000009f",
+            "type": "table",
+            "name": "Lounge Table",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0a",
+            "transform": {
+              "position": {
+                "x": 13,
+                "y": 0,
+                "z": 7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.6,
+              "height": 0.45,
+              "depth": 0.8
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-0000000000a0",
+            "type": "chair",
+            "name": "Mentor Armchair 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+            "transform": {
+              "position": {
+                "x": 11.4,
+                "y": 0,
+                "z": 7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.85,
+              "height": 0.82,
+              "depth": 0.85
+            }
+          },
+          {
+            "id": "dd000000-0000-4000-8000-0000000000a1",
+            "type": "chair",
+            "name": "Mentor Armchair 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+            "transform": {
+              "position": {
+                "x": 14.6,
+                "y": 0,
+                "z": 7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.85,
+              "height": 0.82,
+              "depth": 0.85
+            }
+          }
+        ],
+        "zones": [
+          {
+            "id": "dd000000-0000-4000-8000-000000000032",
+            "type": "zone",
+            "name": "Central Mentorship Lounge",
+            "boundary": [
+              {
+                "x": 10,
+                "z": 5.5
+              },
+              {
+                "x": 10,
+                "z": 8.5
+              },
+              {
+                "x": 16,
+                "z": 8.5
+              },
+              {
+                "x": 16,
+                "z": 5.5
+              }
+            ],
+            "interaction": {
+              "type": "info-panel",
+              "contentRef": "content/mentor.json"
+            }
+          }
+        ]
+      }
+    ],
+    "spawnPoints": [
+      {
+        "id": "dd000000-0000-4000-8000-000000000005",
+        "name": "Arena Check-in",
+        "floorId": "dd000000-0000-4000-8000-000000000003",
+        "position": {
+          "x": 13,
+          "y": 0,
+          "z": 1.2
+        },
+        "rotationY": 3.141592653589793,
+        "role": "visitor"
+      }
+    ]
+  }
+}
