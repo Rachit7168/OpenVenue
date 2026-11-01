@@ -26,6 +26,7 @@ import { commitPolygon, rectangleFromCorners } from "../plan/draw";
 import { hitHandle, idsInsideBox, toLocal } from "../plan/handles";
 import { hitPlan, type PlanHit } from "../plan/hit";
 import { planScene } from "../plan/model";
+import { placeCatalogueAsset } from "../assets/place";
 import { useVenueStore } from "../stores/venue";
 import FloorPlan from "./FloorPlan.vue";
 
@@ -606,6 +607,19 @@ function onKey(event: KeyboardEvent) {
   }
 }
 
+function onAssetDrop(point: PlanPoint, assetId: string) {
+  const name = placeCatalogueAsset(
+    (command) => store.execute(command),
+    store.document,
+    assetId,
+    point.x,
+    point.z,
+  );
+  if (name) {
+    note.value = `Placed ${name}`;
+  }
+}
+
 onMounted(() => window.addEventListener("keydown", onKey));
 onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 </script>
@@ -656,6 +670,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
       @down="onDown"
       @move="onMove"
       @up="onUp"
+      @drop="onAssetDrop"
     />
     <p
       class="flex justify-between gap-3 border-t border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400"

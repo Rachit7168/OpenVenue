@@ -21,6 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: [id: string | null];
   transform: [id: string, mode: GizmoMode, pose: ObjectPose];
+  place: [assetId: string, point: { x: number; z: number }];
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -96,6 +97,16 @@ function resetView() {
   view?.reset();
 }
 
+function onAssetDrop(event: DragEvent) {
+  event.preventDefault();
+  const assetId = event.dataTransfer?.getData("text/plain") ?? "";
+  const point = view?.floorPoint(event.clientX, event.clientY);
+  if (!assetId || !point) {
+    return;
+  }
+  emit("place", assetId, point);
+}
+
 defineExpose({ fit: fitView, reset: resetView });
 
 onBeforeUnmount(() => {
@@ -107,7 +118,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="h-full min-h-0 w-full bg-zinc-950">
+  <div class="h-full min-h-0 w-full bg-zinc-950" @dragover.prevent @drop="onAssetDrop">
     <canvas ref="canvas" data-testid="venue-stage" class="h-full w-full" />
   </div>
 </template>

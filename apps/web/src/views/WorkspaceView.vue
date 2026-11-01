@@ -3,6 +3,8 @@ import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
 import type { CameraMode, GizmoMode, ObjectPose, QualityMode } from "@openvenue/renderer-3d";
+import { placeCatalogueAsset } from "../assets/place";
+import AssetLibrary from "../components/AssetLibrary.vue";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
 import VenueStage from "../components/VenueStage.vue";
@@ -31,6 +33,10 @@ const selectedObjectId = computed(() => {
 
 function nearly(a: number, b: number): boolean {
   return Math.abs(a - b) < 1e-4;
+}
+
+function onPlaceAsset(assetId: string, point: { x: number; z: number }) {
+  placeCatalogueAsset(store.execute, store.document, assetId, point.x, point.z);
 }
 
 function onObjectTransform(id: string, mode: GizmoMode, pose: ObjectPose) {
@@ -373,6 +379,8 @@ function save() {
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
     </div>
 
+    <AssetLibrary class="mt-4" />
+
     <section
       class="mt-6 flex h-[36rem] overflow-hidden rounded-xl border border-zinc-800 shadow-sm"
     >
@@ -388,6 +396,7 @@ function save() {
         :selected-id="selectedObjectId"
         @select="store.setSelection($event ? [$event] : [])"
         @transform="onObjectTransform"
+        @place="onPlaceAsset"
       />
       <Inspector />
     </section>

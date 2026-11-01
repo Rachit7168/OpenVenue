@@ -40,6 +40,7 @@ const emit = defineEmits<{
   down: [point: PlanPoint, shift: boolean];
   move: [point: PlanPoint];
   up: [point: PlanPoint];
+  drop: [point: PlanPoint, assetId: string];
 }>();
 
 const root = ref<SVGSVGElement | null>(null);
@@ -233,6 +234,29 @@ function onPointerUp(event: PointerEvent) {
   }
 }
 
+function onAssetDrop(event: DragEvent) {
+  if (!props.interactive) {
+    return;
+  }
+  event.preventDefault();
+  const assetId = event.dataTransfer?.getData("text/plain") ?? "";
+  if (!assetId) {
+    return;
+  }
+  const bounds = root.value?.getBoundingClientRect();
+  if (!bounds) {
+    return;
+  }
+  emit(
+    "drop",
+    screenToWorld(viewport.value, {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    }),
+    assetId,
+  );
+}
+
 function onWheel(event: WheelEvent) {
   if (!props.interactive) {
     return;
@@ -291,6 +315,8 @@ watch(
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
       @pointerleave="onPointerUp"
+      @dragover.prevent
+      @drop="onAssetDrop"
       @wheel.prevent="onWheel"
     >
       <defs>
