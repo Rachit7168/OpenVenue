@@ -3,6 +3,10 @@ import { MAX_VENUE_JSON_CHARS, saveVenueJson } from "@openvenue/scene-schema";
 import { computed, nextTick, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import conferenceHall from "../../../../examples/conference-hall.venue.json?raw";
+import exhibitionExpo from "../../../../examples/exhibition-expo.venue.json?raw";
+import galaBanquet from "../../../../examples/gala-banquet.venue.json?raw";
+import hackathonArena from "../../../../examples/hackathon-arena.venue.json?raw";
+import theaterStage from "../../../../examples/theater-stage.venue.json?raw";
 import FloorPlan from "../components/FloorPlan.vue";
 import type { ProjectTemplate } from "../project-library";
 import { useProjectLibrary } from "../stores/projects";
@@ -10,6 +14,7 @@ import { useProjectLibrary } from "../stores/projects";
 const library = useProjectLibrary();
 const router = useRouter();
 const wizardOpen = ref(false);
+const templatesMenuOpen = ref(false);
 const newProjectButton = ref<HTMLButtonElement | null>(null);
 const dialog = ref<HTMLDialogElement | null>(null);
 const nameInput = ref<HTMLInputElement | null>(null);
@@ -22,6 +27,39 @@ const depth = ref(12);
 const ceilingHeight = ref(3);
 const template = ref<ProjectTemplate>("empty");
 const formError = ref("");
+
+const sampleBlueprints = [
+  {
+    id: "conference-hall",
+    name: "Conference Auditorium",
+    raw: conferenceHall,
+    desc: "24 × 18 m · Keynote stage, podium, 200 attendee chairs",
+  },
+  {
+    id: "exhibition-expo",
+    name: "Exhibition Trade Fair",
+    raw: exhibitionExpo,
+    desc: "30 × 20 m · 10 shell booths, demo counters, lounge",
+  },
+  {
+    id: "gala-banquet",
+    name: "Gala Banquet & Reception",
+    raw: galaBanquet,
+    desc: "22 × 16 m · 12 round banquet tables, 72 chairs, stage",
+  },
+  {
+    id: "theater-stage",
+    name: "Theater & Keynote Stage",
+    raw: theaterStage,
+    desc: "24 × 16 m · 10m raised proscenium stage, 140 chairs",
+  },
+  {
+    id: "hackathon-arena",
+    name: "Hackathon & Esports Arena",
+    raw: hackathonArena,
+    desc: "26 × 18 m · 8 team pod clusters, 48 chairs, pitch stage",
+  },
+];
 
 watch(wizardOpen, (open) => {
   if (open) {
@@ -126,13 +164,17 @@ function exportProject(id: string, projectName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-function openConferenceHall() {
+function openBlueprint(raw: string) {
   try {
-    const document = library.importText(conferenceHall);
+    const document = library.importText(raw);
     void router.push({ name: "project", params: { projectId: document.project.id } });
   } catch {
     // The store records the message.
   }
+}
+
+function openConferenceHall() {
+  openBlueprint(conferenceHall);
 }
 
 function importFile(event: Event) {
@@ -201,6 +243,32 @@ function importFile(event: Event) {
         >
           Conference hall
         </button>
+        <div class="relative inline-block text-left">
+          <button
+            type="button"
+            data-testid="templates-menu-btn"
+            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            @click="templatesMenuOpen = !templatesMenuOpen"
+          >
+            Blueprints ▾
+          </button>
+          <div
+            v-if="templatesMenuOpen"
+            class="absolute right-0 z-30 mt-1 w-64 origin-top-right rounded-lg border border-zinc-200 bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <button
+              v-for="bp in sampleBlueprints"
+              :key="bp.id"
+              type="button"
+              :data-testid="`open-blueprint-${bp.id}`"
+              class="block w-full px-4 py-2.5 text-left text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              @click="templatesMenuOpen = false; openBlueprint(bp.raw)"
+            >
+              <div class="font-semibold text-zinc-900 dark:text-zinc-100">{{ bp.name }}</div>
+              <div class="text-[11px] text-zinc-500">{{ bp.desc }}</div>
+            </button>
+          </div>
+        </div>
         <input
           ref="fileInput"
           class="sr-only"
@@ -332,13 +400,36 @@ function importFile(event: Event) {
     >
       Loading projects…
     </p>
-    <p
+    <div
       v-else-if="cards.length === 0"
-      class="mt-8 rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+      class="mt-8 rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
       data-testid="empty-projects"
     >
-      No projects yet.
-    </p>
+      <p class="font-medium text-zinc-900 dark:text-zinc-100">No projects yet.</p>
+      <p class="mt-1 text-xs text-zinc-500">
+        Create a new blank venue above, or launch any of our pre-furnished blueprints below:
+      </p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-left">
+        <button
+          v-for="bp in sampleBlueprints"
+          :key="bp.id"
+          type="button"
+          :data-testid="`empty-blueprint-${bp.id}`"
+          class="group rounded-lg border border-zinc-200 p-4 transition hover:border-teal-600 hover:shadow-sm dark:border-zinc-800 dark:hover:border-teal-400 bg-white dark:bg-zinc-900"
+          @click="openBlueprint(bp.raw)"
+        >
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-zinc-900 group-hover:text-teal-700 dark:text-zinc-100 dark:group-hover:text-teal-300">
+              {{ bp.name }}
+            </h3>
+            <span class="text-xs text-teal-600 dark:text-teal-400">Launch →</span>
+          </div>
+          <p class="mt-1 text-xs text-zinc-500">
+            {{ bp.desc }}
+          </p>
+        </button>
+      </div>
+    </div>
 
     <ul v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <li
