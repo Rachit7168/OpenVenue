@@ -1,8 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
+import AccountView from "./views/AccountView.vue";
 import BenchmarkView from "./views/BenchmarkView.vue";
+import ForgotPasswordView from "./views/ForgotPasswordView.vue";
 import GuideView from "./views/GuideView.vue";
 import LandingView from "./views/LandingView.vue";
+import LoginView from "./views/LoginView.vue";
 import ProjectsView from "./views/ProjectsView.vue";
+import SignupView from "./views/SignupView.vue";
 import WorkspaceView from "./views/WorkspaceView.vue";
 
 export const routes = [
@@ -10,6 +14,10 @@ export const routes = [
   { path: "/projects", name: "projects", component: ProjectsView },
   { path: "/guide", name: "guide", component: GuideView },
   { path: "/benchmark", name: "benchmark", component: BenchmarkView },
+  { path: "/login", name: "login", component: LoginView },
+  { path: "/signup", name: "signup", component: SignupView },
+  { path: "/forgot-password", name: "forgot-password", component: ForgotPasswordView },
+  { path: "/account", name: "account", component: AccountView },
   { path: "/projects/:projectId", name: "project", component: WorkspaceView },
 ];
 
