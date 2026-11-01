@@ -19,6 +19,16 @@ import { RouterLink } from "vue-router";
       <article
         class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
       >
+        <h2 class="font-semibold">Map</h2>
+        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+          Switch to 3D or Both, then choose Map to draw the floors apart. Drag to rotate and
+          right-drag to pan. Click a floor name to open that level. Find lists rooms and tables.
+          Escape closes Find or the selected place card first, then shows every floor again.
+        </p>
+      </article>
+      <article
+        class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+      >
         <h2 class="font-semibold">Walk</h2>
         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Choose Walk, click the hall, and use WASD. Escape returns to orbit. Doors stay open.
