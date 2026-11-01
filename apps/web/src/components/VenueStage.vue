@@ -13,6 +13,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 const props = defineProps<{
   scene: SceneSource;
   cameraMode: CameraMode;
+  eyeHeight: number;
   gizmoMode: GizmoMode;
   qualityMode: QualityMode;
   selectedId: string | null;
@@ -22,6 +23,7 @@ const emit = defineEmits<{
   select: [id: string | null];
   transform: [id: string, mode: GizmoMode, pose: ObjectPose];
   place: [assetId: string, point: { x: number; z: number }];
+  exitWalk: [];
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -50,6 +52,7 @@ onMounted(() => {
   view.setHandlers({
     onSelect: (id) => emit("select", id),
     onTransform: (id, mode, pose) => emit("transform", id, mode, pose),
+    onExitWalk: () => emit("exitWalk"),
   });
   view.setDocument(props.scene.getDocument());
   unsubscribe = props.scene.subscribe((change) => {
@@ -58,6 +61,7 @@ onMounted(() => {
     }
   });
   view.setCameraMode(props.cameraMode);
+  view.setEyeHeight(props.eyeHeight);
   view.setGizmoMode(props.gizmoMode);
   view.setQuality(props.qualityMode);
   view.setSelected(props.selectedId);
@@ -72,6 +76,11 @@ onMounted(() => {
 watch(
   () => props.cameraMode,
   (mode) => view?.setCameraMode(mode),
+);
+
+watch(
+  () => props.eyeHeight,
+  (height) => view?.setEyeHeight(height),
 );
 
 watch(
