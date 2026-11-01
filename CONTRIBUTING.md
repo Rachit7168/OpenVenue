@@ -64,28 +64,93 @@ That serves the editor at http://localhost:8080.
 4. **Automated checks**: Ensure all tests, linter checks, and formatting pass before opening a PR.
 5. **Address review feedback**: Respond to review comments (including automated AI reviews like Sourcery) directly on your PR branch.
 
-## Pull requests
+## Pull requests & development workflows
 
-1. Update your local `dev` branch:
+All contributions must target the `dev` branch. Choose the workflow below that fits your setup:
+
+### Workflow A: Fork & Pull Request (Recommended for community contributors)
+
+1. **Fork the repository**:
+   Click **Fork** at [https://github.com/Rachit7168/OpenVenue](https://github.com/Rachit7168/OpenVenue) to create your personal fork.
+
+2. **Clone your fork locally**:
+
    ```bash
-   git checkout dev
-   git pull origin dev
+   git clone https://github.com/<your-username>/OpenVenue.git
+   cd OpenVenue
    ```
-2. Create a new branch from `dev`:
+
+3. **Configure upstream remote**:
+
    ```bash
-   git checkout -b feature/your-feature-name
+   git remote add upstream https://github.com/Rachit7168/OpenVenue.git
+   git fetch upstream
    ```
-3. Run verification before committing:
+
+4. **Create a feature branch based on `upstream/dev`**:
+
+   ```bash
+   git checkout -b feature/your-feature-name upstream/dev
+   ```
+
+5. **Run verification before committing**:
+
    ```bash
    pnpm format:check
    pnpm lint
    pnpm typecheck
    pnpm test
    ```
-4. Open a pull request against the `dev` branch (do not open against `main`).
-5. Keep schema changes in `packages/scene-schema` with a test for a valid file and an invalid file. Read `packages/scene-schema/MIGRATION.md` before adding a field. Unknown properties on a venue document must survive a save.
 
-The visitor app belongs in `apps/viewer`, not in the editor.
+6. **Push to your fork**:
+
+   ```bash
+   git push -u origin feature/your-feature-name
+   ```
+
+7. **Submit a Pull Request**:
+   - Open a pull request from `<your-username>:feature/your-feature-name` into `Rachit7168/OpenVenue:dev`.
+   - Ensure the base branch is **`dev`** (NOT `main`). Pull requests targeting `main` will be blocked by CI.
+
+---
+
+### Workflow B: Direct branch workflow (for maintainers with write access)
+
+1. **Update your local `dev` branch**:
+
+   ```bash
+   git checkout dev
+   git pull origin dev
+   ```
+
+2. **Create a new branch from `dev`**:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Run verification**:
+
+   ```bash
+   pnpm format:check
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   ```
+
+4. **Push branch and open a PR into `dev`**:
+   ```bash
+   git push -u origin feature/your-feature-name
+   gh pr create --base dev --head feature/your-feature-name
+   ```
+
+---
+
+### General PR guidelines
+
+- Keep schema changes in `packages/scene-schema` with a test for a valid file and an invalid file. Read `packages/scene-schema/MIGRATION.md` before adding a field. Unknown properties on a venue document must survive a save.
+- The visitor app belongs in `apps/viewer`, not in the editor.
+- Always run `pnpm format:check` to ensure Prettier compliance before opening a PR.
 
 ## Code of conduct
 
