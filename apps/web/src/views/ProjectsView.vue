@@ -101,12 +101,26 @@ const cards = computed(() =>
     return {
       id: document.project.id,
       name: document.project.name,
-      updatedAt: document.project.metadata.updatedAt,
+      updatedAt: formatUpdatedAt(document.project.metadata.updatedAt),
       size,
       document,
     };
   }),
 );
+
+function formatUpdatedAt(value: unknown): string {
+  if (typeof value !== "string" || !value.trim()) {
+    return "Unknown update time";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown update time";
+  }
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
 
 function createProject() {
   formError.value = "";
