@@ -19,6 +19,12 @@ export {
   updateWall,
   updateZone,
 } from "./commands.js";
+export {
+  CAPACITY_NOTE,
+  DEFAULT_METRES_PER_PERSON,
+  capacityOf,
+  type CapacityReport,
+} from "./capacity.js";
 export { CHECK_NOTE, checkVenue, type SceneLocation, type VenueWarning } from "./checks.js";
 export { CommandError } from "./errors.js";
 export {
