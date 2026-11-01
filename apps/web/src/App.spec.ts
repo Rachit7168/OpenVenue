@@ -1,8 +1,9 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia } from "pinia";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryHistory, createRouter } from "vue-router";
 import App from "./App.vue";
+import { deleteVenueDatabase } from "./persistence";
 import { routes } from "./router";
 
 function mountApp() {
@@ -17,8 +18,9 @@ function mountApp() {
 }
 
 describe("app shell", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
+    await deleteVenueDatabase();
     document.documentElement.classList.remove("dark");
   });
 
@@ -27,7 +29,7 @@ describe("app shell", () => {
     await first.router.isReady();
     await flushPromises();
 
-    expect(first.wrapper.text()).toContain("No projects yet");
+    await vi.waitUntil(() => first.wrapper.text().includes("No projects yet"));
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     await first.wrapper.get("[data-testid=theme-toggle]").trigger("click");
     expect(document.documentElement.classList.contains("dark")).toBe(false);
@@ -48,6 +50,7 @@ describe("app shell", () => {
     const second = mountApp();
     await second.router.isReady();
     await flushPromises();
+    await vi.waitUntil(() => second.wrapper.text().includes("Main hall"));
     expect(second.wrapper.get("[data-testid=project-card]").text()).toContain("Main hall");
     expect(
       second.wrapper.find("[data-testid=project-thumbnail] [data-testid=floor-plan]").exists(),

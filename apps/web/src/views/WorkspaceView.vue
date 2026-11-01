@@ -115,6 +115,21 @@ watch(
 );
 
 const preview = computed(() => JSON.stringify(store.document, null, 2));
+const saveLabel = computed(() => {
+  switch (library.saveState) {
+    case "pending":
+    case "saving":
+      return "Saving…";
+    case "saved":
+      return "Saved in this browser";
+    case "restored":
+      return "Restored the last session";
+    case "error":
+      return "Save failed";
+    default:
+      return "";
+  }
+});
 
 const counts = computed(() => {
   const floors = store.document.venue.floors;
@@ -414,7 +429,10 @@ function save() {
           Click the hall to look. WASD walks. Escape returns to orbit.
         </p>
       </div>
-      <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">
+        {{ store.status }}
+        <span v-if="saveLabel" data-testid="save-status"> · {{ saveLabel }}</span>
+      </p>
     </div>
 
     <AssetLibrary class="mt-4" />

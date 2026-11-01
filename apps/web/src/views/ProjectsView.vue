@@ -257,7 +257,14 @@ function importFile(event: Event) {
     </p>
 
     <p
-      v-if="cards.length === 0"
+      v-if="!library.ready"
+      class="mt-8 text-sm text-zinc-500 dark:text-zinc-400"
+      data-testid="empty-projects"
+    >
+      Loading projects…
+    </p>
+    <p
+      v-else-if="cards.length === 0"
       class="mt-8 text-sm text-zinc-500 dark:text-zinc-400"
       data-testid="empty-projects"
     >
