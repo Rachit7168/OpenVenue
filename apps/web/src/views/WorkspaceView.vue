@@ -14,6 +14,7 @@ import { planPdf, planPng, planSvg } from "../export/plan";
 import AssetLibrary from "../components/AssetLibrary.vue";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
+import VenueChecks from "../components/VenueChecks.vue";
 import VenueStage from "../components/VenueStage.vue";
 import { useProjectLibrary } from "../stores/projects";
 import { useVenueStore } from "../stores/venue";
@@ -510,6 +511,8 @@ async function saveGlb() {
       />
       <Inspector />
     </section>
+
+    <VenueChecks />
 
     <section
       class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
