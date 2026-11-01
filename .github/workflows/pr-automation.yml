@@ -1,0 +1,174 @@
+name: Pull Request Automation
+
+on:
+  pull_request_target:
+    types: [opened, closed]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  welcome-contributor:
+    name: Welcome Contributor
+    if: github.event_name == 'pull_request_target' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post welcome message on new pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+
+            const author = pr.user ? pr.user.login : 'contributor';
+            const isBot = pr.user && pr.user.type === 'Bot';
+            if (isBot) {
+              console.log('Skipping bot contributor:', author);
+              return;
+            }
+
+            const lines = [
+              `### 👋 Welcome @${author}!`,
+              '',
+              'Thank you for opening this pull request and contributing to **OpenVenue**! 🚀',
+              '',
+              'Our maintainers will review your submission soon. In the meantime, please check the following:',
+              '',
+              '- 🧪 **CI Checks & Tests**: Please make sure all automated tests and checks pass. If tests fail, click on the check run details, inspect the logs, and push fixes to this branch.',
+              '- 🤖 **AI Code Review**: If automated AI review comments or suggestions are posted on this PR, please take a moment to address them or reply to the threads.',
+              '- 💬 **Collaborative Feedback**: If maintainers request changes, resolve them directly in the review comments or discussions.',
+              '',
+              'We truly appreciate your time and effort in making OpenVenue better!',
+            ];
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: lines.join('\n'),
+            });
+            console.log(`Welcome comment posted for PR #${pr.number} by @${author}`);
+
+  thank-on-merge:
+    name: Thank Contributor on Merge
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post appreciation comment on merged pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+
+            const author = pr.user ? pr.user.login : 'contributor';
+            const isBot = pr.user && pr.user.type === 'Bot';
+            if (isBot) {
+              console.log('Skipping bot contributor:', author);
+              return;
+            }
+
+            const lines = [
+              `### 🎉 Congratulations & Thank You @${author}!`,
+              '',
+              'Your pull request has been successfully **merged** into OpenVenue! 🥳',
+              '',
+              'Thank you for your valuable contribution and for helping build a better open-source event venue designer.',
+              '',
+              `- 🌟 Check out other [open issues](https://github.com/${context.repo.owner}/${context.repo.repo}/issues) if you would like to continue contributing!`,
+              "- ⭐ Don't forget to star the repository and share it with fellow event organizers and developers.",
+              '',
+              'Happy building! 🚀',
+            ];
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: lines.join('\n'),
+            });
+            console.log(`Merge appreciation comment posted for PR #${pr.number} by @${author}`);
+
+  ai-review-guidance:
+    name: AI Review Guidance
+    if: github.event_name == 'pull_request_review' && github.event.action == 'submitted' && github.event.pull_request.state == 'open'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remind contributor to address AI review comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = context.payload.review;
+            const pr = context.payload.pull_request;
+            if (!review || !pr) return;
+
+            const reviewer = review.user ? review.user.login : '';
+            const reviewerType = review.user ? review.user.type : '';
+            const isBotOrAi =
+              reviewerType === 'Bot' ||
+              reviewer.toLowerCase().includes('bot') ||
+              reviewer.toLowerCase().includes('copilot') ||
+              reviewer.toLowerCase().includes('coderabbit') ||
+              reviewer.toLowerCase().includes('gemini') ||
+              reviewer.toLowerCase().includes('sourcery') ||
+              reviewer.toLowerCase().includes('ai');
+
+            if (!isBotOrAi) {
+              console.log('Review submitted by human user, skipping AI guidance comment:', reviewer);
+              return;
+            }
+
+            // Only notify if there are actual review comments or changes requested
+            const state = review.state;
+            const body = (review.body || '').trim();
+            if (state !== 'CHANGES_REQUESTED' && state !== 'COMMENTED' && !body) {
+              console.log('Review does not require action, state:', state);
+              return;
+            }
+
+            const prNumber = pr.number;
+            const author = pr.user ? pr.user.login : 'contributor';
+            const deduplicationTag = '<!-- openvenue-ai-review-reminder -->';
+
+            // Check if reminder was already posted on this PR
+            const existingComments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const alreadyPosted = existingComments.data.some(
+              (c) => c.body && c.body.includes(deduplicationTag)
+            );
+
+            if (alreadyPosted) {
+              console.log('AI review guidance already posted on PR #' + prNumber);
+              return;
+            }
+
+            const lines = [
+              deduplicationTag,
+              '### 🤖 AI Review Feedback Detected',
+              '',
+              `Hi @${author}, an automated AI code review was submitted by **@${reviewer}**.`,
+              '',
+              'Please take a look at the review feedback:',
+              '1. Review any suggested improvements, security advisories, or test coverage items.',
+              '2. Update your branch to address valid comments, or reply inline with context if a suggestion does not apply.',
+              '3. If automated tests are also failing, be sure to resolve the failures so all CI checks turn green.',
+              '',
+              'Addressing AI review comments early helps ensure a fast maintainer review. Thank you!',
+            ];
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: lines.join('\n'),
+            });
+            console.log(`AI review guidance comment posted on PR #${prNumber}`);
