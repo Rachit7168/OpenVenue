@@ -16,7 +16,7 @@ function show(ids: readonly string[]) {
 <template>
   <section
     data-testid="venue-checks"
-    class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+    class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
   >
     <div class="flex items-baseline justify-between gap-3">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-zinc-500">Checks</h2>

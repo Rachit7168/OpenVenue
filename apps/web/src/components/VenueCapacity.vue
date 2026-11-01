@@ -32,7 +32,7 @@ function area(value: number): string {
 <template>
   <section
     data-testid="venue-capacity"
-    class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+    class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
   >
     <h2 class="text-sm font-semibold uppercase tracking-wide text-zinc-500">Capacity</h2>
     <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{{ CAPACITY_NOTE }}</p>
