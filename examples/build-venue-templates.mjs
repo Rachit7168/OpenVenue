@@ -29,24 +29,132 @@ const ASSET_SPEAKER = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13";
 const ASSET_EXIT_SIGN = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a";
 
 const COMMON_ASSETS = [
-  { id: ASSET_SIDE_CHAIR, name: "Side chair", format: "glb", uri: "/assets/side-chair.glb", license: "Apache-2.0" },
-  { id: ASSET_BANQUET_TABLE, name: "Banquet table", format: "glb", uri: "/assets/banquet-table.glb", license: "Apache-2.0" },
-  { id: ASSET_PODIUM, name: "Podium", format: "glb", uri: "/assets/podium.glb", license: "Apache-2.0" },
-  { id: ASSET_ARMCHAIR, name: "Armchair", format: "glb", uri: "/assets/armchair.glb", license: "Apache-2.0" },
-  { id: ASSET_STOOL, name: "Stool", format: "glb", uri: "/assets/stool.glb", license: "Apache-2.0" },
-  { id: ASSET_BENCH, name: "Bench", format: "glb", uri: "/assets/bench.glb", license: "Apache-2.0" },
-  { id: ASSET_BAR_STOOL, name: "Bar stool", format: "glb", uri: "/assets/bar-stool.glb", license: "Apache-2.0" },
-  { id: ASSET_COCKTAIL_TABLE, name: "Cocktail table", format: "glb", uri: "/assets/cocktail-table.glb", license: "Apache-2.0" },
-  { id: ASSET_CONF_TABLE, name: "Conference table", format: "glb", uri: "/assets/conference-table.glb", license: "Apache-2.0" },
-  { id: ASSET_COFFEE_TABLE, name: "Coffee table", format: "glb", uri: "/assets/coffee-table.glb", license: "Apache-2.0" },
-  { id: ASSET_PLATFORM, name: "Platform", format: "glb", uri: "/assets/platform.glb", license: "Apache-2.0" },
-  { id: ASSET_RISER, name: "Riser", format: "glb", uri: "/assets/riser.glb", license: "Apache-2.0" },
-  { id: ASSET_SHELL_BOOTH, name: "Shell booth", format: "glb", uri: "/assets/shell-booth.glb", license: "Apache-2.0" },
-  { id: ASSET_COUNTER_BOOTH, name: "Counter booth", format: "glb", uri: "/assets/counter-booth.glb", license: "Apache-2.0" },
-  { id: ASSET_INFO_DESK, name: "Info desk", format: "glb", uri: "/assets/info-desk.glb", license: "Apache-2.0" },
-  { id: ASSET_SCREEN, name: "Display screen", format: "glb", uri: "/assets/display-screen.glb", license: "Apache-2.0" },
-  { id: ASSET_SPEAKER, name: "Speaker", format: "glb", uri: "/assets/speaker.glb", license: "Apache-2.0" },
-  { id: ASSET_EXIT_SIGN, name: "Exit sign", format: "glb", uri: "/assets/exit-sign.glb", license: "Apache-2.0" },
+  {
+    id: ASSET_SIDE_CHAIR,
+    name: "Side chair",
+    format: "glb",
+    uri: "/assets/side-chair.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_BANQUET_TABLE,
+    name: "Banquet table",
+    format: "glb",
+    uri: "/assets/banquet-table.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_PODIUM,
+    name: "Podium",
+    format: "glb",
+    uri: "/assets/podium.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_ARMCHAIR,
+    name: "Armchair",
+    format: "glb",
+    uri: "/assets/armchair.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_STOOL,
+    name: "Stool",
+    format: "glb",
+    uri: "/assets/stool.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_BENCH,
+    name: "Bench",
+    format: "glb",
+    uri: "/assets/bench.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_BAR_STOOL,
+    name: "Bar stool",
+    format: "glb",
+    uri: "/assets/bar-stool.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_COCKTAIL_TABLE,
+    name: "Cocktail table",
+    format: "glb",
+    uri: "/assets/cocktail-table.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_CONF_TABLE,
+    name: "Conference table",
+    format: "glb",
+    uri: "/assets/conference-table.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_COFFEE_TABLE,
+    name: "Coffee table",
+    format: "glb",
+    uri: "/assets/coffee-table.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_PLATFORM,
+    name: "Platform",
+    format: "glb",
+    uri: "/assets/platform.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_RISER,
+    name: "Riser",
+    format: "glb",
+    uri: "/assets/riser.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_SHELL_BOOTH,
+    name: "Shell booth",
+    format: "glb",
+    uri: "/assets/shell-booth.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_COUNTER_BOOTH,
+    name: "Counter booth",
+    format: "glb",
+    uri: "/assets/counter-booth.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_INFO_DESK,
+    name: "Info desk",
+    format: "glb",
+    uri: "/assets/info-desk.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_SCREEN,
+    name: "Display screen",
+    format: "glb",
+    uri: "/assets/display-screen.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_SPEAKER,
+    name: "Speaker",
+    format: "glb",
+    uri: "/assets/speaker.glb",
+    license: "Apache-2.0",
+  },
+  {
+    id: ASSET_EXIT_SIGN,
+    name: "Exit sign",
+    format: "glb",
+    uri: "/assets/exit-sign.glb",
+    license: "Apache-2.0",
+  },
 ];
 
 function buildPerimeterWalls(prefix, width, depth, height, doors = []) {
@@ -178,7 +286,10 @@ function buildExhibitionTradeFair() {
     type: "chair",
     name: "Lounge Armchair 1",
     assetId: ASSET_ARMCHAIR,
-    transform: { position: { x: width / 2 - 1.5, y: 0, z: depth - 2.5 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 - 1.5, y: 0, z: depth - 2.5 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.85, height: 0.82, depth: 0.85 },
   });
   objects.push({
@@ -186,7 +297,10 @@ function buildExhibitionTradeFair() {
     type: "chair",
     name: "Lounge Armchair 2",
     assetId: ASSET_ARMCHAIR,
-    transform: { position: { x: width / 2 + 1.5, y: 0, z: depth - 2.5 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 + 1.5, y: 0, z: depth - 2.5 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.85, height: 0.82, depth: 0.85 },
   });
 
@@ -203,7 +317,10 @@ function buildExhibitionTradeFair() {
     type: "sign",
     name: "Exit Sign North",
     assetId: ASSET_EXIT_SIGN,
-    transform: { position: { x: width / 2, y: 2.4, z: depth - 0.2 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2, y: 2.4, z: depth - 0.2 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.4, height: 0.2, depth: 0.05 },
   });
 
@@ -215,13 +332,19 @@ function buildExhibitionTradeFair() {
       metadata: {
         createdAt: now,
         updatedAt: now,
-        description: "30x20m trade expo hall with 10 exhibitor shell booths, demo counters, registration desk, and networking lounge.",
+        description:
+          "30x20m trade expo hall with 10 exhibitor shell booths, demo counters, registration desk, and networking lounge.",
         generator: "openvenue",
         planWidth: width,
         planDepth: depth,
       },
     },
-    coordinateSystem: { lengthUnit: "metres", upAxis: "Y", handedness: "right", angleUnit: "radians" },
+    coordinateSystem: {
+      lengthUnit: "metres",
+      upAxis: "Y",
+      handedness: "right",
+      angleUnit: "radians",
+    },
     assets: COMMON_ASSETS,
     venue: {
       id: makeId(prefix, 2),
@@ -321,7 +444,10 @@ function buildGalaBanquet() {
     type: "generic",
     name: "Left Sound Tower",
     assetId: ASSET_SPEAKER,
-    transform: { position: { x: width / 2 - 3.5, y: 0, z: depth - 2.0 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 - 3.5, y: 0, z: depth - 2.0 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.5, height: 1.5, depth: 0.5 },
   });
   objects.push({
@@ -329,7 +455,10 @@ function buildGalaBanquet() {
     type: "generic",
     name: "Right Sound Tower",
     assetId: ASSET_SPEAKER,
-    transform: { position: { x: width / 2 + 3.5, y: 0, z: depth - 2.0 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 + 3.5, y: 0, z: depth - 2.0 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.5, height: 1.5, depth: 0.5 },
   });
 
@@ -366,7 +495,11 @@ function buildGalaBanquet() {
           name: `T${tableNum} Chair ${cIdx + 1}`,
           assetId: ASSET_SIDE_CHAIR,
           transform: {
-            position: { x: Number((x + off.dx).toFixed(2)), y: 0, z: Number((z + off.dz).toFixed(2)) },
+            position: {
+              x: Number((x + off.dx).toFixed(2)),
+              y: 0,
+              z: Number((z + off.dz).toFixed(2)),
+            },
             rotation: { x: 0, y: 0, z: 0 },
           },
           dimensions: { width: 0.46, height: 0.88, depth: 0.46 },
@@ -401,13 +534,19 @@ function buildGalaBanquet() {
       metadata: {
         createdAt: now,
         updatedAt: now,
-        description: "22x16m ballroom with 12 dining tables, 72 chairs, central dance floor zone, live band stage, and cocktail bar.",
+        description:
+          "22x16m ballroom with 12 dining tables, 72 chairs, central dance floor zone, live band stage, and cocktail bar.",
         generator: "openvenue",
         planWidth: width,
         planDepth: depth,
       },
     },
-    coordinateSystem: { lengthUnit: "metres", upAxis: "Y", handedness: "right", angleUnit: "radians" },
+    coordinateSystem: {
+      lengthUnit: "metres",
+      upAxis: "Y",
+      handedness: "right",
+      angleUnit: "radians",
+    },
     assets: COMMON_ASSETS,
     venue: {
       id: makeId(prefix, 2),
@@ -494,7 +633,10 @@ function buildTheaterStage() {
     type: "podium",
     name: "Speaker Keynote Podium",
     assetId: ASSET_PODIUM,
-    transform: { position: { x: width / 2 - 2.0, y: 0.6, z: depth - 2.2 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 - 2.0, y: 0.6, z: depth - 2.2 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.6, height: 1.06, depth: 0.5 },
   });
 
@@ -503,7 +645,10 @@ function buildTheaterStage() {
     type: "screen",
     name: "Keynote LED Wall",
     assetId: ASSET_SCREEN,
-    transform: { position: { x: width / 2, y: 0.6, z: depth - 4.0 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2, y: 0.6, z: depth - 4.0 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 5.0, height: 2.8, depth: 0.4 },
   });
 
@@ -512,7 +657,10 @@ function buildTheaterStage() {
     type: "generic",
     name: "Stage Left Audio Array",
     assetId: ASSET_SPEAKER,
-    transform: { position: { x: width / 2 - 5.5, y: 0, z: depth - 2.6 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 - 5.5, y: 0, z: depth - 2.6 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.6, height: 1.8, depth: 0.6 },
   });
   objects.push({
@@ -520,7 +668,10 @@ function buildTheaterStage() {
     type: "generic",
     name: "Stage Right Audio Array",
     assetId: ASSET_SPEAKER,
-    transform: { position: { x: width / 2 + 5.5, y: 0, z: depth - 2.6 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 + 5.5, y: 0, z: depth - 2.6 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.6, height: 1.8, depth: 0.6 },
   });
 
@@ -571,13 +722,19 @@ function buildTheaterStage() {
       metadata: {
         createdAt: now,
         updatedAt: now,
-        description: "24x16m theater auditorium with 10m raised stage, podium, LED screen, 140 audience chairs, and rear AV production console.",
+        description:
+          "24x16m theater auditorium with 10m raised stage, podium, LED screen, 140 audience chairs, and rear AV production console.",
         generator: "openvenue",
         planWidth: width,
         planDepth: depth,
       },
     },
-    coordinateSystem: { lengthUnit: "metres", upAxis: "Y", handedness: "right", angleUnit: "radians" },
+    coordinateSystem: {
+      lengthUnit: "metres",
+      upAxis: "Y",
+      handedness: "right",
+      angleUnit: "radians",
+    },
     assets: COMMON_ASSETS,
     venue: {
       id: makeId(prefix, 2),
@@ -661,7 +818,10 @@ function buildHackathonArena() {
     type: "podium",
     name: "Pitch Stage Podium",
     assetId: ASSET_PODIUM,
-    transform: { position: { x: width / 2 - 2.0, y: 0.4, z: depth - 2.2 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2 - 2.0, y: 0.4, z: depth - 2.2 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 0.6, height: 1.06, depth: 0.5 },
   });
   objects.push({
@@ -669,7 +829,10 @@ function buildHackathonArena() {
     type: "screen",
     name: "Main Arena Projector Screen",
     assetId: ASSET_SCREEN,
-    transform: { position: { x: width / 2, y: 0.4, z: depth - 3.8 }, rotation: { x: 0, y: 0, z: 0 } },
+    transform: {
+      position: { x: width / 2, y: 0.4, z: depth - 3.8 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
     dimensions: { width: 4.5, height: 2.5, depth: 0.3 },
   });
 
@@ -705,7 +868,11 @@ function buildHackathonArena() {
           name: `Pod ${podNum} Seat ${c + 1}`,
           assetId: ASSET_SIDE_CHAIR,
           transform: {
-            position: { x: Number((x + chairPos[c].dx).toFixed(2)), y: 0, z: Number((z + chairPos[c].dz).toFixed(2)) },
+            position: {
+              x: Number((x + chairPos[c].dx).toFixed(2)),
+              y: 0,
+              z: Number((z + chairPos[c].dz).toFixed(2)),
+            },
             rotation: { x: 0, y: 0, z: 0 },
           },
           dimensions: { width: 0.46, height: 0.88, depth: 0.46 },
@@ -748,13 +915,19 @@ function buildHackathonArena() {
       metadata: {
         createdAt: now,
         updatedAt: now,
-        description: "26x18m tech arena with 8 team hack pods (48 developer seats), central pitch stage, LED wall, and mentor lounge.",
+        description:
+          "26x18m tech arena with 8 team hack pods (48 developer seats), central pitch stage, LED wall, and mentor lounge.",
         generator: "openvenue",
         planWidth: width,
         planDepth: depth,
       },
     },
-    coordinateSystem: { lengthUnit: "metres", upAxis: "Y", handedness: "right", angleUnit: "radians" },
+    coordinateSystem: {
+      lengthUnit: "metres",
+      upAxis: "Y",
+      handedness: "right",
+      angleUnit: "radians",
+    },
     assets: COMMON_ASSETS,
     venue: {
       id: makeId(prefix, 2),

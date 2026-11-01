@@ -438,8 +438,8 @@ const faqs = [
                 Exhibition Trade Fair
               </h3>
               <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                10 shell booths with demo counters, TV displays, registration foyer, and
-                networking lounge.
+                10 shell booths with demo counters, TV displays, registration foyer, and networking
+                lounge.
               </p>
             </div>
             <button
@@ -500,8 +500,8 @@ const faqs = [
                 Theater &amp; Keynote Stage
               </h3>
               <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                10m raised proscenium stage, speaker podium, LED backdrop screen, 140 audience chairs,
-                and AV console.
+                10m raised proscenium stage, speaker podium, LED backdrop screen, 140 audience
+                chairs, and AV console.
               </p>
             </div>
             <button

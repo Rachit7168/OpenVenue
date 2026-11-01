@@ -1,0 +1,148 @@
+name: PR CI Test Failure Notification
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  issues: write
+  actions: read
+  contents: read
+
+jobs:
+  notify-test-failure:
+    name: Notify Failing Tests
+    if: github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'timed_out'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alert PR contributor about failing tests and AI comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            if (!run) return;
+
+            // Only notify for PR events or runs with linked PRs
+            let prNumber = null;
+            let prAuthor = null;
+
+            if (run.pull_requests && run.pull_requests.length > 0) {
+              const pr = run.pull_requests[0];
+              prNumber = pr.number;
+              prAuthor = pr.user ? pr.user.login : null;
+            }
+
+            // Fallback: look up open pull requests matching head_sha
+            if (!prNumber && run.head_sha) {
+              const pulls = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 50,
+              });
+              const matched = pulls.data.find(
+                (p) => p.head && p.head.sha === run.head_sha
+              );
+              if (matched) {
+                prNumber = matched.number;
+                prAuthor = matched.user ? matched.user.login : null;
+              }
+            }
+
+            if (!prNumber) {
+              console.log('No corresponding open pull request found for run SHA:', run.head_sha);
+              return;
+            }
+
+            // Deduplication per commit SHA
+            const deduplicationTag = `<!-- openvenue-ci-failure-${run.head_sha} -->`;
+            const existingComments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const alreadyCommented = existingComments.data.some(
+              (c) => c.body && c.body.includes(deduplicationTag)
+            );
+
+            if (alreadyCommented) {
+              console.log(`Already posted CI failure comment for SHA ${run.head_sha} on PR #${prNumber}`);
+              return;
+            }
+
+            // Check if there are also AI reviews on this PR
+            let hasAiReview = false;
+            try {
+              const reviews = await github.rest.pulls.listReviews({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                per_page: 50,
+              });
+
+              hasAiReview = reviews.data.some((r) => {
+                const u = (r.user ? r.user.login : '').toLowerCase();
+                const type = r.user ? r.user.type : '';
+                return (
+                  type === 'Bot' ||
+                  u.includes('bot') ||
+                  u.includes('copilot') ||
+                  u.includes('coderabbit') ||
+                  u.includes('gemini') ||
+                  u.includes('sourcery') ||
+                  u.includes('ai')
+                );
+              });
+            } catch (err) {
+              console.warn('Could not inspect PR reviews:', err);
+            }
+
+            const authorTag = prAuthor ? `@${prAuthor}` : 'contributor';
+            const runUrl = run.html_url;
+
+            const lines = [
+              deduplicationTag,
+              '### ⚠️ CI Checks / Tests Failed',
+              '',
+              `Hi ${authorTag}, one or more automated checks or tests failed during the CI run:`,
+              `👉 [**View CI Test Run Details**](${runUrl})`,
+            ];
+
+            if (hasAiReview) {
+              lines.push(
+                '',
+                '> 🤖 **AI Review Notice**: Automated AI review comments were also found on this PR. Please address those comments alongside the test fixes before requesting final review.'
+              );
+            }
+
+            lines.push(
+              '',
+              '#### How to resolve:',
+              `1. Open the [CI run link](${runUrl}) to inspect which job failed (e.g. \`web\` tests, linting, format check, or \`api\` tests).`,
+              '2. Reproduce and fix the issue locally:',
+              '   ```bash',
+              '   # Run frontend lint, format, typecheck, and tests',
+              '   pnpm lint',
+              '   pnpm format:check',
+              '   pnpm typecheck',
+              '   pnpm test',
+              '',
+              '   # Run API checks (if modifying backend)',
+              '   cd apps/api && python manage.py test',
+              '   ```',
+              '3. Push the fixes to this branch. The CI workflow will automatically re-run.',
+              '',
+              'Feel free to ask for assistance here if you need any guidance resolving the errors!'
+            );
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: lines.join('\n'),
+            });
+            console.log(`CI failure comment posted on PR #${prNumber} for SHA ${run.head_sha}`);

@@ -262,7 +262,10 @@ function importFile(event: Event) {
               type="button"
               :data-testid="`open-blueprint-${bp.id}`"
               class="block w-full px-4 py-2.5 text-left text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              @click="templatesMenuOpen = false; openBlueprint(bp.raw)"
+              @click="
+                templatesMenuOpen = false;
+                openBlueprint(bp.raw);
+              "
             >
               <div class="font-semibold text-zinc-900 dark:text-zinc-100">{{ bp.name }}</div>
               <div class="text-[11px] text-zinc-500">{{ bp.desc }}</div>
@@ -419,7 +422,9 @@ function importFile(event: Event) {
           @click="openBlueprint(bp.raw)"
         >
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-zinc-900 group-hover:text-teal-700 dark:text-zinc-100 dark:group-hover:text-teal-300">
+            <h3
+              class="text-sm font-semibold text-zinc-900 group-hover:text-teal-700 dark:text-zinc-100 dark:group-hover:text-teal-300"
+            >
               {{ bp.name }}
             </h3>
             <span class="text-xs text-teal-600 dark:text-teal-400">Launch →</span>
