@@ -1,0 +1,4807 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "c0ffee00-0000-4000-8000-000000000001",
+    "name": "Conference hall",
+    "metadata": {
+      "createdAt": "2026-11-01T00:00:00.000Z",
+      "updatedAt": "2026-11-01T00:00:00.000Z",
+      "description": "Sample hall with a stage and 200 chairs.",
+      "generator": "openvenue",
+      "planWidth": 24,
+      "planDepth": 18
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+      "name": "Side chair",
+      "format": "glb",
+      "uri": "/assets/side-chair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+      "name": "Podium",
+      "format": "glb",
+      "uri": "/assets/podium.glb",
+      "license": "Apache-2.0"
+    }
+  ],
+  "venue": {
+    "id": "c0ffee00-0000-4000-8000-000000000002",
+    "name": "Conference hall",
+    "floors": [
+      {
+        "id": "c0ffee00-0000-4000-8000-000000000003",
+        "name": "Ground floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 4,
+        "rooms": [
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000004",
+            "name": "Hall",
+            "boundary": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 18
+              },
+              {
+                "x": 24,
+                "z": 18
+              },
+              {
+                "x": 24,
+                "z": 0
+              }
+            ],
+            "wallIds": [
+              "c0ffee00-0000-4000-8000-000000000005",
+              "c0ffee00-0000-4000-8000-000000000006",
+              "c0ffee00-0000-4000-8000-000000000007",
+              "c0ffee00-0000-4000-8000-000000000008"
+            ],
+            "floorMaterial": "carpet"
+          }
+        ],
+        "walls": [
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000005",
+            "start": {
+              "x": 0,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 18
+            },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000006",
+            "start": {
+              "x": 0,
+              "z": 18
+            },
+            "end": {
+              "x": 24,
+              "z": 18
+            },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000007",
+            "start": {
+              "x": 24,
+              "z": 18
+            },
+            "end": {
+              "x": 24,
+              "z": 0
+            },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000008",
+            "start": {
+              "x": 24,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 0
+            },
+            "thickness": 0.2,
+            "height": 4,
+            "openings": [
+              {
+                "id": "c0ffee00-0000-4000-8000-000000000009",
+                "kind": "door",
+                "offset": 11.3,
+                "width": 1.4,
+                "height": 2.1,
+                "sill": 0
+              }
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000000b",
+            "type": "stage",
+            "name": "Stage",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0,
+                "z": 15.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 8,
+              "height": 0.4,
+              "depth": 3
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000000c",
+            "type": "stage",
+            "name": "Podium",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0.4,
+                "z": 15.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.6,
+              "height": 1.06,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000014",
+            "type": "chair",
+            "name": "Chair 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000015",
+            "type": "chair",
+            "name": "Chair 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000016",
+            "type": "chair",
+            "name": "Chair 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000017",
+            "type": "chair",
+            "name": "Chair 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000018",
+            "type": "chair",
+            "name": "Chair 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000019",
+            "type": "chair",
+            "name": "Chair 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001a",
+            "type": "chair",
+            "name": "Chair 7",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001b",
+            "type": "chair",
+            "name": "Chair 8",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001c",
+            "type": "chair",
+            "name": "Chair 9",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001d",
+            "type": "chair",
+            "name": "Chair 10",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001e",
+            "type": "chair",
+            "name": "Chair 11",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000001f",
+            "type": "chair",
+            "name": "Chair 12",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000020",
+            "type": "chair",
+            "name": "Chair 13",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000021",
+            "type": "chair",
+            "name": "Chair 14",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000022",
+            "type": "chair",
+            "name": "Chair 15",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000023",
+            "type": "chair",
+            "name": "Chair 16",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000024",
+            "type": "chair",
+            "name": "Chair 17",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000025",
+            "type": "chair",
+            "name": "Chair 18",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000026",
+            "type": "chair",
+            "name": "Chair 19",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000027",
+            "type": "chair",
+            "name": "Chair 20",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000028",
+            "type": "chair",
+            "name": "Chair 21",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000029",
+            "type": "chair",
+            "name": "Chair 22",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002a",
+            "type": "chair",
+            "name": "Chair 23",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002b",
+            "type": "chair",
+            "name": "Chair 24",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002c",
+            "type": "chair",
+            "name": "Chair 25",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002d",
+            "type": "chair",
+            "name": "Chair 26",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002e",
+            "type": "chair",
+            "name": "Chair 27",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000002f",
+            "type": "chair",
+            "name": "Chair 28",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000030",
+            "type": "chair",
+            "name": "Chair 29",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000031",
+            "type": "chair",
+            "name": "Chair 30",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000032",
+            "type": "chair",
+            "name": "Chair 31",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000033",
+            "type": "chair",
+            "name": "Chair 32",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000034",
+            "type": "chair",
+            "name": "Chair 33",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000035",
+            "type": "chair",
+            "name": "Chair 34",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000036",
+            "type": "chair",
+            "name": "Chair 35",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000037",
+            "type": "chair",
+            "name": "Chair 36",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000038",
+            "type": "chair",
+            "name": "Chair 37",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000039",
+            "type": "chair",
+            "name": "Chair 38",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003a",
+            "type": "chair",
+            "name": "Chair 39",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003b",
+            "type": "chair",
+            "name": "Chair 40",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 3.3
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003c",
+            "type": "chair",
+            "name": "Chair 41",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003d",
+            "type": "chair",
+            "name": "Chair 42",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003e",
+            "type": "chair",
+            "name": "Chair 43",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000003f",
+            "type": "chair",
+            "name": "Chair 44",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000040",
+            "type": "chair",
+            "name": "Chair 45",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000041",
+            "type": "chair",
+            "name": "Chair 46",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000042",
+            "type": "chair",
+            "name": "Chair 47",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000043",
+            "type": "chair",
+            "name": "Chair 48",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000044",
+            "type": "chair",
+            "name": "Chair 49",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000045",
+            "type": "chair",
+            "name": "Chair 50",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000046",
+            "type": "chair",
+            "name": "Chair 51",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000047",
+            "type": "chair",
+            "name": "Chair 52",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000048",
+            "type": "chair",
+            "name": "Chair 53",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000049",
+            "type": "chair",
+            "name": "Chair 54",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004a",
+            "type": "chair",
+            "name": "Chair 55",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004b",
+            "type": "chair",
+            "name": "Chair 56",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004c",
+            "type": "chair",
+            "name": "Chair 57",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004d",
+            "type": "chair",
+            "name": "Chair 58",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004e",
+            "type": "chair",
+            "name": "Chair 59",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000004f",
+            "type": "chair",
+            "name": "Chair 60",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 4.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000050",
+            "type": "chair",
+            "name": "Chair 61",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000051",
+            "type": "chair",
+            "name": "Chair 62",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000052",
+            "type": "chair",
+            "name": "Chair 63",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000053",
+            "type": "chair",
+            "name": "Chair 64",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000054",
+            "type": "chair",
+            "name": "Chair 65",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000055",
+            "type": "chair",
+            "name": "Chair 66",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000056",
+            "type": "chair",
+            "name": "Chair 67",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000057",
+            "type": "chair",
+            "name": "Chair 68",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000058",
+            "type": "chair",
+            "name": "Chair 69",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000059",
+            "type": "chair",
+            "name": "Chair 70",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005a",
+            "type": "chair",
+            "name": "Chair 71",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005b",
+            "type": "chair",
+            "name": "Chair 72",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005c",
+            "type": "chair",
+            "name": "Chair 73",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005d",
+            "type": "chair",
+            "name": "Chair 74",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005e",
+            "type": "chair",
+            "name": "Chair 75",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000005f",
+            "type": "chair",
+            "name": "Chair 76",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000060",
+            "type": "chair",
+            "name": "Chair 77",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000061",
+            "type": "chair",
+            "name": "Chair 78",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000062",
+            "type": "chair",
+            "name": "Chair 79",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000063",
+            "type": "chair",
+            "name": "Chair 80",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 5.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000064",
+            "type": "chair",
+            "name": "Chair 81",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000065",
+            "type": "chair",
+            "name": "Chair 82",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000066",
+            "type": "chair",
+            "name": "Chair 83",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000067",
+            "type": "chair",
+            "name": "Chair 84",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000068",
+            "type": "chair",
+            "name": "Chair 85",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000069",
+            "type": "chair",
+            "name": "Chair 86",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006a",
+            "type": "chair",
+            "name": "Chair 87",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006b",
+            "type": "chair",
+            "name": "Chair 88",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006c",
+            "type": "chair",
+            "name": "Chair 89",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006d",
+            "type": "chair",
+            "name": "Chair 90",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006e",
+            "type": "chair",
+            "name": "Chair 91",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000006f",
+            "type": "chair",
+            "name": "Chair 92",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000070",
+            "type": "chair",
+            "name": "Chair 93",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000071",
+            "type": "chair",
+            "name": "Chair 94",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000072",
+            "type": "chair",
+            "name": "Chair 95",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000073",
+            "type": "chair",
+            "name": "Chair 96",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000074",
+            "type": "chair",
+            "name": "Chair 97",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000075",
+            "type": "chair",
+            "name": "Chair 98",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000076",
+            "type": "chair",
+            "name": "Chair 99",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000077",
+            "type": "chair",
+            "name": "Chair 100",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000078",
+            "type": "chair",
+            "name": "Chair 101",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000079",
+            "type": "chair",
+            "name": "Chair 102",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007a",
+            "type": "chair",
+            "name": "Chair 103",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007b",
+            "type": "chair",
+            "name": "Chair 104",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007c",
+            "type": "chair",
+            "name": "Chair 105",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007d",
+            "type": "chair",
+            "name": "Chair 106",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007e",
+            "type": "chair",
+            "name": "Chair 107",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000007f",
+            "type": "chair",
+            "name": "Chair 108",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000080",
+            "type": "chair",
+            "name": "Chair 109",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000081",
+            "type": "chair",
+            "name": "Chair 110",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000082",
+            "type": "chair",
+            "name": "Chair 111",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000083",
+            "type": "chair",
+            "name": "Chair 112",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000084",
+            "type": "chair",
+            "name": "Chair 113",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000085",
+            "type": "chair",
+            "name": "Chair 114",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000086",
+            "type": "chair",
+            "name": "Chair 115",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000087",
+            "type": "chair",
+            "name": "Chair 116",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000088",
+            "type": "chair",
+            "name": "Chair 117",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000089",
+            "type": "chair",
+            "name": "Chair 118",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008a",
+            "type": "chair",
+            "name": "Chair 119",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008b",
+            "type": "chair",
+            "name": "Chair 120",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 6.9
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008c",
+            "type": "chair",
+            "name": "Chair 121",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008d",
+            "type": "chair",
+            "name": "Chair 122",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008e",
+            "type": "chair",
+            "name": "Chair 123",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000008f",
+            "type": "chair",
+            "name": "Chair 124",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000090",
+            "type": "chair",
+            "name": "Chair 125",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000091",
+            "type": "chair",
+            "name": "Chair 126",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000092",
+            "type": "chair",
+            "name": "Chair 127",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000093",
+            "type": "chair",
+            "name": "Chair 128",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000094",
+            "type": "chair",
+            "name": "Chair 129",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000095",
+            "type": "chair",
+            "name": "Chair 130",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000096",
+            "type": "chair",
+            "name": "Chair 131",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000097",
+            "type": "chair",
+            "name": "Chair 132",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000098",
+            "type": "chair",
+            "name": "Chair 133",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000099",
+            "type": "chair",
+            "name": "Chair 134",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009a",
+            "type": "chair",
+            "name": "Chair 135",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009b",
+            "type": "chair",
+            "name": "Chair 136",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009c",
+            "type": "chair",
+            "name": "Chair 137",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009d",
+            "type": "chair",
+            "name": "Chair 138",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009e",
+            "type": "chair",
+            "name": "Chair 139",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000009f",
+            "type": "chair",
+            "name": "Chair 140",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 7.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a0",
+            "type": "chair",
+            "name": "Chair 141",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a1",
+            "type": "chair",
+            "name": "Chair 142",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a2",
+            "type": "chair",
+            "name": "Chair 143",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a3",
+            "type": "chair",
+            "name": "Chair 144",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a4",
+            "type": "chair",
+            "name": "Chair 145",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a5",
+            "type": "chair",
+            "name": "Chair 146",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a6",
+            "type": "chair",
+            "name": "Chair 147",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a7",
+            "type": "chair",
+            "name": "Chair 148",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a8",
+            "type": "chair",
+            "name": "Chair 149",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000a9",
+            "type": "chair",
+            "name": "Chair 150",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000aa",
+            "type": "chair",
+            "name": "Chair 151",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ab",
+            "type": "chair",
+            "name": "Chair 152",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ac",
+            "type": "chair",
+            "name": "Chair 153",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ad",
+            "type": "chair",
+            "name": "Chair 154",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ae",
+            "type": "chair",
+            "name": "Chair 155",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000af",
+            "type": "chair",
+            "name": "Chair 156",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b0",
+            "type": "chair",
+            "name": "Chair 157",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b1",
+            "type": "chair",
+            "name": "Chair 158",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b2",
+            "type": "chair",
+            "name": "Chair 159",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b3",
+            "type": "chair",
+            "name": "Chair 160",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 8.7
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b4",
+            "type": "chair",
+            "name": "Chair 161",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b5",
+            "type": "chair",
+            "name": "Chair 162",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b6",
+            "type": "chair",
+            "name": "Chair 163",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b7",
+            "type": "chair",
+            "name": "Chair 164",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b8",
+            "type": "chair",
+            "name": "Chair 165",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000b9",
+            "type": "chair",
+            "name": "Chair 166",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ba",
+            "type": "chair",
+            "name": "Chair 167",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000bb",
+            "type": "chair",
+            "name": "Chair 168",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000bc",
+            "type": "chair",
+            "name": "Chair 169",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000bd",
+            "type": "chair",
+            "name": "Chair 170",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000be",
+            "type": "chair",
+            "name": "Chair 171",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000bf",
+            "type": "chair",
+            "name": "Chair 172",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c0",
+            "type": "chair",
+            "name": "Chair 173",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c1",
+            "type": "chair",
+            "name": "Chair 174",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c2",
+            "type": "chair",
+            "name": "Chair 175",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c3",
+            "type": "chair",
+            "name": "Chair 176",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c4",
+            "type": "chair",
+            "name": "Chair 177",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c5",
+            "type": "chair",
+            "name": "Chair 178",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c6",
+            "type": "chair",
+            "name": "Chair 179",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c7",
+            "type": "chair",
+            "name": "Chair 180",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 9.6
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c8",
+            "type": "chair",
+            "name": "Chair 181",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.45,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000c9",
+            "type": "chair",
+            "name": "Chair 182",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.2,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ca",
+            "type": "chair",
+            "name": "Chair 183",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.95,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000cb",
+            "type": "chair",
+            "name": "Chair 184",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.7,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000cc",
+            "type": "chair",
+            "name": "Chair 185",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.45,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000cd",
+            "type": "chair",
+            "name": "Chair 186",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.2,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000ce",
+            "type": "chair",
+            "name": "Chair 187",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.95,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000cf",
+            "type": "chair",
+            "name": "Chair 188",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d0",
+            "type": "chair",
+            "name": "Chair 189",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.45,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d1",
+            "type": "chair",
+            "name": "Chair 190",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.2,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d2",
+            "type": "chair",
+            "name": "Chair 191",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.8,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d3",
+            "type": "chair",
+            "name": "Chair 192",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.55,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d4",
+            "type": "chair",
+            "name": "Chair 193",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d5",
+            "type": "chair",
+            "name": "Chair 194",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.05,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d6",
+            "type": "chair",
+            "name": "Chair 195",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.8,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d7",
+            "type": "chair",
+            "name": "Chair 196",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.55,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d8",
+            "type": "chair",
+            "name": "Chair 197",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.3,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000d9",
+            "type": "chair",
+            "name": "Chair 198",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.05,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000da",
+            "type": "chair",
+            "name": "Chair 199",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.8,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-0000000000db",
+            "type": "chair",
+            "name": "Chair 200",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.55,
+                "y": 0,
+                "z": 10.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          }
+        ],
+        "zones": []
+      }
+    ],
+    "spawnPoints": [
+      {
+        "id": "c0ffee00-0000-4000-8000-00000000000a",
+        "name": "Entrance",
+        "floorId": "c0ffee00-0000-4000-8000-000000000003",
+        "position": {
+          "x": 12,
+          "y": 0,
+          "z": 1.2
+        },
+        "rotationY": 3.141592653589793,
+        "role": "visitor"
+      }
+    ]
+  }
+}
