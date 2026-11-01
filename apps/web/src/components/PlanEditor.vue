@@ -610,6 +610,30 @@ function onKey(event: KeyboardEvent) {
   }
 }
 
+function onNudge(x: number, z: number) {
+  const floor = store.document.venue.floors[0];
+  if (!floor) {
+    return;
+  }
+  const selected = new Set(store.selection);
+  const objects = floor.objects.filter((object) => selected.has(object.id));
+  if (objects.length === 0) {
+    return;
+  }
+  store.execute(
+    groupCommands(
+      "MOVE_OBJECT",
+      objects.map((object) =>
+        moveObject(store.document, object.id, {
+          x: object.transform.position.x + x,
+          y: object.transform.position.y,
+          z: object.transform.position.z + z,
+        }),
+      ),
+    ),
+  );
+}
+
 function onAssetDrop(point: PlanPoint, assetId: string) {
   const name = placeCatalogueAsset(
     (command) => store.execute(command),
@@ -636,7 +660,8 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         v-for="[id, label] in tools"
         :key="id"
         type="button"
-        class="min-h-10 shrink-0 rounded-md px-3 text-left text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+        class="focus-ring min-h-10 shrink-0 rounded-md px-3 text-left text-xs font-medium"
+        :aria-pressed="tool === id"
         :class="tool === id ? 'bg-teal-400 text-zinc-950' : 'text-zinc-200 hover:bg-zinc-800'"
         :data-testid="`tool-${id}`"
         @click="tool = id"
@@ -657,6 +682,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         @down="onDown"
         @move="onMove"
         @up="onUp"
+        @nudge="onNudge"
         @drop="onAssetDrop"
       />
       <p

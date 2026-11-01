@@ -151,6 +151,8 @@ describe("venue schema", () => {
       nested = `{"a":${nested}}`;
     }
     expect(() => loadVenueJson(nested)).toThrow(/nesting/);
+    expect(() => loadVenueJson('{"__proto__":{"admin":true}}')).toThrow(/forbidden/);
+    expect(() => loadVenueJson('{"venue":{"constructor":{}}}')).toThrow(/forbidden/);
   });
 
   it("creates uuid ids without requiring randomUUID", () => {

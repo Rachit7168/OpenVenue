@@ -25,6 +25,23 @@ describe("glb models", () => {
       buffers: [{ uri: "javascript:alert(1)", byteLength: 0 }],
     });
     expect(validateGlb(scripted)).toMatch(/script|URI/);
+    expect(
+      validateGlb(
+        encodeGlb({
+          asset: { version: "2.0" },
+          buffers: [{ uri: "../secret.bin", byteLength: 0 }],
+        }),
+      ),
+    ).toMatch(/URI/);
+    expect(
+      validateGlb(
+        encodeGlb({
+          asset: { version: "2.0" },
+          buffers: [{ uri: "https://example.com/model.bin", byteLength: 0 }],
+        }),
+      ),
+    ).toMatch(/URI/);
+    expect(validateGlb(new Uint8Array(32 * 1024 * 1024 + 1))).toMatch(/larger than/);
     const remote = encodeGlb({
       asset: { version: "2.0" },
       extensionsUsed: ["KHR_techniques_webgl"],

@@ -300,6 +300,17 @@ function onFile(event: Event) {
 }
 
 const exportOpen = ref(false);
+const exportButton = ref<HTMLButtonElement | null>(null);
+
+watch(exportOpen, (open) => {
+  if (!open) {
+    exportButton.value?.focus();
+    return;
+  }
+  void nextTick(() => {
+    document.querySelector<HTMLButtonElement>("[data-testid=export-json]")?.focus();
+  });
+});
 const exportError = ref("");
 
 function download(bytes: string | Uint8Array, type: string, filename: string) {
@@ -373,7 +384,8 @@ async function saveGlb() {
       <div class="flex gap-1">
         <button
           type="button"
-          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          :aria-pressed="viewMode === 'plan'"
           :class="viewMode === 'plan' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
           @click="viewMode = 'plan'"
         >
@@ -381,7 +393,8 @@ async function saveGlb() {
         </button>
         <button
           type="button"
-          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          :aria-pressed="viewMode === 'stage'"
           :class="viewMode === 'stage' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
           data-testid="view-3d"
           @click="viewMode = 'stage'"
@@ -390,7 +403,8 @@ async function saveGlb() {
         </button>
         <button
           type="button"
-          class="min-h-10 rounded-md px-3 text-sm font-medium"
+          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          :aria-pressed="viewMode === 'both'"
           :class="viewMode === 'both' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
           data-testid="view-both"
           @click="viewMode = 'both'"
@@ -415,7 +429,7 @@ async function saveGlb() {
         >
           Redo
         </button>
-        <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">
+        <p class="text-sm text-zinc-700 dark:text-zinc-300" aria-live="polite">
           {{ store.status }}
           <span v-if="saveLabel" data-testid="save-status"> · {{ saveLabel }}</span>
         </p>
@@ -430,7 +444,7 @@ async function saveGlb() {
         >
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               cameraMode === 'orbit' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -440,7 +454,7 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               cameraMode === 'isometric' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -451,7 +465,7 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               cameraMode === 'walk' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -462,7 +476,7 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               cameraMode === 'map' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -476,7 +490,7 @@ async function saveGlb() {
               v-for="floor in mapFloors"
               :key="floor.id"
               type="button"
-              class="min-h-10 rounded-md px-3 text-sm font-medium"
+              class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
               :class="
                 mapFloorId === floor.id ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
               "
@@ -487,7 +501,7 @@ async function saveGlb() {
             </button>
             <button
               type="button"
-              class="min-h-10 rounded-md px-3 text-sm font-medium"
+              class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
               :class="
                 mapFloorId === null ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
               "
@@ -498,7 +512,7 @@ async function saveGlb() {
             </button>
             <button
               type="button"
-              class="min-h-10 rounded-md px-3 text-sm font-medium"
+              class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
               :class="mapFindOpen ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
               data-testid="map-find-toggle"
               @click="mapFindOpen = !mapFindOpen"
@@ -522,7 +536,7 @@ async function saveGlb() {
           <button
             v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               gizmoMode === 'translate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -533,7 +547,7 @@ async function saveGlb() {
           <button
             v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               gizmoMode === 'rotate' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -544,7 +558,7 @@ async function saveGlb() {
           <button
             v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               gizmoMode === 'scale' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -555,7 +569,7 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               qualityMode === 'simple' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -566,7 +580,7 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
               qualityMode === 'high' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
             "
@@ -577,14 +591,14 @@ async function saveGlb() {
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
+            class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
             @click="stage?.fit()"
           >
             Fit
           </button>
           <button
             type="button"
-            class="min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
+            class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-sm font-medium text-zinc-100"
             @click="stage?.reset()"
           >
             Reset
@@ -616,7 +630,7 @@ async function saveGlb() {
           >
             <input
               v-model="mapQuery"
-              class="min-h-10 rounded-md border border-zinc-300 px-3 text-sm"
+              class="focus-ring min-h-10 rounded-md border border-zinc-300 px-3 text-sm"
               type="search"
               placeholder="Rooms, zones…"
               data-testid="map-find-query"
@@ -626,7 +640,7 @@ async function saveGlb() {
               <li v-for="place in mapResults" :key="place.id">
                 <button
                   type="button"
-                  class="flex min-h-10 w-full items-center justify-between gap-2 rounded-md px-2 text-left text-sm hover:bg-zinc-100"
+                  class="focus-ring flex min-h-10 w-full items-center justify-between gap-2 rounded-md px-2 text-left text-sm hover:bg-zinc-100"
                   :data-testid="`map-place-${place.id}`"
                   @click="openPlace(place)"
                 >
@@ -645,7 +659,7 @@ async function saveGlb() {
               <p class="font-semibold">{{ mapCard.name }}</p>
               <button
                 type="button"
-                class="min-h-10 px-2 text-sm text-zinc-500"
+                class="focus-ring min-h-10 px-2 text-sm text-zinc-500"
                 aria-label="Close place"
                 @click="store.setSelection([])"
               >
@@ -657,14 +671,14 @@ async function saveGlb() {
         </div>
         <p
           v-if="cameraMode === 'walk'"
-          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-400"
+          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-200"
           data-testid="walk-hint"
         >
           Click the hall to look. WASD walks. Escape returns to orbit.
         </p>
         <p
           v-if="cameraMode === 'map'"
-          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-400"
+          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-200"
           data-testid="map-hint"
         >
           Drag rotates. Right-drag pans. Scroll zooms. Double-click zooms in. Click a floor to open
@@ -708,11 +722,13 @@ async function saveGlb() {
             :key="item.label"
             class="rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-950"
           >
-            <dt class="text-xs uppercase tracking-wide text-zinc-500">{{ item.label }}</dt>
+            <dt class="text-xs uppercase tracking-wide text-zinc-700 dark:text-zinc-300">
+              {{ item.label }}
+            </dt>
             <dd class="mt-1 font-medium">{{ item.value }}</dd>
           </div>
         </dl>
-        <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+        <p class="mt-3 text-xs text-zinc-700 dark:text-zinc-300">
           {{ counts.spawns }} spawn point{{ counts.spawns === 1 ? "" : "s" }}. Schema
           {{ store.document.schemaVersion }}, metres, +Y up.
         </p>
@@ -735,9 +751,10 @@ async function saveGlb() {
             Save JSON
           </button>
           <button
+            ref="exportButton"
             type="button"
             data-testid="export-menu"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             :aria-expanded="exportOpen"
             @click="exportOpen = !exportOpen"
           >
@@ -766,11 +783,12 @@ async function saveGlb() {
           role="dialog"
           aria-label="Export venue"
           class="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+          @keydown.esc="exportOpen = false"
         >
           <button
             type="button"
             data-testid="export-json"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             @click="save"
           >
             JSON
@@ -778,7 +796,7 @@ async function saveGlb() {
           <button
             type="button"
             data-testid="export-svg"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             @click="saveSvg"
           >
             SVG
@@ -786,7 +804,7 @@ async function saveGlb() {
           <button
             type="button"
             data-testid="export-png"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             @click="savePng"
           >
             PNG
@@ -794,7 +812,7 @@ async function saveGlb() {
           <button
             type="button"
             data-testid="export-pdf"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             @click="savePdf"
           >
             PDF
@@ -802,7 +820,7 @@ async function saveGlb() {
           <button
             type="button"
             data-testid="export-glb"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
             @click="saveGlb"
           >
             GLB
@@ -822,7 +840,9 @@ async function saveGlb() {
           </ul>
         </div>
         <details class="mt-4">
-          <summary class="cursor-pointer text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <summary
+            class="focus-ring cursor-pointer rounded-md text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
             venue.json
           </summary>
           <pre

@@ -77,8 +77,16 @@ export function loadVenueJson(text: string): VenueDocument {
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(text) as unknown;
-  } catch {
+    parsed = JSON.parse(text, (key, value: unknown) => {
+      if (key === "__proto__" || key === "constructor" || key === "prototype") {
+        throw new VenueValidationError(["Document contains a forbidden property"]);
+      }
+      return value;
+    }) as unknown;
+  } catch (error) {
+    if (error instanceof VenueValidationError) {
+      throw error;
+    }
     throw new VenueValidationError(["Document is not valid JSON"]);
   }
   return assertVenueDocument(parsed);
