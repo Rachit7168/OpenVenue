@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { loadGlb, loadGlbBytes, rememberModel, validateGlb } from "@openvenue/renderer-3d";
+import {
+  MAX_GLB_BYTES,
+  loadGlb,
+  loadGlbBytes,
+  rememberModel,
+  validateGlb,
+} from "@openvenue/renderer-3d";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import {
   addImported,
@@ -59,6 +65,11 @@ async function onImport(event: Event) {
   if (!file) {
     return;
   }
+  if (file.size > MAX_GLB_BYTES) {
+    errors.value = { ...errors.value, import: `Model is larger than ${MAX_GLB_BYTES} bytes.` };
+    input.value = "";
+    return;
+  }
   const bytes = new Uint8Array(await file.arrayBuffer());
   const problem = validateGlb(bytes);
   if (problem) {
@@ -110,7 +121,7 @@ function roundSize(value: number): number {
       <h2 class="text-sm font-medium text-zinc-100">Assets</h2>
       <input
         v-model="query"
-        class="w-48 rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1 text-sm text-zinc-100"
+        class="focus-ring min-h-10 w-48 rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1 text-sm text-zinc-100"
         type="search"
         placeholder="Search chairs, tables…"
         data-testid="asset-search"
@@ -118,7 +129,7 @@ function roundSize(value: number): number {
       />
       <button
         type="button"
-        class="rounded-md bg-zinc-800 px-2 py-1 text-xs text-zinc-100"
+        class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-sm text-zinc-100"
         @click="fileInput?.click()"
       >
         Import GLB
@@ -137,7 +148,7 @@ function roundSize(value: number): number {
       <li v-for="asset in results" :key="asset.id">
         <button
           type="button"
-          class="flex w-36 flex-col gap-1 rounded-md border border-zinc-700 bg-zinc-950 p-2 text-left"
+          class="focus-ring flex min-h-10 w-36 flex-col gap-1 rounded-md border border-zinc-700 bg-zinc-950 p-2 text-left"
           draggable="true"
           data-testid="asset-card"
           :data-asset-id="asset.id"
@@ -150,13 +161,13 @@ function roundSize(value: number): number {
             class="h-10 w-full rounded bg-zinc-900 object-cover"
           />
           <span class="truncate text-xs font-medium text-zinc-100">{{ asset.name }}</span>
-          <span class="truncate text-[10px] uppercase tracking-wide text-zinc-500">{{
+          <span class="truncate text-[10px] uppercase tracking-wide text-zinc-300">{{
             asset.category
           }}</span>
           <span v-if="errors[asset.id]" class="text-[10px] text-rose-300">{{
             errors[asset.id]
           }}</span>
-          <span v-else-if="(progress[asset.id] ?? 0) < 1" class="text-[10px] text-zinc-400">
+          <span v-else-if="(progress[asset.id] ?? 0) < 1" class="text-[10px] text-zinc-200">
             Loading {{ Math.round((progress[asset.id] ?? 0) * 100) }}%
           </span>
           <span v-else class="text-[10px] text-teal-300">Drag onto the plan</span>

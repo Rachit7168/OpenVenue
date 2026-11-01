@@ -52,7 +52,9 @@ describe("buildVenueGroup", () => {
 
     const group = buildVenueGroup(document);
     const box = new THREE.Box3().setFromObject(group);
-    expect(nodesOf(group).filter((child) => child instanceof THREE.Mesh).length).toBeGreaterThanOrEqual(5);
+    expect(
+      nodesOf(group).filter((child) => child instanceof THREE.Mesh).length,
+    ).toBeGreaterThanOrEqual(5);
     expect(box.max.y).toBeGreaterThan(2.5);
     expect(box.max.x).toBeGreaterThan(9);
   });

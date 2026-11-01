@@ -34,7 +34,7 @@ const label = computed(() =>
           class="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:focus-visible:ring-teal-400"
         >
           <p class="text-sm font-semibold leading-tight tracking-tight">OpenVenue</p>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400">Local venue document</p>
+          <p class="text-xs text-zinc-700 dark:text-zinc-300">Local venue document</p>
         </RouterLink>
       </div>
       <nav class="flex items-center gap-2">

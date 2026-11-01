@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MAX_VENUE_JSON_CHARS, saveVenueJson } from "@openvenue/scene-schema";
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import conferenceHall from "../../../../examples/conference-hall.venue.json?raw";
 import FloorPlan from "../components/FloorPlan.vue";
@@ -10,6 +10,9 @@ import { useProjectLibrary } from "../stores/projects";
 const library = useProjectLibrary();
 const router = useRouter();
 const wizardOpen = ref(false);
+const newProjectButton = ref<HTMLButtonElement | null>(null);
+const dialog = ref<HTMLDialogElement | null>(null);
+const nameInput = ref<HTMLInputElement | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const renamingId = ref("");
 const renameValue = ref("");
@@ -19,6 +22,35 @@ const depth = ref(12);
 const ceilingHeight = ref(3);
 const template = ref<ProjectTemplate>("empty");
 const formError = ref("");
+
+watch(wizardOpen, (open) => {
+  if (open) {
+    void nextTick(() => nameInput.value?.focus());
+    return;
+  }
+  newProjectButton.value?.focus();
+});
+
+function trapDialog(event: KeyboardEvent) {
+  if (event.key !== "Tab" || !dialog.value) {
+    return;
+  }
+  const items = [
+    ...dialog.value.querySelectorAll<HTMLElement>("button, input, select, textarea"),
+  ].filter((item) => !item.hasAttribute("disabled"));
+  const first = items[0];
+  const last = items.at(-1);
+  if (!first || !last) {
+    return;
+  }
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 
 const cards = computed(() =>
   library.projects.map((document) => {
@@ -145,6 +177,7 @@ function importFile(event: Event) {
       </div>
       <div class="flex flex-wrap gap-2">
         <button
+          ref="newProjectButton"
           type="button"
           data-testid="new-project"
           class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
@@ -181,10 +214,13 @@ function importFile(event: Event) {
     <div v-if="wizardOpen" class="fixed inset-0 z-20 bg-zinc-950/40" @click="wizardOpen = false" />
     <dialog
       v-if="wizardOpen"
+      ref="dialog"
       open
       class="fixed left-1/2 top-1/2 z-30 w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-5 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
       aria-label="New project"
+      aria-modal="true"
       @keydown.esc="wizardOpen = false"
+      @keydown="trapDialog"
     >
       <form @submit.prevent="createProject">
         <h2 class="text-sm font-medium">New venue</h2>
@@ -192,11 +228,12 @@ function importFile(event: Event) {
           <label class="block text-sm font-medium sm:col-span-2">
             Name
             <input
+              ref="nameInput"
               v-model="name"
               data-testid="project-name"
               required
               maxlength="200"
-              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+              class="focus-ring mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
             />
           </label>
           <label class="block text-sm font-medium">
@@ -209,7 +246,7 @@ function importFile(event: Event) {
               max="1000"
               step="0.1"
               required
-              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+              class="focus-ring mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
             />
           </label>
           <label class="block text-sm font-medium">
@@ -222,7 +259,7 @@ function importFile(event: Event) {
               max="1000"
               step="0.1"
               required
-              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+              class="focus-ring mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
             />
           </label>
           <label class="block text-sm font-medium">
@@ -235,7 +272,7 @@ function importFile(event: Event) {
               max="1000"
               step="0.1"
               required
-              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+              class="focus-ring mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
             />
           </label>
           <label class="block text-sm font-medium">
@@ -251,7 +288,7 @@ function importFile(event: Event) {
             <select
               v-model="template"
               data-testid="project-template"
-              class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
+              class="focus-ring mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-normal dark:border-zinc-700 dark:bg-zinc-950"
             >
               <option value="empty">Empty hall</option>
               <option value="rectangular-hall">Rectangular hall</option>
@@ -261,13 +298,22 @@ function importFile(event: Event) {
         <p v-if="formError" class="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">
           {{ formError }}
         </p>
-        <button
-          type="submit"
-          data-testid="create-project"
-          class="mt-4 rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
-        >
-          Create project
-        </button>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button
+            type="submit"
+            data-testid="create-project"
+            class="focus-ring rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
+          >
+            Create project
+          </button>
+          <button
+            type="button"
+            class="focus-ring rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            @click="wizardOpen = false"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </dialog>
 
@@ -281,14 +327,14 @@ function importFile(event: Event) {
 
     <p
       v-if="!library.ready"
-      class="mt-8 text-sm text-zinc-500 dark:text-zinc-400"
+      class="mt-8 text-sm text-zinc-700 dark:text-zinc-300"
       data-testid="empty-projects"
     >
       Loading projects…
     </p>
     <p
       v-else-if="cards.length === 0"
-      class="mt-8 rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400"
+      class="mt-8 rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
       data-testid="empty-projects"
     >
       No projects yet.
@@ -305,7 +351,7 @@ function importFile(event: Event) {
           <FloorPlan :document="card.document" :interactive="false" />
         </div>
         <h2 class="mt-3 font-medium">{{ card.name }}</h2>
-        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        <p class="mt-1 text-xs text-zinc-700 dark:text-zinc-300">
           {{ card.size }} · {{ card.updatedAt }}
         </p>
         <form
@@ -317,9 +363,12 @@ function importFile(event: Event) {
             v-model="renameValue"
             data-testid="rename-input"
             maxlength="200"
-            class="min-w-0 flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            class="focus-ring min-w-0 flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
           />
-          <button type="submit" class="text-sm font-medium text-teal-800 dark:text-teal-300">
+          <button
+            type="submit"
+            class="focus-ring min-h-10 rounded-md px-2 text-sm font-medium text-teal-800 dark:text-teal-300"
+          >
             Save
           </button>
         </form>
@@ -327,29 +376,37 @@ function importFile(event: Event) {
           <button
             type="button"
             data-testid="project-open"
-            class="font-medium text-teal-800 hover:underline dark:text-teal-300"
+            class="focus-ring min-h-10 rounded-md px-2 font-medium text-teal-800 hover:underline dark:text-teal-300"
             @click="router.push({ name: 'project', params: { projectId: card.id } })"
           >
             Open
           </button>
-          <button type="button" class="hover:underline" @click="startRename(card.id, card.name)">
+          <button
+            type="button"
+            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
+            @click="startRename(card.id, card.name)"
+          >
             Rename
           </button>
           <button
             type="button"
             data-testid="project-duplicate"
-            class="hover:underline"
+            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
             @click="duplicate(card.id)"
           >
             Duplicate
           </button>
-          <button type="button" class="hover:underline" @click="exportProject(card.id, card.name)">
+          <button
+            type="button"
+            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
+            @click="exportProject(card.id, card.name)"
+          >
             Export
           </button>
           <button
             type="button"
             data-testid="project-delete"
-            class="text-red-700 hover:underline dark:text-red-300"
+            class="focus-ring min-h-10 rounded-md px-2 text-red-700 hover:underline dark:text-red-300"
             @click="remove(card.id, card.name)"
           >
             Delete
