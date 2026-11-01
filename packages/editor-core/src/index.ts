@@ -19,6 +19,7 @@ export {
   updateWall,
   updateZone,
 } from "./commands.js";
+export { CHECK_NOTE, checkVenue, type SceneLocation, type VenueWarning } from "./checks.js";
 export { CommandError } from "./errors.js";
 export {
   CommandStack,

@@ -33,7 +33,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
+Open http://localhost:5173. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Checks lists planning warnings, such as a missing exit or furniture outside the room, and says they are not a safety certification. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
 
 ```bash
 pnpm build
