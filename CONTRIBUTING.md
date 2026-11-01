@@ -56,11 +56,34 @@ docker compose --profile web up --build web
 
 That serves the editor at http://localhost:8080.
 
+## Contributing rules
+
+1. **Target the `dev` branch only**: All contributions, feature branches, and bug fixes must target `dev`. Pull requests opened against `main` will be rejected by CI.
+2. **Releases to `main`**: The `main` branch is strictly reserved for production releases, created by merging `dev` into `main`.
+3. **No direct pushes**: Direct pushes to `main` and `dev` are blocked. All changes must go through pull requests.
+4. **Automated checks**: Ensure all tests, linter checks, and formatting pass before opening a PR.
+5. **Address review feedback**: Respond to review comments (including automated AI reviews like Sourcery) directly on your PR branch.
+
 ## Pull requests
 
-Branch from `main` and open a pull request. Do not merge your own branch, and do not push directly to `main`.
-
-Keep schema changes in `packages/scene-schema` with a test for a valid file and an invalid file. Read `packages/scene-schema/MIGRATION.md` before adding a field. Unknown properties on a venue document must survive a save.
+1. Update your local `dev` branch:
+   ```bash
+   git checkout dev
+   git pull origin dev
+   ```
+2. Create a new branch from `dev`:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Run verification before committing:
+   ```bash
+   pnpm format:check
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   ```
+4. Open a pull request against the `dev` branch (do not open against `main`).
+5. Keep schema changes in `packages/scene-schema` with a test for a valid file and an invalid file. Read `packages/scene-schema/MIGRATION.md` before adding a field. Unknown properties on a venue document must survive a save.
 
 The visitor app belongs in `apps/viewer`, not in the editor.
 
