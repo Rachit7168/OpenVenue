@@ -6,6 +6,7 @@ import { applyOrthoFrustum, frameVenue, type CameraMode } from "./camera.js";
 import {
   entityIdFromHit,
   entityIdOf,
+  floorIdOf,
   poseFromMesh,
   type GizmoMode,
   type ObjectBase,
@@ -13,7 +14,7 @@ import {
 } from "./pick.js";
 import { qualityOptions, type QualityMode } from "./quality.js";
 import { onModelsChanged } from "./glb.js";
-import { buildVenueGroup, indexChairs, type ChairSlot } from "./scene.js";
+import { buildVenueGroup, indexChairs, type BuildVenueOptions, type ChairSlot } from "./scene.js";
 import { patchVenueGroup } from "./sync.js";
 import {
   applyLook,
@@ -32,6 +33,7 @@ export interface VenueView {
   setDocument(document: VenueDocument): void;
   applyChange(document: VenueDocument, commandType: string | null): void;
   setCameraMode(mode: CameraMode): void;
+  setMapFloor(floorId: string | null): void;
   setEyeHeight(height: number): void;
   setQuality(mode: QualityMode): void;
   setSelected(id: string | null): void;
@@ -40,6 +42,7 @@ export interface VenueView {
     onSelect: (id: string | null) => void;
     onTransform: (id: string, mode: GizmoMode, pose: ObjectPose) => void;
     onExitWalk?: () => void;
+    onFloor?: (floorId: string) => void;
   }): void;
   fit(): void;
   reset(): void;
@@ -110,6 +113,8 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let onSelect: (id: string | null) => void = () => undefined;
   let onTransform: (id: string, mode: GizmoMode, pose: ObjectPose) => void = () => undefined;
   let onExitWalk: () => void = () => undefined;
+  let onFloor: (floorId: string) => void = () => undefined;
+  let mapFloorId: string | null = null;
   let walker: Walker = { x: 0, z: 0, yaw: 0, pitch: 0 };
   let eyeHeight = DEFAULT_EYE_HEIGHT;
   const pressed = new Set<string>();
@@ -133,7 +138,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       return;
     }
     const framed = frameVenue({
-      mode: mode === "isometric" ? "isometric" : "orbit",
+      mode: mode === "orbit" ? "orbit" : "isometric",
       box: new THREE.Box3().setFromObject(venue),
       aspect: aspect(),
       perspective,
@@ -150,7 +155,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     sun.target.position.copy(center);
     sun.target.updateMatrixWorld();
     fill.position.set(center.x - 12, center.y + 10, center.z - 8);
-    active = mode === "isometric" ? orthographic : perspective;
+    active = mode === "orbit" ? perspective : orthographic;
     controls.object = active;
     gizmo.camera = active;
     controls.update();
@@ -221,7 +226,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const attachSelected = () => {
-    if (mode === "walk") {
+    if (mode === "walk" || mode === "map") {
       gizmo.detach();
       return;
     }
@@ -255,7 +260,12 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     onTransform(id, gizmoMode, poseFromMesh(mesh, base));
   };
 
-  const pickId = (clientX: number, clientY: number): string | null => {
+  const sceneOptions = (): BuildVenueOptions => ({
+    style: mode === "map" ? "map" : "hall",
+    floorId: mode === "map" ? mapFloorId : null,
+  });
+
+  const pickHit = (clientX: number, clientY: number) => {
     if (!venue) {
       return null;
     }
@@ -268,8 +278,17 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       -((clientY - rect.top) / rect.height) * 2 + 1,
     );
     raycaster.setFromCamera(pointer, active);
-    const hit = raycaster.intersectObject(venue, true)[0];
+    return raycaster.intersectObject(venue, true)[0] ?? null;
+  };
+
+  const pickId = (clientX: number, clientY: number): string | null => {
+    const hit = pickHit(clientX, clientY);
     return hit ? entityIdFromHit(hit.object, hit.instanceId) : null;
+  };
+
+  const pickFloorId = (clientX: number, clientY: number): string | null => {
+    const hit = pickHit(clientX, clientY);
+    return hit ? floorIdOf(hit.object) : null;
   };
 
   const onPointerDown = (event: PointerEvent) => {
@@ -292,7 +311,22 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) {
       return;
     }
+    if (mode === "map" && mapFloorId === null) {
+      const floorId = pickFloorId(event.clientX, event.clientY);
+      if (floorId) {
+        onFloor(floorId);
+      }
+      return;
+    }
     onSelect(pickId(event.clientX, event.clientY));
+  };
+
+  const onDoubleClick = () => {
+    if (mode !== "map") {
+      return;
+    }
+    orthographic.zoom = Math.min(orthographic.zoom * 1.4, 12);
+    orthographic.updateProjectionMatrix();
   };
 
   gizmo.addEventListener("dragging-changed", (event) => {
@@ -305,6 +339,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   });
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointerup", onPointerUp);
+  canvas.addEventListener("dblclick", onDoubleClick);
 
   const currentWalls = (): WalkWall[] => {
     const floor = lastDocument?.venue.floors[0];
@@ -443,7 +478,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     }
   });
 
-  const replaceDocument = (document: VenueDocument) => {
+  const replaceDocument = (document: VenueDocument, aimCamera = false) => {
     lastDocument = document;
     chairSlot = null;
     gizmo.detach();
@@ -451,11 +486,13 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       scene.remove(venue);
       disposeObject(venue);
     }
-    venue = buildVenueGroup(document);
+    venue = buildVenueGroup(document, sceneOptions());
     scene.add(venue);
+    scene.background = new THREE.Color(mode === "map" ? "#e8eaf6" : "#09090b");
+    controls.zoomToCursor = mode === "map";
     attachSelected();
     const replace = framedVenueId !== document.venue.id;
-    if (!replace) {
+    if (!replace && !aimCamera) {
       return;
     }
     if (mode === "walk") {
@@ -481,19 +518,34 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       if (next === mode) {
         return;
       }
+      const rebuild = mode === "map" || next === "map";
       mode = next;
       pressed.clear();
       if (document.pointerLockElement === canvas) {
         document.exitPointerLock();
       }
+      if (rebuild && lastDocument) {
+        replaceDocument(lastDocument, true);
+      }
       if (next === "walk") {
         beginWalk();
         return;
       }
-      gizmo.enabled = true;
+      gizmo.enabled = next !== "map";
       controls.enabled = true;
       perspective.rotation.set(0, 0, 0);
-      aim(true);
+      if (!rebuild) {
+        aim(true);
+      }
+    },
+    setMapFloor(floorId) {
+      if (floorId === mapFloorId) {
+        return;
+      }
+      mapFloorId = floorId;
+      if (mode === "map" && lastDocument) {
+        replaceDocument(lastDocument, true);
+      }
     },
     setEyeHeight(height) {
       eyeHeight = clampEyeHeight(height);
@@ -541,6 +593,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       onSelect = handlers.onSelect;
       onTransform = handlers.onTransform;
       onExitWalk = handlers.onExitWalk ?? (() => undefined);
+      onFloor = handlers.onFloor ?? (() => undefined);
     },
     resize(width, height) {
       if (width < 2 || height < 2) {
@@ -559,6 +612,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       cancelAnimationFrame(frameId);
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("dblclick", onDoubleClick);
       canvas.removeEventListener("click", onCanvasClick);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);

@@ -160,6 +160,7 @@ function addSpan(
   to: number,
   bottom: number,
   top: number,
+  material: THREE.Material = wallMaterial,
 ): void {
   const span = to - from;
   const height = top - bottom;
@@ -167,7 +168,7 @@ function addSpan(
     return;
   }
   const along = (from + to) / 2;
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(span, height, wall.thickness), wallMaterial);
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(span, height, wall.thickness), material);
   mesh.position.set(
     wall.start.x + direction.x * along,
     bottom + height / 2,
@@ -192,31 +193,38 @@ function clippedSpan(
   return { from, to };
 }
 
-function addWall(group: THREE.Group, wall: Wall): void {
+function addWall(
+  group: THREE.Group,
+  wall: Wall,
+  height = wall.height,
+  bottom = 0,
+  material: THREE.Material = wallMaterial,
+): void {
   const dx = wall.end.x - wall.start.x;
   const dz = wall.end.z - wall.start.z;
   const length = Math.hypot(dx, dz);
-  if (length < 1e-6) {
+  if (length < 1e-6 || height < 1e-3) {
     return;
   }
   const direction = { x: dx / length, z: dz / length };
   const yaw = Math.atan2(-dz, dx);
   const openings = wall.openings ?? [];
+  const top = bottom + height;
   for (const span of solidSpans(length, openings)) {
-    addSpan(group, wall, direction, yaw, span.from, span.to, 0, wall.height);
+    addSpan(group, wall, direction, yaw, span.from, span.to, bottom, top, material);
   }
   for (const opening of openings) {
     const span = clippedSpan(length, opening.offset, opening.width);
     if (!span) {
       continue;
     }
-    const sill = Math.min(wall.height, Math.max(0, opening.sill ?? 0));
-    const head = Math.min(wall.height, sill + opening.height);
-    if (sill > 1e-3) {
-      addSpan(group, wall, direction, yaw, span.from, span.to, 0, sill);
+    const sill = Math.min(top, bottom + Math.max(0, opening.sill ?? 0));
+    const head = Math.min(top, sill + opening.height);
+    if (sill > bottom + 1e-3) {
+      addSpan(group, wall, direction, yaw, span.from, span.to, bottom, sill, material);
     }
-    if (head < wall.height - 1e-3) {
-      addSpan(group, wall, direction, yaw, span.from, span.to, head, wall.height);
+    if (head < top - 1e-3) {
+      addSpan(group, wall, direction, yaw, span.from, span.to, head, top, material);
     }
   }
 }
@@ -284,7 +292,11 @@ export function placeObjectMesh(mesh: THREE.Mesh, object: SceneObject): void {
   }
 }
 
-function addChairs(group: THREE.Group, chairs: readonly SceneObject[]): void {
+function addChairs(
+  group: THREE.Group,
+  chairs: readonly SceneObject[],
+  material: THREE.Material = materialPreset("wood"),
+): void {
   const batches = new Map<string, SceneObject[]>();
   for (const chair of chairs) {
     const size = objectSize(chair);
@@ -304,7 +316,7 @@ function addChairs(group: THREE.Group, chairs: readonly SceneObject[]): void {
     const size = objectSize(first);
     const mesh = new THREE.InstancedMesh(
       new THREE.BoxGeometry(size.width, size.height, size.depth),
-      materialPreset("wood"),
+      material,
       list.length,
     );
     mesh.userData.entityIds = list.map((chair) => chair.id);
@@ -321,44 +333,111 @@ function addChairs(group: THREE.Group, chairs: readonly SceneObject[]): void {
   }
 }
 
-/** Meshes for the ground floor: floors, ceilings, walls with openings, and object boxes. */
-export function buildVenueGroup(document: VenueDocument): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "venue";
-  const floor = document.venue.floors[0];
-  if (!floor) {
-    return group;
-  }
+/** Cutaway walls stay short so the rooms read as a plan. */
+export const MAP_WALL_HEIGHT = 0.45;
 
-  for (const room of floor.rooms) {
+/** Extra metres between plates when the map shows every floor at once. */
+export const MAP_FLOOR_GAP = 8;
+
+const MAP_SLAB_DEPTH = 0.12;
+
+const mapWallMaterial = new THREE.MeshStandardMaterial({ color: "#d9d9e6", roughness: 1 });
+const mapRoomColors = ["#93c5fd", "#fcd34d", "#86efac", "#f9a8d4", "#c4b5fd", "#fdba74", "#67e8f9"];
+const mapFurnitureMaterials = new Map<string, THREE.MeshStandardMaterial>();
+
+export interface BuildVenueOptions {
+  /** Hall keeps ceilings and full-height walls. Map is a cutaway dollhouse. */
+  style?: "hall" | "map";
+  /** Draw this floor only. Omit it to draw every floor. */
+  floorId?: string | null;
+}
+
+function mapFurnitureMaterial(type: string): THREE.Material {
+  const color = objectColors[type] ?? "#a8a29e";
+  const existing = mapFurnitureMaterials.get(color);
+  if (existing) {
+    return existing;
+  }
+  const material = new THREE.MeshStandardMaterial({ color, roughness: 1 });
+  mapFurnitureMaterials.set(color, material);
+  return material;
+}
+
+function floorsToDraw(document: VenueDocument, options: BuildVenueOptions) {
+  const ordered = [...document.venue.floors].sort(
+    (left, right) => left.level - right.level || left.elevation - right.elevation,
+  );
+  if (!options.floorId) {
+    return ordered;
+  }
+  const chosen = ordered.filter((floor) => floor.id === options.floorId);
+  return chosen.length > 0 ? chosen : ordered;
+}
+
+function addFloor(
+  venue: THREE.Group,
+  document: VenueDocument,
+  floor: (typeof document.venue.floors)[number],
+  originY: number,
+  style: "hall" | "map",
+): void {
+  const group = new THREE.Group();
+  group.name = `floor:${floor.id}`;
+  group.userData.floorId = floor.id;
+  group.position.y = originY;
+  const map = style === "map";
+  const wallBottom = map ? MAP_SLAB_DEPTH : 0;
+
+  floor.rooms.forEach((room, index) => {
     if (!shown(room) || room.boundary.length < 3) {
-      continue;
+      return;
     }
     const shape = new THREE.Shape();
-    room.boundary.forEach((point, index) => {
+    room.boundary.forEach((point, pointIndex) => {
       const x = point.x;
       const y = -point.z;
-      if (index === 0) {
+      if (pointIndex === 0) {
         shape.moveTo(x, y);
       } else {
         shape.lineTo(x, y);
       }
     });
-    const footprint = new THREE.ShapeGeometry(shape);
-    const slab = new THREE.Mesh(footprint, materialPreset(room.floorMaterial));
+    const material = map
+      ? new THREE.MeshStandardMaterial({
+          color: mapRoomColors[index % mapRoomColors.length],
+          roughness: 1,
+        })
+      : materialPreset(room.floorMaterial);
+    const slab = map
+      ? new THREE.Mesh(
+          new THREE.ExtrudeGeometry(shape, { depth: MAP_SLAB_DEPTH, bevelEnabled: false }),
+          material,
+        )
+      : new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
     slab.rotation.x = -Math.PI / 2;
-    slab.position.y = 0.02;
-    slab.receiveShadow = true;
+    slab.position.y = map ? 0 : 0.02;
+    slab.receiveShadow = !map;
+    if (map) {
+      slab.userData.entityId = room.id;
+    }
+    slab.userData.ownMaterial = map;
     group.add(slab);
 
-    const ceiling = new THREE.Mesh(footprint.clone(), ceilingMaterial);
-    ceiling.rotation.x = -Math.PI / 2;
-    ceiling.position.y = Math.max(floor.height - 0.05, 0.2);
-    group.add(ceiling);
-  }
+    if (!map) {
+      const ceiling = new THREE.Mesh(slab.geometry.clone(), ceilingMaterial);
+      ceiling.rotation.x = -Math.PI / 2;
+      ceiling.position.y = Math.max(floor.height - 0.05, 0.2);
+      group.add(ceiling);
+    }
+  });
 
   for (const wall of floor.walls) {
-    if (shown(wall)) {
+    if (!shown(wall)) {
+      continue;
+    }
+    if (map) {
+      addWall(group, wall, Math.min(wall.height, MAP_WALL_HEIGHT), wallBottom, mapWallMaterial);
+    } else {
       addWall(group, wall);
     }
   }
@@ -377,27 +456,51 @@ export function buildVenueGroup(document: VenueDocument): THREE.Group {
       group.add(model);
       continue;
     }
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), furnitureMaterial(object.type));
+    const material = map ? mapFurnitureMaterial(object.type) : furnitureMaterial(object.type);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material);
     placeObjectMesh(mesh, object);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.userData.ownMaterial = !sharedSurface(object.type);
+    mesh.castShadow = !map;
+    mesh.receiveShadow = !map;
+    mesh.userData.ownMaterial = !map && !sharedSurface(object.type);
     group.add(mesh);
   }
-  addChairs(group, chairs);
+  addChairs(group, chairs, map ? mapFurnitureMaterial("chair") : materialPreset("wood"));
 
-  for (const spawn of document.venue.spawnPoints) {
-    if (!shown(spawn) || spawn.floorId !== floor.id) {
-      continue;
+  if (!map) {
+    for (const spawn of document.venue.spawnPoints) {
+      if (!shown(spawn) || spawn.floorId !== floor.id) {
+        continue;
+      }
+      const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(0.22, 16, 12),
+        new THREE.MeshStandardMaterial({ color: spawn.role === "exit" ? "#fb7185" : "#38bdf8" }),
+      );
+      marker.position.set(
+        spawn.position.x,
+        spawn.position.y - floor.elevation + 0.22,
+        spawn.position.z,
+      );
+      marker.userData.ownMaterial = true;
+      group.add(marker);
     }
-    const marker = new THREE.Mesh(
-      new THREE.SphereGeometry(0.22, 16, 12),
-      new THREE.MeshStandardMaterial({ color: spawn.role === "exit" ? "#fb7185" : "#38bdf8" }),
-    );
-    marker.position.set(spawn.position.x, spawn.position.y + 0.22, spawn.position.z);
-    marker.userData.ownMaterial = true;
-    group.add(marker);
   }
 
+  venue.add(group);
+}
+
+/** Meshes for every floor. Map style is a cutaway with an exploded stack. */
+export function buildVenueGroup(
+  document: VenueDocument,
+  options: BuildVenueOptions = {},
+): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "venue";
+  const style = options.style ?? "hall";
+  const floors = floorsToDraw(document, options);
+  const explode = style === "map" && !options.floorId && floors.length > 1;
+  floors.forEach((floor, index) => {
+    const origin = floor.elevation + (explode ? index * MAP_FLOOR_GAP : 0);
+    addFloor(group, document, floor, origin, style);
+  });
   return group;
 }

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type CameraMode = "orbit" | "isometric" | "walk";
+export type CameraMode = "orbit" | "isometric" | "walk" | "map";
 
 const ISO_DIRECTION = new THREE.Vector3(1, 1, 1).normalize();
 

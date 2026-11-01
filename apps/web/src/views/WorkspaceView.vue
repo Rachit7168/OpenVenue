@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
 import {
@@ -27,6 +27,40 @@ const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage" | "both">("plan");
 const cameraMode = ref<CameraMode>("orbit");
+const mapFloorId = ref<string | null>(null);
+const mapFloors = computed(() =>
+  [...store.document.venue.floors].sort(
+    (left, right) => left.level - right.level || left.elevation - right.elevation,
+  ),
+);
+
+function onMapKey(event: KeyboardEvent) {
+  if (cameraMode.value !== "map") {
+    return;
+  }
+  const target = event.target;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  ) {
+    return;
+  }
+  if (event.key === "Escape") {
+    mapFloorId.value = null;
+    return;
+  }
+  if (!/^[0-9]$/.test(event.key)) {
+    return;
+  }
+  const floor = mapFloors.value.find((item) => item.level === Number(event.key));
+  if (floor) {
+    mapFloorId.value = floor.id;
+  }
+}
+
+onMounted(() => window.addEventListener("keydown", onMapKey));
+onBeforeUnmount(() => window.removeEventListener("keydown", onMapKey));
 const eyeHeight = ref(1.6);
 const gizmoMode = ref<GizmoMode>("translate");
 const qualityMode = ref<QualityMode>("high");
@@ -393,6 +427,45 @@ async function saveGlb() {
           >
             Walk
           </button>
+          <button
+            type="button"
+            class="min-h-10 rounded-md px-3 text-sm font-medium"
+            :class="
+              cameraMode === 'map' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+            "
+            data-testid="camera-map"
+            @click="cameraMode = 'map'"
+          >
+            Map
+          </button>
+          <template v-if="cameraMode === 'map'">
+            <button
+              v-for="floor in mapFloors"
+              :key="floor.id"
+              type="button"
+              class="min-h-10 rounded-md px-3 text-sm font-medium"
+              :class="
+                mapFloorId === floor.id
+                  ? 'bg-teal-400 text-zinc-950'
+                  : 'bg-zinc-800 text-zinc-100'
+              "
+              :data-testid="`map-floor-${floor.level}`"
+              @click="mapFloorId = floor.id"
+            >
+              {{ floor.name }}
+            </button>
+            <button
+              type="button"
+              class="min-h-10 rounded-md px-3 text-sm font-medium"
+              :class="
+                mapFloorId === null ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="map-floor-all"
+              @click="mapFloorId = null"
+            >
+              All floors
+            </button>
+          </template>
           <label v-if="cameraMode === 'walk'" class="flex items-center gap-1 text-xs text-zinc-300">
             Eye
             <input
@@ -407,7 +480,7 @@ async function saveGlb() {
             />
           </label>
           <button
-            v-if="cameraMode !== 'walk'"
+            v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
             class="min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
@@ -418,7 +491,7 @@ async function saveGlb() {
             Move
           </button>
           <button
-            v-if="cameraMode !== 'walk'"
+            v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
             class="min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
@@ -429,7 +502,7 @@ async function saveGlb() {
             Rotate
           </button>
           <button
-            v-if="cameraMode !== 'walk'"
+            v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
             class="min-h-10 rounded-md px-3 text-sm font-medium"
             :class="
@@ -485,11 +558,13 @@ async function saveGlb() {
             class="min-h-0 min-w-0 flex-1"
             :scene="store.scene"
             :camera-mode="cameraMode"
+            :map-floor-id="mapFloorId"
             :eye-height="eyeHeight"
             :gizmo-mode="gizmoMode"
             :quality-mode="qualityMode"
             :selected-id="selectedObjectId"
             @exit-walk="cameraMode = 'orbit'"
+            @floor="mapFloorId = $event"
             @select="store.setSelection($event ? [$event] : [])"
             @transform="onObjectTransform"
             @place="onPlaceAsset"
@@ -501,6 +576,14 @@ async function saveGlb() {
           data-testid="walk-hint"
         >
           Click the hall to look. WASD walks. Escape returns to orbit.
+        </p>
+        <p
+          v-if="cameraMode === 'map'"
+          class="border-t border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-400"
+          data-testid="map-hint"
+        >
+          Drag rotates. Right-drag pans. Scroll zooms. Double-click zooms in. Click a floor to open
+          it. Escape shows every floor.
         </p>
       </div>
       <Inspector />

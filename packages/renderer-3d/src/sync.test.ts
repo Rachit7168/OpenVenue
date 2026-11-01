@@ -22,7 +22,12 @@ describe("patchVenueGroup", () => {
       dimensions: { width: 2, height: 0.4, depth: 1 },
     });
     const group = buildVenueGroup(document);
-    const mesh = group.children.find((child) => child.userData.entityId === "stage-1");
+    let mesh: THREE.Object3D | undefined;
+    group.traverse((child) => {
+      if (child.userData.entityId === "stage-1") {
+        mesh = child;
+      }
+    });
     if (!(mesh instanceof THREE.Mesh)) {
       throw new Error("missing stage");
     }
@@ -56,7 +61,12 @@ describe("patchVenueGroup", () => {
       dimensions: { width: 0.45, height: 0.9, depth: 0.45 },
     });
     const group = buildVenueGroup(document);
-    const batch = group.children.find((child) => child instanceof THREE.InstancedMesh);
+    let batch: THREE.Object3D | undefined;
+    group.traverse((child) => {
+      if (child instanceof THREE.InstancedMesh) {
+        batch = child;
+      }
+    });
     if (!(batch instanceof THREE.InstancedMesh)) {
       throw new Error("missing chair batch");
     }
