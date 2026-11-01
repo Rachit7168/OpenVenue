@@ -11,6 +11,7 @@ import {
 } from "@openvenue/renderer-3d";
 import { placeCatalogueAsset } from "../assets/place";
 import { planPdf, planPng, planSvg } from "../export/plan";
+import { mapPlace, mapPlaces, type MapPlace } from "../plan/places";
 import AssetLibrary from "../components/AssetLibrary.vue";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
@@ -28,6 +29,8 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage" | "both">("plan");
 const cameraMode = ref<CameraMode>("orbit");
 const mapFloorId = ref<string | null>(null);
+const mapFindOpen = ref(false);
+const mapQuery = ref("");
 const mapFloors = computed(() =>
   [...store.document.venue.floors].sort(
     (left, right) => left.level - right.level || left.elevation - right.elevation,
@@ -47,6 +50,14 @@ function onMapKey(event: KeyboardEvent) {
     return;
   }
   if (event.key === "Escape") {
+    if (mapFindOpen.value) {
+      mapFindOpen.value = false;
+      return;
+    }
+    if (store.selection.length > 0) {
+      store.setSelection([]);
+      return;
+    }
     mapFloorId.value = null;
     return;
   }
@@ -71,6 +82,28 @@ watch(viewMode, (mode) => {
     void nextTick(() => stage.value?.fit());
   }
 });
+
+const places = computed(() => mapPlaces(store.document));
+const mapCard = computed(() =>
+  cameraMode.value === "map" ? mapPlace(store.document, store.selection[0]) : null,
+);
+const mapResults = computed(() => {
+  const query = mapQuery.value.trim().toLowerCase();
+  return places.value.filter((place) => {
+    if (!query) {
+      return true;
+    }
+    return (
+      place.name.toLowerCase().includes(query) || place.floorName.toLowerCase().includes(query)
+    );
+  });
+});
+
+function openPlace(place: MapPlace) {
+  mapFloorId.value = place.floorId;
+  store.setSelection([place.id]);
+  mapFindOpen.value = false;
+}
 
 const selectedObjectId = computed(() => {
   if (store.selection.length !== 1) {
@@ -477,6 +510,15 @@ async function saveGlb() {
             >
               All floors
             </button>
+            <button
+              type="button"
+              class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+              :class="mapFindOpen ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+              data-testid="map-find-toggle"
+              @click="mapFindOpen = !mapFindOpen"
+            >
+              Find
+            </button>
           </template>
           <label v-if="cameraMode === 'walk'" class="flex items-center gap-1 text-xs text-zinc-300">
             Eye
@@ -574,13 +616,58 @@ async function saveGlb() {
             :eye-height="eyeHeight"
             :gizmo-mode="gizmoMode"
             :quality-mode="qualityMode"
-            :selected-id="selectedObjectId"
+            :selected-id="cameraMode === 'map' ? (mapCard?.id ?? null) : selectedObjectId"
             @exit-walk="cameraMode = 'orbit'"
             @floor="mapFloorId = $event"
             @select="store.setSelection($event ? [$event] : [])"
             @transform="onObjectTransform"
             @place="onPlaceAsset"
           />
+          <section
+            v-if="cameraMode === 'map' && mapFindOpen"
+            class="absolute left-3 top-3 z-10 flex max-h-64 w-64 flex-col gap-2 rounded-xl bg-white p-3 text-zinc-900 shadow-lg"
+            data-testid="map-find"
+          >
+            <input
+              v-model="mapQuery"
+              class="focus-ring min-h-10 rounded-md border border-zinc-300 px-3 text-sm"
+              type="search"
+              placeholder="Rooms, zones…"
+              data-testid="map-find-query"
+              aria-label="Find a place"
+            />
+            <ul class="min-h-0 overflow-auto">
+              <li v-for="place in mapResults" :key="place.id">
+                <button
+                  type="button"
+                  class="focus-ring flex min-h-10 w-full items-center justify-between gap-2 rounded-md px-2 text-left text-sm hover:bg-zinc-100"
+                  :data-testid="`map-place-${place.id}`"
+                  @click="openPlace(place)"
+                >
+                  <span>{{ place.name }}</span>
+                  <span class="text-xs text-zinc-500">{{ place.floorName }}</span>
+                </button>
+              </li>
+            </ul>
+          </section>
+          <aside
+            v-if="mapCard"
+            class="absolute bottom-3 left-3 z-10 w-64 rounded-xl bg-white p-3 text-zinc-900 shadow-lg"
+            data-testid="map-card"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <p class="font-semibold">{{ mapCard.name }}</p>
+              <button
+                type="button"
+                class="focus-ring min-h-10 px-2 text-sm text-zinc-500"
+                aria-label="Close place"
+                @click="store.setSelection([])"
+              >
+                Close
+              </button>
+            </div>
+            <p class="text-sm text-zinc-600">{{ mapCard.detail }}</p>
+          </aside>
         </div>
         <p
           v-if="cameraMode === 'walk'"
@@ -595,7 +682,7 @@ async function saveGlb() {
           data-testid="map-hint"
         >
           Drag rotates. Right-drag pans. Scroll zooms. Double-click zooms in. Click a floor to open
-          it. Escape shows every floor.
+          it, or Find a room. Escape closes the card, then shows every floor.
         </p>
       </div>
       <Inspector />

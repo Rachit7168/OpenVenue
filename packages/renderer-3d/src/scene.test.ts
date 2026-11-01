@@ -221,5 +221,7 @@ describe("buildVenueGroup", () => {
     expect(one.children).toHaveLength(1);
     expect(one.children[0]?.userData.floorId).toBe("gallery");
     expect(one.children[0]?.position.y).toBeCloseTo(4);
+    const room = nodesOf(one).find((child) => child.userData.entityId === "gallery-room");
+    expect(room?.userData.mapColor).toBe("#93c5fd");
   });
 });
