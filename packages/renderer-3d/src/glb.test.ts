@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import {
+  assemblyGlb,
   boxGlb,
   clearModels,
   createGltfLoader,
@@ -47,6 +48,14 @@ describe("glb models", () => {
     const model = await loadGlbBytes(bytes);
     const box = new THREE.Box3().setFromObject(model);
     expect(box.getSize(new THREE.Vector3()).x).toBeCloseTo(1);
+    expect(() => assemblyGlb([])).toThrow(/at least one box/);
+    const stacked = await loadGlbBytes(
+      assemblyGlb([
+        { center: [0, 0.5, 0], size: [1, 1, 1], color: [0.2, 0.2, 0.2] },
+        { center: [0, 2, 0], size: [1, 1, 1], color: [0.8, 0.8, 0.8] },
+      ]),
+    );
+    expect(new THREE.Box3().setFromObject(stacked).getSize(new THREE.Vector3()).y).toBeCloseTo(2.5);
     const loader = createGltfLoader("/draco/") as GLTFLoaderLike;
     expect(loader.dracoLoader).toBeTruthy();
     expect(loader.meshoptDecoder).toBeTruthy();

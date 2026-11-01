@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm --filter @openvenue/scene-schema build && pnpm -r --if-present typecheck",
-    "generate": "pnpm --filter @openvenue/scene-schema generate && prettier --write packages/scene-schema/src/generated/venue.ts"
+    "generate": "pnpm --filter @openvenue/scene-schema generate && prettier --write packages/scene-schema/src/generated/venue.ts && pnpm --filter @openvenue/scene-schema build && pnpm --filter @openvenue/renderer-3d build && node packages/renderer-3d/scripts/write-pack.mjs && prettier --write apps/web/src/assets/catalogue.data.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
