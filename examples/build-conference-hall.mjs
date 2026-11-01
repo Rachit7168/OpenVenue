@@ -179,4 +179,3 @@ writeFileSync(
   resolve(root, "conference-hall.venue.json"),
   `${JSON.stringify(document, null, 2)}\n`,
 );
-console.log(`wrote ${chairs.length} chairs`);
