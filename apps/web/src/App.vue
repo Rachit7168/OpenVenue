@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import ToastContainer from "./components/ToastContainer.vue";
 import TopBar from "./components/TopBar.vue";
+import { useAuthStore } from "./stores/auth";
 import { useThemeStore } from "./stores/theme";
 
 useThemeStore().hydrate();
+useAuthStore().hydrate();
 </script>
 
 <template>
@@ -20,5 +23,6 @@ useThemeStore().hydrate();
     <div id="content">
       <RouterView />
     </div>
+    <ToastContainer />
   </div>
 </template>
