@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type CameraMode = "orbit" | "isometric";
+export type CameraMode = "orbit" | "isometric" | "walk";
 
 const ISO_DIRECTION = new THREE.Vector3(1, 1, 1).normalize();
 
@@ -33,7 +33,7 @@ export function applyOrthoFrustum(
  * looking along +X +Y +Z when the direction is reset.
  */
 export function frameVenue(options: {
-  mode: CameraMode;
+  mode: Exclude<CameraMode, "walk">;
   box: THREE.Box3;
   aspect: number;
   perspective: THREE.PerspectiveCamera;

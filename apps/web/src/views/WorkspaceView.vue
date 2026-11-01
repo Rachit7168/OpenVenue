@@ -18,6 +18,7 @@ const router = useRouter();
 const fileInput = ref<HTMLInputElement | null>(null);
 const viewMode = ref<"plan" | "stage" | "both">("plan");
 const cameraMode = ref<CameraMode>("orbit");
+const eyeHeight = ref(1.6);
 const gizmoMode = ref<GizmoMode>("translate");
 const qualityMode = ref<QualityMode>("high");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
@@ -290,6 +291,34 @@ function save() {
               type="button"
               class="rounded-md px-3 py-1 text-sm font-medium"
               :class="
+                cameraMode === 'walk' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'
+              "
+              data-testid="camera-walk"
+              @click="cameraMode = 'walk'"
+            >
+              Walk
+            </button>
+            <label
+              v-if="cameraMode === 'walk'"
+              class="flex items-center gap-1 text-xs text-zinc-300"
+            >
+              Eye
+              <input
+                v-model.number="eyeHeight"
+                class="w-16 rounded-md border border-zinc-700 bg-zinc-950 px-1 py-1 text-sm text-zinc-100"
+                type="number"
+                min="0.4"
+                max="2.4"
+                step="0.1"
+                data-testid="eye-height"
+                aria-label="Eye height in metres"
+              />
+            </label>
+            <button
+              v-if="cameraMode !== 'walk'"
+              type="button"
+              class="rounded-md px-3 py-1 text-sm font-medium"
+              :class="
                 gizmoMode === 'translate'
                   ? 'bg-teal-400 text-zinc-950'
                   : 'bg-zinc-800 text-zinc-100'
@@ -299,6 +328,7 @@ function save() {
               Move
             </button>
             <button
+              v-if="cameraMode !== 'walk'"
               type="button"
               class="rounded-md px-3 py-1 text-sm font-medium"
               :class="
@@ -309,6 +339,7 @@ function save() {
               Rotate
             </button>
             <button
+              v-if="cameraMode !== 'walk'"
               type="button"
               class="rounded-md px-3 py-1 text-sm font-medium"
               :class="
@@ -375,6 +406,13 @@ function save() {
             Redo
           </button>
         </div>
+        <p
+          v-if="cameraMode === 'walk'"
+          class="mt-2 text-xs text-zinc-500 dark:text-zinc-400"
+          data-testid="walk-hint"
+        >
+          Click the hall to look. WASD walks. Escape returns to orbit.
+        </p>
       </div>
       <p class="text-sm text-zinc-500 dark:text-zinc-400" aria-live="polite">{{ store.status }}</p>
     </div>
@@ -391,9 +429,11 @@ function save() {
         class="min-h-0 min-w-0 flex-1"
         :scene="store.scene"
         :camera-mode="cameraMode"
+        :eye-height="eyeHeight"
         :gizmo-mode="gizmoMode"
         :quality-mode="qualityMode"
         :selected-id="selectedObjectId"
+        @exit-walk="cameraMode = 'orbit'"
         @select="store.setSelection($event ? [$event] : [])"
         @transform="onObjectTransform"
         @place="onPlaceAsset"

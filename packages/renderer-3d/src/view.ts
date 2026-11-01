@@ -15,6 +15,16 @@ import { qualityOptions, type QualityMode } from "./quality.js";
 import { onModelsChanged } from "./glb.js";
 import { buildVenueGroup, indexChairs, type ChairSlot } from "./scene.js";
 import { patchVenueGroup } from "./sync.js";
+import {
+  applyLook,
+  collisionSegments,
+  DEFAULT_EYE_HEIGHT,
+  spawnWalker,
+  stepWalker,
+  clampEyeHeight,
+  type WalkWall,
+  type Walker,
+} from "./walk.js";
 
 export type { CameraMode, GizmoMode, ObjectPose, QualityMode };
 
@@ -22,12 +32,14 @@ export interface VenueView {
   setDocument(document: VenueDocument): void;
   applyChange(document: VenueDocument, commandType: string | null): void;
   setCameraMode(mode: CameraMode): void;
+  setEyeHeight(height: number): void;
   setQuality(mode: QualityMode): void;
   setSelected(id: string | null): void;
   setGizmoMode(mode: GizmoMode): void;
   setHandlers(handlers: {
     onSelect: (id: string | null) => void;
     onTransform: (id: string, mode: GizmoMode, pose: ObjectPose) => void;
+    onExitWalk?: () => void;
   }): void;
   fit(): void;
   reset(): void;
@@ -97,6 +109,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let selectedId: string | null = null;
   let onSelect: (id: string | null) => void = () => undefined;
   let onTransform: (id: string, mode: GizmoMode, pose: ObjectPose) => void = () => undefined;
+  let onExitWalk: () => void = () => undefined;
+  let walker: Walker = { x: 0, z: 0, yaw: 0, pitch: 0 };
+  let eyeHeight = DEFAULT_EYE_HEIGHT;
+  const pressed = new Set<string>();
+  let lastTick = performance.now();
   let ignoreClick = false;
   let pointerDown: { x: number; y: number } | null = null;
   let active: THREE.Camera = perspective;
@@ -116,7 +133,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       return;
     }
     const framed = frameVenue({
-      mode,
+      mode: mode === "isometric" ? "isometric" : "orbit",
       box: new THREE.Box3().setFromObject(venue),
       aspect: aspect(),
       perspective,
@@ -133,7 +150,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     sun.target.position.copy(center);
     sun.target.updateMatrixWorld();
     fill.position.set(center.x - 12, center.y + 10, center.z - 8);
-    active = mode === "orbit" ? perspective : orthographic;
+    active = mode === "isometric" ? orthographic : perspective;
     controls.object = active;
     gizmo.camera = active;
     controls.update();
@@ -204,6 +221,10 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const attachSelected = () => {
+    if (mode === "walk") {
+      gizmo.detach();
+      return;
+    }
     if (syncChairHandle()) {
       if (chairHandle) {
         gizmo.attach(chairHandle);
@@ -264,7 +285,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     }
     const start = pointerDown;
     pointerDown = null;
-    if (ignoreClick) {
+    if (ignoreClick || mode === "walk") {
       ignoreClick = false;
       return;
     }
@@ -275,7 +296,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   gizmo.addEventListener("dragging-changed", (event) => {
-    controls.enabled = event.value !== true;
+    controls.enabled = event.value !== true && mode !== "walk";
   });
   gizmo.addEventListener("objectChange", followChairHandle);
   gizmo.addEventListener("mouseUp", () => {
@@ -285,17 +306,112 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointerup", onPointerUp);
 
+  const currentWalls = (): WalkWall[] => {
+    const floor = lastDocument?.venue.floors[0];
+    if (!floor) {
+      return [];
+    }
+    return collisionSegments(
+      floor.walls.map((wall) => ({
+        startX: wall.start.x,
+        startZ: wall.start.z,
+        endX: wall.end.x,
+        endZ: wall.end.z,
+        thickness: wall.thickness,
+        openings: wall.openings?.map((opening) => ({
+          kind: opening.kind,
+          offset: opening.offset,
+          width: opening.width,
+        })),
+      })),
+    );
+  };
+
+  const applyWalker = () => {
+    perspective.position.set(walker.x, eyeHeight, walker.z);
+    perspective.rotation.order = "YXZ";
+    perspective.rotation.set(walker.pitch, walker.yaw, 0);
+    active = perspective;
+  };
+
+  const beginWalk = () => {
+    const spawn =
+      lastDocument?.venue.spawnPoints.find((point) => point.role === "visitor") ??
+      lastDocument?.venue.spawnPoints[0];
+    const walls = currentWalls();
+    walker = spawn
+      ? spawnWalker(spawn.position, spawn.rotationY, walls)
+      : spawnWalker({ x: 0, z: 0 }, 0, walls);
+    controls.enabled = false;
+    gizmo.detach();
+    gizmo.enabled = false;
+    applyWalker();
+  };
+
   const tick = () => {
     if (stopped) {
       return;
     }
     frameId = requestAnimationFrame(tick);
-    controls.update();
+    const now = performance.now();
+    const dt = (now - lastTick) / 1000;
+    lastTick = now;
+    if (mode === "walk") {
+      const forward = (pressed.has("KeyW") ? 1 : 0) - (pressed.has("KeyS") ? 1 : 0);
+      const strafe = (pressed.has("KeyD") ? 1 : 0) - (pressed.has("KeyA") ? 1 : 0);
+      walker = stepWalker(walker, { forward, strafe }, currentWalls(), dt);
+      applyWalker();
+    } else {
+      controls.update();
+    }
     renderer.render(scene, active);
   };
 
-  const applyQuality = (mode: QualityMode) => {
-    const options = qualityOptions(mode);
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (mode !== "walk" || canvas.offsetParent === null) {
+      return;
+    }
+    if (event.code === "Escape") {
+      onExitWalk();
+      return;
+    }
+    if (
+      event.code === "KeyW" ||
+      event.code === "KeyA" ||
+      event.code === "KeyS" ||
+      event.code === "KeyD"
+    ) {
+      pressed.add(event.code);
+      event.preventDefault();
+    }
+  };
+
+  const onKeyUp = (event: KeyboardEvent) => {
+    pressed.delete(event.code);
+  };
+
+  const onMouseMove = (event: MouseEvent) => {
+    if (mode !== "walk" || document.pointerLockElement !== canvas) {
+      return;
+    }
+    const look = applyLook(walker.yaw, walker.pitch, event.movementX, event.movementY);
+    walker = { ...walker, yaw: look.yaw, pitch: look.pitch };
+  };
+
+  const onCanvasClick = () => {
+    if (mode !== "walk" || document.pointerLockElement === canvas) {
+      return;
+    }
+    void canvas.requestPointerLock();
+  };
+
+  canvas.addEventListener("click", onCanvasClick);
+  window.addEventListener("keydown", onKeyDown);
+  window.addEventListener("keyup", onKeyUp);
+  window.addEventListener("mousemove", onMouseMove);
+
+  const applyQuality = (quality: QualityMode) => {
+    const options = qualityOptions(quality);
     renderer.shadowMap.enabled = options.shadows;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     sun.castShadow = options.shadows;
@@ -342,7 +458,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     if (!replace) {
       return;
     }
-    aim(true);
+    if (mode === "walk") {
+      beginWalk();
+    } else {
+      aim(true);
+    }
     if (!new THREE.Box3().setFromObject(venue).isEmpty()) {
       framedVenueId = document.venue.id;
     }
@@ -362,15 +482,38 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         return;
       }
       mode = next;
+      pressed.clear();
+      if (document.pointerLockElement === canvas) {
+        document.exitPointerLock();
+      }
+      if (next === "walk") {
+        beginWalk();
+        return;
+      }
+      gizmo.enabled = true;
+      controls.enabled = true;
+      perspective.rotation.set(0, 0, 0);
       aim(true);
+    },
+    setEyeHeight(height) {
+      eyeHeight = clampEyeHeight(height);
+      if (mode === "walk") {
+        applyWalker();
+      }
     },
     setQuality(next) {
       applyQuality(next);
     },
     fit() {
-      aim(false);
+      if (mode !== "walk") {
+        aim(false);
+      }
     },
     reset() {
+      if (mode === "walk") {
+        beginWalk();
+        return;
+      }
       aim(true);
     },
     floorPoint(clientX, clientY) {
@@ -397,6 +540,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     setHandlers(handlers) {
       onSelect = handlers.onSelect;
       onTransform = handlers.onTransform;
+      onExitWalk = handlers.onExitWalk ?? (() => undefined);
     },
     resize(width, height) {
       if (width < 2 || height < 2) {
@@ -415,6 +559,13 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       cancelAnimationFrame(frameId);
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("click", onCanvasClick);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      if (document.pointerLockElement === canvas) {
+        document.exitPointerLock();
+      }
       gizmo.detach();
       if (chairHandle) {
         scene.remove(chairHandle);
