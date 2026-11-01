@@ -2,6 +2,7 @@
 import { MAX_VENUE_JSON_CHARS, saveVenueJson } from "@openvenue/scene-schema";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import conferenceHall from "../../../../examples/conference-hall.venue.json?raw";
 import FloorPlan from "../components/FloorPlan.vue";
 import type { ProjectTemplate } from "../project-library";
 import { useProjectLibrary } from "../stores/projects";
@@ -93,6 +94,15 @@ function exportProject(id: string, projectName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
+function openConferenceHall() {
+  try {
+    const document = library.importText(conferenceHall);
+    void router.push({ name: "project", params: { projectId: document.project.id } });
+  } catch {
+    // The store records the message.
+  }
+}
+
 function importFile(event: Event) {
   const input = event.target;
   if (!(input instanceof HTMLInputElement)) {
@@ -149,6 +159,14 @@ function importFile(event: Event) {
           @click="fileInput?.click()"
         >
           Import JSON
+        </button>
+        <button
+          type="button"
+          data-testid="conference-hall"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+          @click="openConferenceHall"
+        >
+          Conference hall
         </button>
         <input
           ref="fileInput"
