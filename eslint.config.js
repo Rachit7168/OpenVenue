@@ -26,7 +26,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["scripts/**/*.mjs", "examples/**/*.mjs"],
+    files: ["scripts/**/*.mjs", "examples/**/*.mjs", "apps/docs/**/*.mjs"],
     languageOptions: {
       globals: {
         Buffer: "readonly",
@@ -34,6 +34,7 @@ export default tseslint.config(
         clearTimeout: "readonly",
         console: "readonly",
         process: "readonly",
+        URL: "readonly",
         setInterval: "readonly",
         setTimeout: "readonly",
       },

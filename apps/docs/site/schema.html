@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Schema · OpenVenue</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <strong>OpenVenue</strong>
+        <nav>
+          <a href="index.html">Getting started</a>
+          <a href="schema.html" aria-current="page">Schema</a>
+          <a href="assets.html">Assets</a>
+          <a href="changelog.html">Release notes</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <h1>Schema reference</h1>
+      <p>
+        Version <strong>1.0.0</strong> is the only schema the editor reads. The file is
+        <code>packages/scene-schema/src/schema/venue.schema.json</code> (JSON Schema draft 2020-12).
+        Lengths are metres.
+      </p>
+      <h2>Document</h2>
+      <p>
+        A document requires <code>schemaVersion</code>, <code>project</code>,
+        <code>coordinateSystem</code>, <code>assets</code>, and <code>venue</code>.
+      </p>
+      <ul>
+        <li>Every entity id is a UUID.</li>
+        <li>Names are 1 to 200 characters.</li>
+        <li>Unknown properties are kept on save. Do not rebuild the object field by field.</li>
+        <li>
+          A file larger than five million characters, nested deeper than 32 levels, or carrying
+          <code>__proto__</code>, <code>constructor</code>, or <code>prototype</code> is rejected
+          before it loads.
+        </li>
+      </ul>
+      <h2>Coordinates</h2>
+      <p>
+        v1 stores one coordinate system: metres, +Y up, right-handed, radians. Plan points are
+        <code>{x, z}</code> because Y is up. On the plan, +X is to the right and +Z is up the
+        screen.
+      </p>
+      <h2>Floors, rooms, and walls</h2>
+      <p>
+        A floor has a level, an elevation, and a floor-to-floor height. Level 0 is the ground. Rooms
+        and walls live on a floor. A wall runs from <code>start</code> to <code>end</code>
+        and has a thickness and a height. An opening is a door, a window, or an opening, placed by
+        its offset from the wall start.
+      </p>
+      <h2>Objects and zones</h2>
+      <p>
+        An object is <code>generic</code>, <code>stage</code>, <code>chair</code>,
+        <code>table</code>, <code>booth</code>, <code>screen</code>, <code>podium</code>,
+        <code>sign</code>, or <code>custom</code>. Its position and rotation are in the transform.
+        If <code>assetId</code> is set, that id must exist in <code>assets</code>.
+      </p>
+      <p>
+        A zone is a named area. Its <code>interaction</code> may be <code>info-panel</code>,
+        <code>link</code>, <code>menu</code>, <code>session-list</code>, or none. The menu itself is
+        a <code>contentRef</code> outside this file, so changing a menu does not require a venue
+        migration.
+      </p>
+      <h2>What this version does not edit</h2>
+      <p>
+        Map can show every floor. The plan tools and the stairs still use the ground floor. Spawn
+        points mark where a visitor starts. Optional <code>navigation</code> holds walkable areas
+        for a later viewer.
+      </p>
+      <p>
+        How to add a later version is written in <code>packages/scene-schema/MIGRATION.md</code>.
+      </p>
+    </main>
+  </body>
+</html>

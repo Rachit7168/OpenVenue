@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Getting started · OpenVenue</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <strong>OpenVenue</strong>
+        <nav>
+          <a href="index.html" aria-current="page">Getting started</a>
+          <a href="schema.html">Schema</a>
+          <a href="assets.html">Assets</a>
+          <a href="changelog.html">Release notes</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <h1>Getting started</h1>
+      <p>
+        OpenVenue is a local-first designer for event spaces. The editor keeps one
+        <code>venue.json</code> in this browser until you choose to export it.
+      </p>
+      <h2>Install</h2>
+      <p>You need Node.js 22 and pnpm 10.20.0.</p>
+      <pre><code>corepack enable
+corepack prepare pnpm@10.20.0 --activate
+pnpm install
+pnpm dev</code></pre>
+      <p>
+        Open <a href="http://localhost:5173">http://localhost:5173</a>. The landing page leads to
+        the project list. <strong>New project</strong> asks for a name, a hall size, a ceiling
+        height, and either an empty hall or a rectangular room.
+      </p>
+      <h2>A first hall</h2>
+      <ol>
+        <li>Draw walls with two clicks. A wall shorter than 0.2 m is rejected.</li>
+        <li>Use Room for a rectangle, then place a table with one click.</li>
+        <li>
+          Drag a catalogue model onto the plan. The file records that model, so the save stays
+          valid.
+        </li>
+        <li>Switch to 3D. Orbit, Isometric, and Walk show the same hall. Escape leaves Walk.</li>
+        <li>Choose Map when the venue has more than one floor. Find lists rooms and tables.</li>
+      </ol>
+      <h2>Conference hall</h2>
+      <p>
+        <strong>Conference hall</strong> on the project list opens a 24 by 18 metre room with a
+        door, a stage, a podium, 200 chairs, and a viewing gallery on the floor above. The file is
+        <code>examples/conference-hall.venue.json</code>.
+      </p>
+      <h2>Save and check</h2>
+      <p>
+        Save JSON downloads the venue. Open JSON checks the file and keeps the current venue if it
+        is invalid. Export also writes an SVG or PNG plan, a one-page PDF, or a GLB. Checks and the
+        capacity figure are planning aids, not a certification.
+      </p>
+      <p>
+        The schema is described on the <a href="schema.html">schema page</a>. Models are described
+        on the <a href="assets.html">asset page</a>.
+      </p>
+    </main>
+  </body>
+</html>
