@@ -140,6 +140,7 @@ function roundSize(value: number): number {
           class="flex w-36 flex-col gap-1 rounded-md border border-zinc-700 bg-zinc-950 p-2 text-left"
           draggable="true"
           data-testid="asset-card"
+          :data-asset-id="asset.id"
           @dragstart="onDragStart($event, asset)"
         >
           <img
