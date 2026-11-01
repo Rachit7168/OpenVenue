@@ -236,8 +236,8 @@ function distribute() {
   <aside
     class="flex h-full w-full flex-col overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200"
   >
-    <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-400">Inspector</h2>
-    <p v-if="store.selection.length === 0" class="mt-3 text-zinc-400">
+    <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-300">Inspector</h2>
+    <p v-if="store.selection.length === 0" class="mt-3 text-zinc-300">
       Select a room, table, or zone. Shift-click adds to the selection. Drag on empty floor to
       box-select.
     </p>
@@ -246,23 +246,31 @@ function distribute() {
     </p>
 
     <div v-if="selectedObjects.length > 1" class="mt-3 flex flex-wrap gap-2">
-      <button type="button" class="rounded-md bg-zinc-800 px-2 py-1 text-xs" @click="align('min')">
+      <button
+        type="button"
+        class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-xs text-zinc-100"
+        @click="align('min')"
+      >
         Align left
       </button>
       <button
         type="button"
-        class="rounded-md bg-zinc-800 px-2 py-1 text-xs"
+        class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-xs text-zinc-100"
         @click="align('center')"
       >
         Align center
       </button>
-      <button type="button" class="rounded-md bg-zinc-800 px-2 py-1 text-xs" @click="distribute">
+      <button
+        type="button"
+        class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-xs text-zinc-100"
+        @click="distribute"
+      >
         Distribute
       </button>
     </div>
 
     <form v-if="room || zone || object || spawn" class="mt-4 space-y-3" @submit.prevent>
-      <label class="block text-xs text-zinc-400">
+      <label class="block text-xs text-zinc-300">
         Name
         <input
           class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
@@ -271,7 +279,7 @@ function distribute() {
         />
       </label>
 
-      <label v-if="room" class="block text-xs text-zinc-400">
+      <label v-if="room" class="block text-xs text-zinc-300">
         Floor material
         <select
           class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm"
@@ -290,7 +298,7 @@ function distribute() {
 
       <template v-if="object">
         <div class="grid grid-cols-2 gap-2">
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             X
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -298,7 +306,7 @@ function distribute() {
               @change="commitAxis('x', $event)"
             />
           </label>
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             Z
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -306,7 +314,7 @@ function distribute() {
               @change="commitAxis('z', $event)"
             />
           </label>
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             Rotation °
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -314,7 +322,7 @@ function distribute() {
               @change="commitYaw"
             />
           </label>
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             Width
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -322,7 +330,7 @@ function distribute() {
               @change="commitSize('width', $event)"
             />
           </label>
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             Depth
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -330,7 +338,7 @@ function distribute() {
               @change="commitSize('depth', $event)"
             />
           </label>
-          <label class="text-xs text-zinc-400">
+          <label class="text-xs text-zinc-300">
             Height
             <input
               class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -342,7 +350,7 @@ function distribute() {
       </template>
 
       <template v-if="zone">
-        <label class="block text-xs text-zinc-400">
+        <label class="block text-xs text-zinc-300">
           Interaction
           <select
             class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -354,7 +362,7 @@ function distribute() {
         </label>
         <label
           v-if="zone.interaction && zone.interaction.type !== 'none'"
-          class="block text-xs text-zinc-400"
+          class="block text-xs text-zinc-300"
         >
           Content reference
           <input
@@ -363,7 +371,7 @@ function distribute() {
             @change="commitContent"
           />
         </label>
-        <label class="block text-xs text-zinc-400">
+        <label class="block text-xs text-zinc-300">
           Colour
           <input
             class="mt-1 h-8 w-full bg-transparent"
@@ -398,7 +406,7 @@ function distribute() {
         v-for="item in hidden"
         :key="item.id"
         type="button"
-        class="mt-1 block text-left text-xs text-teal-300 hover:underline"
+        class="focus-ring mt-1 block min-h-10 rounded-md px-2 text-left text-xs text-teal-200 hover:underline"
         @click="store.setSelection([item.id])"
       >
         {{ item.name }}

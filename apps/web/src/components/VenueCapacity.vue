@@ -34,7 +34,9 @@ function area(value: number): string {
     data-testid="venue-capacity"
     class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
   >
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-zinc-500">Capacity</h2>
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-zinc-700 dark:text-zinc-300">
+      Capacity
+    </h2>
     <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{{ CAPACITY_NOTE }}</p>
     <dl class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
       <div
@@ -42,11 +44,13 @@ function area(value: number): string {
         :key="row.label"
         class="rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-950"
       >
-        <dt class="text-xs uppercase tracking-wide text-zinc-500">{{ row.label }}</dt>
+        <dt class="text-xs uppercase tracking-wide text-zinc-700 dark:text-zinc-300">
+          {{ row.label }}
+        </dt>
         <dd class="mt-1 font-medium">{{ area(row.value) }}</dd>
       </div>
       <div class="rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-950">
-        <dt class="text-xs uppercase tracking-wide text-zinc-500">Seats</dt>
+        <dt class="text-xs uppercase tracking-wide text-zinc-700 dark:text-zinc-300">Seats</dt>
         <dd class="mt-1 font-medium">{{ report.seats }}</dd>
       </div>
     </dl>

@@ -44,6 +44,7 @@ const emit = defineEmits<{
   move: [point: PlanPoint];
   up: [point: PlanPoint];
   drop: [point: PlanPoint, assetId: string];
+  nudge: [x: number, z: number];
 }>();
 
 const root = ref<SVGSVGElement | null>(null);
@@ -271,6 +272,25 @@ function onWheel(event: WheelEvent) {
   viewport.value = zoomViewport(viewport.value, localPoint(event), factor);
 }
 
+function onPlanKey(event: KeyboardEvent) {
+  if (!props.interactive) {
+    return;
+  }
+  const step = event.shiftKey ? 0.1 : 0.5;
+  const move: Record<string, [number, number]> = {
+    ArrowRight: [step, 0],
+    ArrowLeft: [-step, 0],
+    ArrowUp: [0, step],
+    ArrowDown: [0, -step],
+  };
+  const delta = move[event.key];
+  if (!delta) {
+    return;
+  }
+  event.preventDefault();
+  emit("nudge", delta[0], delta[1]);
+}
+
 onMounted(() => {
   if (props.source) {
     drawing.value = props.source.getDocument();
@@ -315,8 +335,17 @@ watch(
     <svg
       ref="root"
       data-testid="floor-plan"
-      class="min-h-0 w-full flex-1 touch-none bg-zinc-950"
+      class="min-h-0 w-full flex-1 touch-none bg-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-400"
+      :tabindex="interactive ? 0 : undefined"
+      :role="interactive ? 'application' : undefined"
+      aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown"
+      :aria-label="
+        interactive
+          ? 'Floor plan. Arrow keys move the selection by half a metre. Shift moves a tenth of a metre.'
+          : undefined
+      "
       :class="!interactive ? '' : tool === 'pan' ? 'cursor-grab' : 'cursor-crosshair'"
+      @keydown="onPlanKey"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
