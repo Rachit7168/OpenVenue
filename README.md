@@ -34,6 +34,14 @@ pnpm install
 pnpm dev
 ```
 
+The docs site covers getting started, the schema, the asset catalogue, and the release notes:
+
+```bash
+pnpm --filter @openvenue/docs dev
+```
+
+http://127.0.0.1:4174
+
 Open http://localhost:5173. The landing page leads to the project list. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Checks lists planning warnings, such as a missing exit or furniture outside the room, and says they are not a safety certification. Capacity sums the room and the furniture, and the people figure is a planning estimate, not an approved occupancy number. Timings for a 500-table hall and a 2,000-chair hall are in `docs/performance.md`. Playwright walks through creating a hall, editing it, exporting it, and opening it again. Keyboard focus, contrast, and how imported files are checked are in `docs/accessibility.md`. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
 
 ```bash
@@ -85,6 +93,7 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 | Path                    | Role                                        |
 | ----------------------- | ------------------------------------------- |
 | `apps/web`              | Vue 3 editor shell                          |
+| `apps/docs`             | Getting started, schema, assets, changelog  |
 | `apps/viewer`           | Future read-only visitor app                |
 | `apps/api`              | Optional Django API                         |
 | `packages/scene-schema` | `venue.json` schema, types, validator       |
