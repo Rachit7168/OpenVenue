@@ -3,6 +3,10 @@ import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import hallStill from "../../../../docs/conference-hall.gif";
 import conferenceHallRaw from "../../../../examples/conference-hall.venue.json?raw";
+import exhibitionExpoRaw from "../../../../examples/exhibition-expo.venue.json?raw";
+import galaBanquetRaw from "../../../../examples/gala-banquet.venue.json?raw";
+import hackathonArenaRaw from "../../../../examples/hackathon-arena.venue.json?raw";
+import theaterStageRaw from "../../../../examples/theater-stage.venue.json?raw";
 import SiteFooter from "../components/SiteFooter.vue";
 import { useProjectLibrary } from "../stores/projects";
 import { useToastStore } from "../stores/toast";
@@ -19,30 +23,18 @@ function toggleFaq(index: number) {
   openFaqIndex.value = openFaqIndex.value === index ? null : index;
 }
 
-function launchConferenceHallDemo() {
+function launchTemplateBlueprint(rawJson: string, name: string) {
   try {
-    const document = library.importText(conferenceHallRaw);
-    toast.success("Demo loaded", "Conference Hall template opened in studio.");
+    const document = library.importText(rawJson);
+    toast.success("Blueprint Loaded", `${name} opened with full layout & furniture.`);
     void router.push({ name: "project", params: { projectId: document.project.id } });
   } catch {
     void router.push("/projects");
   }
 }
 
-function launchCustomTemplate(name: string, width: number, depth: number, height: number) {
-  try {
-    const document = library.create({
-      name,
-      width,
-      depth,
-      ceilingHeight: height,
-      template: "rectangular-hall",
-    });
-    toast.success("Template initialized", `${name} ready for editing.`);
-    void router.push({ name: "project", params: { projectId: document.project.id } });
-  } catch {
-    void router.push("/projects");
-  }
+function launchConferenceHallDemo() {
+  launchTemplateBlueprint(conferenceHallRaw, "Conference Auditorium");
 }
 
 const faqs = [
@@ -397,7 +389,7 @@ const faqs = [
           </RouterLink>
         </div>
 
-        <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <!-- Template 1: Conference Hall -->
           <div
             class="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
@@ -421,6 +413,7 @@ const faqs = [
             </div>
             <button
               type="button"
+              data-testid="blueprint-conference"
               class="focus-ring mt-6 w-full rounded-lg bg-zinc-100 py-2 text-xs font-semibold text-zinc-900 hover:bg-teal-800 hover:text-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-teal-400 dark:hover:text-zinc-950 transition"
               @click="launchConferenceHallDemo"
             >
@@ -435,9 +428,9 @@ const faqs = [
             <div>
               <div class="flex items-center justify-between">
                 <span
-                  class="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  class="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
                 >
-                  Single Floor
+                  Expo Grid
                 </span>
                 <span class="text-xs text-zinc-500">30 × 20 m</span>
               </div>
@@ -445,14 +438,15 @@ const faqs = [
                 Exhibition Trade Fair
               </h3>
               <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Spacious expo grid with 12 booth islands, registration foyer, emergency exits, and
-                high clearance.
+                10 shell booths with demo counters, TV displays, registration foyer, and
+                networking lounge.
               </p>
             </div>
             <button
               type="button"
+              data-testid="blueprint-exhibition"
               class="focus-ring mt-6 w-full rounded-lg bg-zinc-100 py-2 text-xs font-semibold text-zinc-900 hover:bg-teal-800 hover:text-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-teal-400 dark:hover:text-zinc-950 transition"
-              @click="launchCustomTemplate('Exhibition Trade Fair', 30, 20, 5)"
+              @click="launchTemplateBlueprint(exhibitionExpoRaw, 'Exhibition Trade Fair')"
             >
               Launch Blueprint
             </button>
@@ -465,54 +459,87 @@ const faqs = [
             <div>
               <div class="flex items-center justify-between">
                 <span
-                  class="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  class="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300"
                 >
                   Hospitality
                 </span>
-                <span class="text-xs text-zinc-500">20 × 15 m</span>
+                <span class="text-xs text-zinc-500">22 × 16 m</span>
               </div>
               <h3 class="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-100">
                 Gala Banquet &amp; Reception
               </h3>
               <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Round dining tables, central dance floor zone, catering stations, and guest arrival
-                lounge.
+                12 banquet round tables with 72 chairs, live performance stage, sound towers, and
+                cocktail bar.
               </p>
             </div>
             <button
               type="button"
+              data-testid="blueprint-gala"
               class="focus-ring mt-6 w-full rounded-lg bg-zinc-100 py-2 text-xs font-semibold text-zinc-900 hover:bg-teal-800 hover:text-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-teal-400 dark:hover:text-zinc-950 transition"
-              @click="launchCustomTemplate('Gala Banquet Hall', 20, 15, 3.8)"
+              @click="launchTemplateBlueprint(galaBanquetRaw, 'Gala Banquet & Reception')"
             >
               Launch Blueprint
             </button>
           </div>
 
-          <!-- Template 4: Townhall & Stage -->
+          <!-- Template 4: Theater Stage -->
           <div
             class="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
               <div class="flex items-center justify-between">
                 <span
-                  class="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  class="rounded-md bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-950 dark:text-purple-300"
                 >
-                  Townhall
+                  Tiered Hall
                 </span>
-                <span class="text-xs text-zinc-500">18 × 12 m</span>
+                <span class="text-xs text-zinc-500">24 × 16 m</span>
               </div>
               <h3 class="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                Theater &amp; Production Stage
+                Theater &amp; Keynote Stage
               </h3>
               <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Raised performance stage, AV equipment truss, acoustic boundary walls, and audience
-                seating rows.
+                10m raised proscenium stage, speaker podium, LED backdrop screen, 140 audience chairs,
+                and AV console.
               </p>
             </div>
             <button
               type="button"
+              data-testid="blueprint-theater"
               class="focus-ring mt-6 w-full rounded-lg bg-zinc-100 py-2 text-xs font-semibold text-zinc-900 hover:bg-teal-800 hover:text-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-teal-400 dark:hover:text-zinc-950 transition"
-              @click="launchCustomTemplate('Theater Stage', 18, 12, 4.2)"
+              @click="launchTemplateBlueprint(theaterStageRaw, 'Theater & Keynote Stage')"
+            >
+              Launch Blueprint
+            </button>
+          </div>
+
+          <!-- Template 5: Hackathon Arena -->
+          <div
+            class="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <span
+                  class="rounded-md bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+                >
+                  Collaborative
+                </span>
+                <span class="text-xs text-zinc-500">26 × 18 m</span>
+              </div>
+              <h3 class="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                Hackathon &amp; Esports Arena
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                8 team pod clusters with 48 chairs, central pitch stage, sponsor booths, and mentor
+                lounge.
+              </p>
+            </div>
+            <button
+              type="button"
+              data-testid="blueprint-hackathon"
+              class="focus-ring mt-6 w-full rounded-lg bg-zinc-100 py-2 text-xs font-semibold text-zinc-900 hover:bg-teal-800 hover:text-white dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-teal-400 dark:hover:text-zinc-950 transition"
+              @click="launchTemplateBlueprint(hackathonArenaRaw, 'Hackathon & Esports Arena')"
             >
               Launch Blueprint
             </button>

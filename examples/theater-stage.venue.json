@@ -1,0 +1,3690 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "cc000000-0000-4000-8000-000000000001",
+    "name": "Theater & Keynote Stage",
+    "metadata": {
+      "createdAt": "2026-11-01T00:00:00.000Z",
+      "updatedAt": "2026-11-01T00:00:00.000Z",
+      "description": "24x16m theater auditorium with 10m raised stage, podium, LED screen, 140 audience chairs, and rear AV production console.",
+      "generator": "openvenue",
+      "planWidth": 24,
+      "planDepth": 16
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+      "name": "Side chair",
+      "format": "glb",
+      "uri": "/assets/side-chair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e02",
+      "name": "Banquet table",
+      "format": "glb",
+      "uri": "/assets/banquet-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+      "name": "Podium",
+      "format": "glb",
+      "uri": "/assets/podium.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e04",
+      "name": "Armchair",
+      "format": "glb",
+      "uri": "/assets/armchair.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e05",
+      "name": "Stool",
+      "format": "glb",
+      "uri": "/assets/stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e06",
+      "name": "Bench",
+      "format": "glb",
+      "uri": "/assets/bench.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e07",
+      "name": "Bar stool",
+      "format": "glb",
+      "uri": "/assets/bar-stool.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e08",
+      "name": "Cocktail table",
+      "format": "glb",
+      "uri": "/assets/cocktail-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+      "name": "Conference table",
+      "format": "glb",
+      "uri": "/assets/conference-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0a",
+      "name": "Coffee table",
+      "format": "glb",
+      "uri": "/assets/coffee-table.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0b",
+      "name": "Platform",
+      "format": "glb",
+      "uri": "/assets/platform.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0c",
+      "name": "Riser",
+      "format": "glb",
+      "uri": "/assets/riser.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0d",
+      "name": "Shell booth",
+      "format": "glb",
+      "uri": "/assets/shell-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0e",
+      "name": "Counter booth",
+      "format": "glb",
+      "uri": "/assets/counter-booth.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11",
+      "name": "Info desk",
+      "format": "glb",
+      "uri": "/assets/info-desk.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+      "name": "Display screen",
+      "format": "glb",
+      "uri": "/assets/display-screen.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13",
+      "name": "Speaker",
+      "format": "glb",
+      "uri": "/assets/speaker.glb",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e1a",
+      "name": "Exit sign",
+      "format": "glb",
+      "uri": "/assets/exit-sign.glb",
+      "license": "Apache-2.0"
+    }
+  ],
+  "venue": {
+    "id": "cc000000-0000-4000-8000-000000000002",
+    "name": "Theater & Keynote Stage",
+    "floors": [
+      {
+        "id": "cc000000-0000-4000-8000-000000000003",
+        "name": "Main Auditorium Floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 4.8,
+        "rooms": [
+          {
+            "id": "cc000000-0000-4000-8000-000000000004",
+            "name": "Auditorium Hall",
+            "boundary": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 16
+              },
+              {
+                "x": 24,
+                "z": 16
+              },
+              {
+                "x": 24,
+                "z": 0
+              }
+            ],
+            "wallIds": [
+              "cc000000-0000-4000-8000-00000000000a",
+              "cc000000-0000-4000-8000-00000000000b",
+              "cc000000-0000-4000-8000-00000000000c",
+              "cc000000-0000-4000-8000-00000000000d"
+            ],
+            "floorMaterial": "wood"
+          }
+        ],
+        "walls": [
+          {
+            "id": "cc000000-0000-4000-8000-00000000000a",
+            "start": {
+              "x": 0,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 16
+            },
+            "thickness": 0.25,
+            "height": 4.8,
+            "openings": [
+              {
+                "id": "cc000000-0000-4000-8000-00000000001e",
+                "kind": "door",
+                "offset": 7.3,
+                "width": 1.4,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000000b",
+            "start": {
+              "x": 0,
+              "z": 16
+            },
+            "end": {
+              "x": 24,
+              "z": 16
+            },
+            "thickness": 0.25,
+            "height": 4.8,
+            "openings": [
+              {
+                "id": "cc000000-0000-4000-8000-000000000022",
+                "kind": "door",
+                "offset": 11.1,
+                "width": 1.8,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000000c",
+            "start": {
+              "x": 24,
+              "z": 16
+            },
+            "end": {
+              "x": 24,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.8,
+            "openings": [
+              {
+                "id": "cc000000-0000-4000-8000-000000000026",
+                "kind": "door",
+                "offset": 7.3,
+                "width": 1.4,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000000d",
+            "start": {
+              "x": 24,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 0
+            },
+            "thickness": 0.25,
+            "height": 4.8,
+            "openings": [
+              {
+                "id": "cc000000-0000-4000-8000-00000000002a",
+                "kind": "door",
+                "offset": 10.9,
+                "width": 2.2,
+                "height": 2.2,
+                "sill": 0
+              }
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "id": "cc000000-0000-4000-8000-000000000064",
+            "type": "stage",
+            "name": "Main Performance Stage",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e0b",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0,
+                "z": 13.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 10,
+              "height": 0.6,
+              "depth": 3.5
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000065",
+            "type": "podium",
+            "name": "Speaker Keynote Podium",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e03",
+            "transform": {
+              "position": {
+                "x": 10,
+                "y": 0.6,
+                "z": 13.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.6,
+              "height": 1.06,
+              "depth": 0.5
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000066",
+            "type": "screen",
+            "name": "Keynote LED Wall",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e12",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0.6,
+                "z": 12
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 5,
+              "height": 2.8,
+              "depth": 0.4
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000067",
+            "type": "generic",
+            "name": "Stage Left Audio Array",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13",
+            "transform": {
+              "position": {
+                "x": 6.5,
+                "y": 0,
+                "z": 13.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.6,
+              "height": 1.8,
+              "depth": 0.6
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000068",
+            "type": "generic",
+            "name": "Stage Right Audio Array",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e13",
+            "transform": {
+              "position": {
+                "x": 17.5,
+                "y": 0,
+                "z": 13.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.6,
+              "height": 1.8,
+              "depth": 0.6
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000069",
+            "type": "chair",
+            "name": "Audience Chair 1",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006a",
+            "type": "chair",
+            "name": "Audience Chair 2",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006b",
+            "type": "chair",
+            "name": "Audience Chair 3",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006c",
+            "type": "chair",
+            "name": "Audience Chair 4",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006d",
+            "type": "chair",
+            "name": "Audience Chair 5",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006e",
+            "type": "chair",
+            "name": "Audience Chair 6",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000006f",
+            "type": "chair",
+            "name": "Audience Chair 7",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000070",
+            "type": "chair",
+            "name": "Audience Chair 8",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000071",
+            "type": "chair",
+            "name": "Audience Chair 9",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000072",
+            "type": "chair",
+            "name": "Audience Chair 10",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000073",
+            "type": "chair",
+            "name": "Audience Chair 11",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000074",
+            "type": "chair",
+            "name": "Audience Chair 12",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000075",
+            "type": "chair",
+            "name": "Audience Chair 13",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000076",
+            "type": "chair",
+            "name": "Audience Chair 14",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000077",
+            "type": "chair",
+            "name": "Audience Chair 15",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000078",
+            "type": "chair",
+            "name": "Audience Chair 16",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000079",
+            "type": "chair",
+            "name": "Audience Chair 17",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007a",
+            "type": "chair",
+            "name": "Audience Chair 18",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007b",
+            "type": "chair",
+            "name": "Audience Chair 19",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007c",
+            "type": "chair",
+            "name": "Audience Chair 20",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 2.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007d",
+            "type": "chair",
+            "name": "Audience Chair 21",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007e",
+            "type": "chair",
+            "name": "Audience Chair 22",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000007f",
+            "type": "chair",
+            "name": "Audience Chair 23",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000080",
+            "type": "chair",
+            "name": "Audience Chair 24",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000081",
+            "type": "chair",
+            "name": "Audience Chair 25",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000082",
+            "type": "chair",
+            "name": "Audience Chair 26",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000083",
+            "type": "chair",
+            "name": "Audience Chair 27",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000084",
+            "type": "chair",
+            "name": "Audience Chair 28",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000085",
+            "type": "chair",
+            "name": "Audience Chair 29",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000086",
+            "type": "chair",
+            "name": "Audience Chair 30",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000087",
+            "type": "chair",
+            "name": "Audience Chair 31",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000088",
+            "type": "chair",
+            "name": "Audience Chair 32",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000089",
+            "type": "chair",
+            "name": "Audience Chair 33",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008a",
+            "type": "chair",
+            "name": "Audience Chair 34",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008b",
+            "type": "chair",
+            "name": "Audience Chair 35",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008c",
+            "type": "chair",
+            "name": "Audience Chair 36",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008d",
+            "type": "chair",
+            "name": "Audience Chair 37",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008e",
+            "type": "chair",
+            "name": "Audience Chair 38",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000008f",
+            "type": "chair",
+            "name": "Audience Chair 39",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000090",
+            "type": "chair",
+            "name": "Audience Chair 40",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 3.25
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000091",
+            "type": "chair",
+            "name": "Audience Chair 41",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000092",
+            "type": "chair",
+            "name": "Audience Chair 42",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000093",
+            "type": "chair",
+            "name": "Audience Chair 43",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000094",
+            "type": "chair",
+            "name": "Audience Chair 44",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000095",
+            "type": "chair",
+            "name": "Audience Chair 45",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000096",
+            "type": "chair",
+            "name": "Audience Chair 46",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000097",
+            "type": "chair",
+            "name": "Audience Chair 47",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000098",
+            "type": "chair",
+            "name": "Audience Chair 48",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-000000000099",
+            "type": "chair",
+            "name": "Audience Chair 49",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009a",
+            "type": "chair",
+            "name": "Audience Chair 50",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009b",
+            "type": "chair",
+            "name": "Audience Chair 51",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009c",
+            "type": "chair",
+            "name": "Audience Chair 52",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009d",
+            "type": "chair",
+            "name": "Audience Chair 53",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009e",
+            "type": "chair",
+            "name": "Audience Chair 54",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-00000000009f",
+            "type": "chair",
+            "name": "Audience Chair 55",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a0",
+            "type": "chair",
+            "name": "Audience Chair 56",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a1",
+            "type": "chair",
+            "name": "Audience Chair 57",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a2",
+            "type": "chair",
+            "name": "Audience Chair 58",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a3",
+            "type": "chair",
+            "name": "Audience Chair 59",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a4",
+            "type": "chair",
+            "name": "Audience Chair 60",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 4.1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a5",
+            "type": "chair",
+            "name": "Audience Chair 61",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a6",
+            "type": "chair",
+            "name": "Audience Chair 62",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a7",
+            "type": "chair",
+            "name": "Audience Chair 63",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a8",
+            "type": "chair",
+            "name": "Audience Chair 64",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000a9",
+            "type": "chair",
+            "name": "Audience Chair 65",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000aa",
+            "type": "chair",
+            "name": "Audience Chair 66",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ab",
+            "type": "chair",
+            "name": "Audience Chair 67",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ac",
+            "type": "chair",
+            "name": "Audience Chair 68",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ad",
+            "type": "chair",
+            "name": "Audience Chair 69",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ae",
+            "type": "chair",
+            "name": "Audience Chair 70",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000af",
+            "type": "chair",
+            "name": "Audience Chair 71",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b0",
+            "type": "chair",
+            "name": "Audience Chair 72",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b1",
+            "type": "chair",
+            "name": "Audience Chair 73",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b2",
+            "type": "chair",
+            "name": "Audience Chair 74",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b3",
+            "type": "chair",
+            "name": "Audience Chair 75",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b4",
+            "type": "chair",
+            "name": "Audience Chair 76",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b5",
+            "type": "chair",
+            "name": "Audience Chair 77",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b6",
+            "type": "chair",
+            "name": "Audience Chair 78",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b7",
+            "type": "chair",
+            "name": "Audience Chair 79",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b8",
+            "type": "chair",
+            "name": "Audience Chair 80",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 4.95
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000b9",
+            "type": "chair",
+            "name": "Audience Chair 81",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ba",
+            "type": "chair",
+            "name": "Audience Chair 82",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000bb",
+            "type": "chair",
+            "name": "Audience Chair 83",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000bc",
+            "type": "chair",
+            "name": "Audience Chair 84",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000bd",
+            "type": "chair",
+            "name": "Audience Chair 85",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000be",
+            "type": "chair",
+            "name": "Audience Chair 86",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000bf",
+            "type": "chair",
+            "name": "Audience Chair 87",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c0",
+            "type": "chair",
+            "name": "Audience Chair 88",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c1",
+            "type": "chair",
+            "name": "Audience Chair 89",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c2",
+            "type": "chair",
+            "name": "Audience Chair 90",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c3",
+            "type": "chair",
+            "name": "Audience Chair 91",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c4",
+            "type": "chair",
+            "name": "Audience Chair 92",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c5",
+            "type": "chair",
+            "name": "Audience Chair 93",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c6",
+            "type": "chair",
+            "name": "Audience Chair 94",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c7",
+            "type": "chair",
+            "name": "Audience Chair 95",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c8",
+            "type": "chair",
+            "name": "Audience Chair 96",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000c9",
+            "type": "chair",
+            "name": "Audience Chair 97",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ca",
+            "type": "chair",
+            "name": "Audience Chair 98",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000cb",
+            "type": "chair",
+            "name": "Audience Chair 99",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000cc",
+            "type": "chair",
+            "name": "Audience Chair 100",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 5.8
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000cd",
+            "type": "chair",
+            "name": "Audience Chair 101",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ce",
+            "type": "chair",
+            "name": "Audience Chair 102",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000cf",
+            "type": "chair",
+            "name": "Audience Chair 103",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d0",
+            "type": "chair",
+            "name": "Audience Chair 104",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d1",
+            "type": "chair",
+            "name": "Audience Chair 105",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d2",
+            "type": "chair",
+            "name": "Audience Chair 106",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d3",
+            "type": "chair",
+            "name": "Audience Chair 107",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d4",
+            "type": "chair",
+            "name": "Audience Chair 108",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d5",
+            "type": "chair",
+            "name": "Audience Chair 109",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d6",
+            "type": "chair",
+            "name": "Audience Chair 110",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d7",
+            "type": "chair",
+            "name": "Audience Chair 111",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d8",
+            "type": "chair",
+            "name": "Audience Chair 112",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000d9",
+            "type": "chair",
+            "name": "Audience Chair 113",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000da",
+            "type": "chair",
+            "name": "Audience Chair 114",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000db",
+            "type": "chair",
+            "name": "Audience Chair 115",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000dc",
+            "type": "chair",
+            "name": "Audience Chair 116",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000dd",
+            "type": "chair",
+            "name": "Audience Chair 117",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000de",
+            "type": "chair",
+            "name": "Audience Chair 118",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000df",
+            "type": "chair",
+            "name": "Audience Chair 119",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e0",
+            "type": "chair",
+            "name": "Audience Chair 120",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 6.65
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e1",
+            "type": "chair",
+            "name": "Audience Chair 121",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 4.8,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e2",
+            "type": "chair",
+            "name": "Audience Chair 122",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 5.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e3",
+            "type": "chair",
+            "name": "Audience Chair 123",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.2,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e4",
+            "type": "chair",
+            "name": "Audience Chair 124",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 6.9,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e5",
+            "type": "chair",
+            "name": "Audience Chair 125",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 7.6,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e6",
+            "type": "chair",
+            "name": "Audience Chair 126",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 8.3,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e7",
+            "type": "chair",
+            "name": "Audience Chair 127",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e8",
+            "type": "chair",
+            "name": "Audience Chair 128",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 9.7,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000e9",
+            "type": "chair",
+            "name": "Audience Chair 129",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 10.4,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ea",
+            "type": "chair",
+            "name": "Audience Chair 130",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 11.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000eb",
+            "type": "chair",
+            "name": "Audience Chair 131",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 12.9,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ec",
+            "type": "chair",
+            "name": "Audience Chair 132",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 13.6,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ed",
+            "type": "chair",
+            "name": "Audience Chair 133",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 14.3,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ee",
+            "type": "chair",
+            "name": "Audience Chair 134",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000ef",
+            "type": "chair",
+            "name": "Audience Chair 135",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 15.7,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f0",
+            "type": "chair",
+            "name": "Audience Chair 136",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 16.4,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f1",
+            "type": "chair",
+            "name": "Audience Chair 137",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.1,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f2",
+            "type": "chair",
+            "name": "Audience Chair 138",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 17.8,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f3",
+            "type": "chair",
+            "name": "Audience Chair 139",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 18.5,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f4",
+            "type": "chair",
+            "name": "Audience Chair 140",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01",
+            "transform": {
+              "position": {
+                "x": 19.2,
+                "y": 0,
+                "z": 7.5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 0.46,
+              "height": 0.88,
+              "depth": 0.46
+            }
+          },
+          {
+            "id": "cc000000-0000-4000-8000-0000000000f5",
+            "type": "table",
+            "name": "AV Production Console",
+            "assetId": "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e09",
+            "transform": {
+              "position": {
+                "x": 12,
+                "y": 0,
+                "z": 1.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 2.2,
+              "height": 0.75,
+              "depth": 0.9
+            }
+          }
+        ],
+        "zones": [
+          {
+            "id": "cc000000-0000-4000-8000-000000000032",
+            "type": "zone",
+            "name": "Keynote Presentation Zone",
+            "boundary": [
+              {
+                "x": 6.5,
+                "z": 11
+              },
+              {
+                "x": 6.5,
+                "z": 15.5
+              },
+              {
+                "x": 17.5,
+                "z": 15.5
+              },
+              {
+                "x": 17.5,
+                "z": 11
+              }
+            ],
+            "interaction": {
+              "type": "info-panel",
+              "contentRef": "content/keynote.json"
+            }
+          }
+        ]
+      }
+    ],
+    "spawnPoints": [
+      {
+        "id": "cc000000-0000-4000-8000-000000000005",
+        "name": "Auditorium Entrance",
+        "floorId": "cc000000-0000-4000-8000-000000000003",
+        "position": {
+          "x": 12,
+          "y": 0,
+          "z": 0.8
+        },
+        "rotationY": 3.141592653589793,
+        "role": "visitor"
+      }
+    ]
+  }
+}
