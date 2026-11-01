@@ -214,19 +214,14 @@ function galleryFloor(levelHeight) {
     wall(302, lounge[0], lounge[1]),
     wall(303, lounge[1], { x: width, z: galleryDepth }),
     wall(304, { x: width, z: galleryDepth }, meeting[3]),
-    wall(
-      305,
-      meeting[3],
-      lounge[0],
-      {
-        id: id(306),
-        kind: "door",
-        offset: 6,
-        width: 1.4,
-        height: 2.1,
-        sill: 0,
-      },
-    ),
+    wall(305, meeting[3], lounge[0], {
+      id: id(306),
+      kind: "door",
+      offset: 6,
+      width: 1.4,
+      height: 2.1,
+      sill: 0,
+    }),
     wall(307, { x: split, z: 0 }, { x: split, z: galleryDepth }),
   ];
   return {
