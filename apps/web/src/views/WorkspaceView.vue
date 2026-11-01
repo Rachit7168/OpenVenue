@@ -2,8 +2,15 @@
 import { computed, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
-import type { CameraMode, GizmoMode, ObjectPose, QualityMode } from "@openvenue/renderer-3d";
+import {
+  exportVenueGlb,
+  type CameraMode,
+  type GizmoMode,
+  type ObjectPose,
+  type QualityMode,
+} from "@openvenue/renderer-3d";
 import { placeCatalogueAsset } from "../assets/place";
+import { planPdf, planPng, planSvg } from "../export/plan";
 import AssetLibrary from "../components/AssetLibrary.vue";
 import Inspector from "../components/Inspector.vue";
 import PlanEditor from "../components/PlanEditor.vue";
@@ -217,19 +224,64 @@ function onFile(event: Event) {
   reader.readAsText(file);
 }
 
+const exportOpen = ref(false);
+const exportError = ref("");
+
+function download(bytes: string | Uint8Array, type: string, filename: string) {
+  const body: BlobPart =
+    typeof bytes === "string"
+      ? bytes
+      : (() => {
+          const copy = new ArrayBuffer(bytes.byteLength);
+          new Uint8Array(copy).set(bytes);
+          return copy;
+        })();
+  const blob = new Blob([body], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function venueFile(extension: string): string {
+  const name = store.document.venue.name.trim() || "venue";
+  return `${name.replace(/[^\w.-]+/g, "-")}.${extension}`;
+}
+
 function save() {
   const json = store.toJson();
   if (!json) {
     return;
   }
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = store.fileName.endsWith(".json") ? store.fileName : "venue.json";
-  link.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
-  store.markSaved(link.download);
+  download(
+    json,
+    "application/json",
+    store.fileName.endsWith(".json") ? store.fileName : "venue.json",
+  );
+  store.markSaved(store.fileName.endsWith(".json") ? store.fileName : "venue.json");
+}
+
+function saveSvg() {
+  download(planSvg(store.document), "image/svg+xml", venueFile("svg"));
+}
+
+function savePng() {
+  download(planPng(store.document), "image/png", venueFile("png"));
+}
+
+function savePdf() {
+  download(planPdf(store.document), "application/pdf", venueFile("pdf"));
+}
+
+async function saveGlb() {
+  exportError.value = "";
+  try {
+    download(await exportVenueGlb(store.document), "model/gltf-binary", venueFile("glb"));
+  } catch (error) {
+    exportError.value = error instanceof Error ? error.message : "The hall could not be exported.";
+  }
 }
 </script>
 
@@ -517,6 +569,15 @@ function save() {
         </button>
         <button
           type="button"
+          data-testid="export-menu"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+          :aria-expanded="exportOpen"
+          @click="exportOpen = !exportOpen"
+        >
+          Export
+        </button>
+        <button
+          type="button"
           data-testid="open-json"
           class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
           @click="openPicker"
@@ -531,6 +592,55 @@ function save() {
           accept="application/json,.json"
           @change="onFile"
         />
+      </div>
+      <div
+        v-if="exportOpen"
+        data-testid="export-dialog"
+        role="dialog"
+        aria-label="Export venue"
+        class="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+      >
+        <button
+          type="button"
+          data-testid="export-json"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          @click="save"
+        >
+          JSON
+        </button>
+        <button
+          type="button"
+          data-testid="export-svg"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          @click="saveSvg"
+        >
+          SVG
+        </button>
+        <button
+          type="button"
+          data-testid="export-png"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          @click="savePng"
+        >
+          PNG
+        </button>
+        <button
+          type="button"
+          data-testid="export-pdf"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          @click="savePdf"
+        >
+          PDF
+        </button>
+        <button
+          type="button"
+          data-testid="export-glb"
+          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          @click="saveGlb"
+        >
+          GLB
+        </button>
+        <p v-if="exportError" class="text-sm text-red-700 dark:text-red-300">{{ exportError }}</p>
       </div>
 
       <div
