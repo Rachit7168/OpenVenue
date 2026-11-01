@@ -7,6 +7,7 @@ import {
 } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
 import {
+  addAsset,
   addObject,
   addRoom,
   addWall,
@@ -309,5 +310,25 @@ describe("commands", () => {
     expect(() => stack.undo(redone)).toThrow("undo failed");
     expect(stack.canUndo).toBe(true);
     expect(stack.canRedo).toBe(false);
+  });
+
+  it("keeps a placed catalogue file on the document so the object reference is valid", () => {
+    const document = createEmptyVenue("Hall");
+    const floor = floorOf(document);
+    const assetId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01";
+    const stack = new CommandStack();
+    const placed = stack.execute(
+      document,
+      groupCommands("ADD_OBJECT", [
+        addAsset({ id: assetId, name: "Side chair", format: "glb", uri: "/assets/side-chair.glb" }),
+        addObject(floor.id, {
+          ...chair("6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11"),
+          name: "Side chair",
+          assetId,
+        }),
+      ]),
+    );
+    expect(validateVenue(placed).valid).toBe(true);
+    expect(stack.undo(placed).assets).toHaveLength(0);
   });
 });

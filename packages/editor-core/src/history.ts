@@ -2,6 +2,7 @@ import type { VenueDocument } from "@openvenue/scene-schema";
 
 export type CommandType =
   | "ADD_OBJECT"
+  | "ADD_ASSET"
   | "MOVE_OBJECT"
   | "ROTATE_OBJECT"
   | "RESIZE_OBJECT"

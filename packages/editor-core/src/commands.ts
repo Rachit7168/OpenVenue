@@ -1,4 +1,5 @@
 import type {
+  Asset,
   BoxDimensions,
   Room,
   SceneObject,
@@ -312,6 +313,32 @@ function setMaterial(
 
 export function addObject(floorId: string, object: SceneObject): EditorCommand {
   return new AddObjectCommand(floorId, clone(object));
+}
+
+class AddAssetCommand implements EditorCommand {
+  readonly type = "ADD_ASSET" as const;
+
+  constructor(private readonly asset: Asset) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    if (document.assets.some((item) => item.id === this.asset.id)) {
+      return document;
+    }
+    const next = cloneDocument(document);
+    next.assets.push(clone(this.asset));
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    next.assets = next.assets.filter((item) => item.id !== this.asset.id);
+    return next;
+  }
+}
+
+/** Record a catalogue file so an object may reference it. A repeat id leaves the document unchanged. */
+export function addAsset(asset: Asset): EditorCommand {
+  return new AddAssetCommand(clone(asset));
 }
 
 export function moveObject(

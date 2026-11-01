@@ -1,4 +1,5 @@
 export {
+  addAsset,
   addObject,
   addRoom,
   addSpawn,
