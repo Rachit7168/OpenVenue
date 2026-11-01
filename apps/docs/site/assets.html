@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assets · OpenVenue</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <strong>OpenVenue</strong>
+        <nav>
+          <a href="index.html">Getting started</a>
+          <a href="schema.html">Schema</a>
+          <a href="assets.html" aria-current="page">Assets</a>
+          <a href="changelog.html">Release notes</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <h1>Asset guide</h1>
+      <p>
+        The editor ships thirty generated models. Each one is Apache-2.0, with its size and
+        attribution recorded in <code>apps/web/src/assets/catalogue.data.ts</code>. Do not add a
+        model that you cannot redistribute.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Models</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Seating</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>Tables</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>Stage</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td>Booth</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>AV</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>Circulation</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>Signs</td>
+            <td>5</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>A model in the venue file</h2>
+      <p>
+        An asset record needs an id, a name, a format (<code>glb</code>, <code>image</code>, or
+        <code>audio</code>), and a uri. An object that points at an asset id must have that asset in
+        <code>document.assets</code>. Dropping a catalogue chair writes both the object and the
+        asset, as one undo step.
+      </p>
+      <h2>Size</h2>
+      <p>
+        A generated model stays at or under 500 triangles. A box is 12 triangles. Repeated chairs
+        share one mesh in the hall.
+      </p>
+      <h2>Imported GLB files</h2>
+      <p>An imported model is untrusted. The editor refuses it when any of these are true:</p>
+      <ul>
+        <li>The file is larger than 32 MB.</li>
+        <li>It is not glTF 2.0.</li>
+        <li>
+          It uses an extension outside the allow-list, or its JSON contains a script or a forbidden
+          key.
+        </li>
+        <li>A buffer or image URI is anything other than an embedded data URL.</li>
+      </ul>
+      <p>
+        Catalogue files are loaded from this app. An import must not make the browser fetch another
+        address.
+      </p>
+    </main>
+  </body>
+</html>

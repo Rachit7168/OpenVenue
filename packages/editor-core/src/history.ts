@@ -2,6 +2,7 @@ import type { VenueDocument } from "@openvenue/scene-schema";
 
 export type CommandType =
   | "ADD_OBJECT"
+  | "ADD_ASSET"
   | "MOVE_OBJECT"
   | "ROTATE_OBJECT"
   | "RESIZE_OBJECT"
@@ -9,7 +10,16 @@ export type CommandType =
   | "ADD_WALL"
   | "UPDATE_WALL"
   | "ADD_ROOM"
-  | "UPDATE_MATERIAL";
+  | "DELETE_WALL"
+  | "DELETE_ROOM"
+  | "ADD_ZONE"
+  | "DELETE_ZONE"
+  | "ADD_SPAWN"
+  | "DELETE_SPAWN"
+  | "UPDATE_MATERIAL"
+  | "RENAME"
+  | "UPDATE_ZONE"
+  | "SET_FLAG";
 
 export interface EditorCommand {
   readonly type: CommandType;
@@ -56,6 +66,14 @@ export class CommandStack {
     this.undoStack.push(command);
     this.redoStack = [];
     return next;
+  }
+
+  peekUndo(): EditorCommand | null {
+    return this.undoStack[this.undoStack.length - 1] ?? null;
+  }
+
+  peekRedo(): EditorCommand | null {
+    return this.redoStack[this.redoStack.length - 1] ?? null;
   }
 
   undo(document: VenueDocument): VenueDocument {

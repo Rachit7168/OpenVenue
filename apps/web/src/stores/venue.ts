@@ -1,3 +1,4 @@
+import { type EditorCommand, type ExecuteOptions } from "@openvenue/editor-core";
 import {
   createEmptyVenue,
   loadVenueJson,
@@ -80,10 +81,26 @@ export const useVenueStore = defineStore("venue", () => {
 
   function createNew() {
     invalidateLoads();
-    scene.replaceDocument(createEmptyVenue());
+    const current = scene.getDocument();
+    const fresh = createEmptyVenue(current.project.name);
+    fresh.project.id = current.project.id;
+    fresh.project.metadata.createdAt = current.project.metadata.createdAt;
+    fresh.project.metadata.planWidth = current.project.metadata.planWidth;
+    fresh.project.metadata.planDepth = current.project.metadata.planDepth;
+    fresh.venue.id = current.venue.id;
+    fresh.venue.name = current.venue.name;
+    scene.replaceDocument(fresh);
     issues.value = [];
     fileName.value = "venue.json";
     status.value = "New empty venue";
+  }
+
+  function openDocument(next: VenueDocument) {
+    invalidateLoads();
+    scene.replaceDocument(next);
+    issues.value = [];
+    fileName.value = "venue.json";
+    status.value = `Opened ${next.project.name}`;
   }
 
   function renameProject(name: string) {
@@ -142,6 +159,20 @@ export const useVenueStore = defineStore("venue", () => {
     status.value = `Saved ${name}`;
   }
 
+  function execute(command: EditorCommand, options?: ExecuteOptions) {
+    try {
+      scene.execute(command, options);
+      issues.value = [];
+      status.value = "Unsaved changes";
+    } catch (error) {
+      status.value = error instanceof Error ? error.message : "That edit could not be applied.";
+    }
+  }
+
+  function setSelection(ids: readonly string[]) {
+    scene.setSelection(ids);
+  }
+
   function undo() {
     scene.undo();
     status.value = scene.canRedo ? "Undone" : status.value;
@@ -161,6 +192,7 @@ export const useVenueStore = defineStore("venue", () => {
     canUndo,
     canRedo,
     createNew,
+    openDocument,
     renameProject,
     renameVenue,
     loadJson,
@@ -169,6 +201,9 @@ export const useVenueStore = defineStore("venue", () => {
     toJson,
     markSaved,
     maxFileChars: MAX_VENUE_JSON_CHARS,
+    scene,
+    execute,
+    setSelection,
     undo,
     redo,
   };

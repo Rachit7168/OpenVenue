@@ -8,7 +8,18 @@ The editor, the visitor view, and a future live layer all read one `venue.json`.
 
 ## Status
 
-You can create, validate, save, and load a venue document. Geometry (grid snap, walls, rooms) and undoable commands run from code. The 2D canvas and the 3D view are not built yet. The visitor app (`apps/viewer`) stays separate from the editor.
+You can create a project and draw its floor plan: walls, rooms, zones, doors, tables, entrances, and exits. Each wall shows its length, and each door shows its width. Select an item to edit its name, size, and rotation in the inspector. Drag the corner handles to resize a table and the amber handle to rotate it. Shift-click or drag a box to select several items. Middle-drag pans and scroll zooms. The 3D button shows the same hall with walls, a floor, a ceiling, and boxes for the furniture. Orbit and Isometric switch the camera, and Fit and Reset frame the hall. Click a table in 3D to select it, then Move, Rotate, or Scale it; the plan updates and the edit can be undone. Both shows the plan and the 3D hall together, and moving a table on the plan moves that same table in 3D without rebuilding the hall. Floors use concrete, wood, carpet, or glass. Simple turns shadows off for a weak machine, and High keeps a softer light and shadows. Repeated chairs share one mesh, so a crowd of them stays light to draw. Walk uses WASD and the mouse. Click the hall to look around, and Escape returns to orbit. Walls stop the visitor, and doors stay open. Map draws every floor as a cutaway. Drag rotates, right-drag pans, and a click or a floor name opens one level. The asset row searches the catalogue and a drag onto the plan or the 3D hall places the model. Thirty generated models cover seating, tables, stages, booths, AV, doors and stairs, and safety signs. Each one is Apache-2.0, with its size and attribution recorded. Imported GLB files are checked before they load, and script URLs are refused. The selection stays put when you switch views. Projects stay in this browser and save again about two seconds after an edit. Closing the tab keeps the latest copy, and a newer snapshot is restored if the last write was interrupted. The visitor app (`apps/viewer`) stays separate from the editor.
+
+## Demo
+
+**Conference hall** on the project list opens a 24 by 18 metre room with a door, a stage, a podium, and 200 chairs, plus a viewing gallery on the floor above. The file is `examples/conference-hall.venue.json`.
+
+1. Open the plan. The chairs face the stage, with an aisle down the middle and the entrance on the south wall.
+2. Switch to 3D. The same chairs, stage, and podium are in the hall.
+3. Choose Walk, click the hall, and use WASD. Escape returns to orbit.
+4. Choose Map. Both floors sit apart. Click a plate, or its name, to open that floor. Escape shows every floor again.
+
+![Plan, 3D hall, and a walk toward the stage](docs/conference-hall.gif)
 
 The roadmap is the [issue list](https://github.com/Rachit7168/OpenVenue/issues).
 
@@ -23,7 +34,15 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173. The workspace starts from an empty venue (one ground floor and an entrance spawn). **Save JSON** downloads the file. **Open JSON** checks it against the schema and keeps the current venue if the file is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
+The docs site covers getting started, the schema, the asset catalogue, and the release notes:
+
+```bash
+pnpm --filter @openvenue/docs dev
+```
+
+http://127.0.0.1:4174
+
+Open http://localhost:5173. The landing page leads to the project list. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Checks lists planning warnings, such as a missing exit or furniture outside the room, and says they are not a safety certification. Capacity sums the room and the furniture, and the people figure is a planning estimate, not an approved occupancy number. Timings for a 500-table hall and a 2,000-chair hall are in `docs/performance.md`. Playwright walks through creating a hall, editing it, exporting it, and opening it again. Keyboard focus, contrast, and how imported files are checked are in `docs/accessibility.md`. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
 
 ```bash
 pnpm build
@@ -71,15 +90,18 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 
 ## Layout
 
-| Path                    | Role                                  |
-| ----------------------- | ------------------------------------- |
-| `apps/web`              | Vue 3 editor shell                    |
-| `apps/viewer`           | Future read-only visitor app          |
-| `apps/api`              | Optional Django API                   |
-| `packages/scene-schema` | `venue.json` schema, types, validator |
-| `packages/geometry`     | Plan math, snapping, walls, and rooms |
-| `packages/editor-core`  | Undoable commands                     |
-| `packages/scene-engine` | Document store for later 2D and 3D    |
+| Path                    | Role                                        |
+| ----------------------- | ------------------------------------------- |
+| `apps/web`              | Vue 3 editor shell                          |
+| `apps/docs`             | Getting started, schema, assets, changelog  |
+| `apps/viewer`           | Future read-only visitor app                |
+| `apps/api`              | Optional Django API                         |
+| `packages/scene-schema` | `venue.json` schema, types, validator       |
+| `packages/geometry`     | Plan math, snapping, walls, and rooms       |
+| `packages/editor-core`  | Undoable commands                           |
+| `packages/scene-engine` | Document store for the 2D plan and later 3D |
+| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid          |
+| `packages/renderer-3d`  | Three.js hall built from the venue document |
 
 ## License
 

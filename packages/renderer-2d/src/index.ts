@@ -1,2 +1,15 @@
-/** SVG editor viewport. Not implemented yet. */
-export const RENDERER_2D_STATUS = "placeholder" as const;
+export {
+  defaultViewport,
+  fitViewport,
+  footprintCorners,
+  gridLines,
+  panViewport,
+  pointsToPath,
+  screenToWorld,
+  worldToScreen,
+  zoomViewport,
+  type PlanPoint,
+  type ScreenLine,
+  type ScreenPoint,
+  type Viewport,
+} from "./viewport.js";

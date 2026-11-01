@@ -18,6 +18,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level=high
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm generate
@@ -25,6 +26,8 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm --filter @openvenue/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @openvenue/web e2e
 
   api:
     runs-on: ubuntu-latest
@@ -39,6 +42,8 @@ jobs:
           cache: pip
           cache-dependency-path: apps/api/requirements.txt
       - run: pip install -r requirements.txt
+      - run: pip install pip-audit
+      - run: pip-audit -r requirements.txt
       - run: python manage.py check
         env:
           DJANGO_DEBUG: "1"

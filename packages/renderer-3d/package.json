@@ -13,9 +13,17 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@openvenue/scene-schema": "workspace:*",
+    "three": "^0.187.0"
   },
   "devDependencies": {
-    "typescript": "catalog:"
+    "@openvenue/editor-core": "workspace:*",
+    "@types/three": "0.170.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

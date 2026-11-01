@@ -1,2 +1,15 @@
-/** Three.js scene generated from the venue document. Not implemented yet. */
-export const RENDERER_3D_STATUS = "placeholder" as const;
+export type { CameraMode } from "./camera.js";
+export type { GizmoMode, ObjectPose } from "./pick.js";
+export type { QualityMode } from "./quality.js";
+export {
+  DRACO_DECODER_PATH,
+  MAX_GLB_BYTES,
+  loadGlb,
+  loadGlbBytes,
+  rememberModel,
+  validateGlb,
+} from "./glb.js";
+export { exportVenueGlb } from "./export.js";
+export { buildVenueGroup } from "./scene.js";
+export { patchVenueGroup } from "./sync.js";
+export { mountVenueView, type VenueView } from "./view.js";

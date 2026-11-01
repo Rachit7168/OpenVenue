@@ -226,6 +226,9 @@ node_modules/
 .vite/
 .eslintcache
 coverage/
+test-results/
+playwright-report/
+blob-report/
 
 # OS
 .DS_Store

@@ -7,9 +7,15 @@ import {
 } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
 import {
+  addAsset,
   addObject,
   addRoom,
   addWall,
+  addZone,
+  renameEntity,
+  setEntityFlag,
+  updateZone,
+  groupCommands,
   CommandError,
   CommandStack,
   deleteObject,
@@ -180,6 +186,89 @@ describe("commands", () => {
     expect(JSON.stringify(current)).toBe(built);
   });
 
+  it("undoes a grouped room in one step", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue();
+    const floorId = floorOf(document).id;
+    const planned = planRectangularRoom({
+      name: "Room",
+      width: 4,
+      depth: 3,
+      roomId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      wallIds: [
+        "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+        "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+        "ffffffff-ffff-4fff-8fff-ffffffffffff",
+      ],
+    });
+    document = stack.execute(
+      document,
+      groupCommands("ADD_ROOM", [
+        ...planned.walls.map((wall) => addWall(floorId, wall)),
+        addRoom(floorId, planned.room),
+      ]),
+    );
+    expect(floorOf(document).walls).toHaveLength(4);
+    expect(floorOf(document).rooms).toHaveLength(1);
+    expect(validateVenue(document).valid).toBe(true);
+    const undone = stack.undo(document);
+    expect(floorOf(undone).walls).toHaveLength(0);
+    expect(floorOf(undone).rooms).toHaveLength(0);
+    expect(stack.canRedo).toBe(true);
+  });
+
+  it("undoes a rename, a zone interaction, and a visibility flag", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue();
+    const floorId = floorOf(document).id;
+    const zoneId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    document = stack.execute(
+      document,
+      addZone(floorId, {
+        id: zoneId,
+        type: "zone",
+        name: "Zone",
+        boundary: [
+          { x: 0, z: 0 },
+          { x: 0, z: 2 },
+          { x: 2, z: 2 },
+          { x: 2, z: 0 },
+        ],
+        interaction: { type: "none" },
+      }),
+    );
+    document = stack.execute(document, renameEntity(document, zoneId, "Food court"));
+    expect(floorOf(document).zones[0]?.name).toBe("Food court");
+    document = stack.execute(
+      document,
+      updateZone(document, zoneId, {
+        id: zoneId,
+        type: "zone",
+        name: "Food court",
+        boundary: [
+          { x: 0, z: 0 },
+          { x: 0, z: 2 },
+          { x: 2, z: 2 },
+          { x: 2, z: 0 },
+        ],
+        interaction: { type: "menu", contentRef: "content/food.json" },
+        color: "#7c3aed",
+      }),
+    );
+    expect(floorOf(document).zones[0]?.interaction).toEqual({
+      type: "menu",
+      contentRef: "content/food.json",
+    });
+    expect(validateVenue(document).valid).toBe(true);
+    document = stack.undo(document);
+    expect(floorOf(document).zones[0]?.name).toBe("Food court");
+    expect(floorOf(document).zones[0]?.interaction).toEqual({ type: "none" });
+    document = stack.execute(document, setEntityFlag(document, zoneId, "visible", false));
+    expect(floorOf(document).zones[0]?.visible).toBe(false);
+    expect(stack.undo(document).venue.floors[0]?.zones[0]?.visible).toBe(true);
+  });
+
   it("leaves history unchanged when execute, undo, or redo throws", () => {
     const stack = new CommandStack();
     let document = createEmptyVenue();
@@ -221,5 +310,25 @@ describe("commands", () => {
     expect(() => stack.undo(redone)).toThrow("undo failed");
     expect(stack.canUndo).toBe(true);
     expect(stack.canRedo).toBe(false);
+  });
+
+  it("keeps a placed catalogue file on the document so the object reference is valid", () => {
+    const document = createEmptyVenue("Hall");
+    const floor = floorOf(document);
+    const assetId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e01";
+    const stack = new CommandStack();
+    const placed = stack.execute(
+      document,
+      groupCommands("ADD_OBJECT", [
+        addAsset({ id: assetId, name: "Side chair", format: "glb", uri: "/assets/side-chair.glb" }),
+        addObject(floor.id, {
+          ...chair("6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e11"),
+          name: "Side chair",
+          assetId,
+        }),
+      ]),
+    );
+    expect(validateVenue(placed).valid).toBe(true);
+    expect(stack.undo(placed).assets).toHaveLength(0);
   });
 });

@@ -1,0 +1,11 @@
+{
+  "name": "@openvenue/docs",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node serve.mjs",
+    "build": "node build.mjs",
+    "test": "node build.mjs"
+  }
+}

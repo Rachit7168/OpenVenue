@@ -10,6 +10,7 @@ export default tseslint.config(
       "**/node_modules/**",
       "**/coverage/**",
       "apps/api/**",
+      "apps/web/public/draco/**",
       "pnpm-lock.yaml",
     ],
   },
@@ -21,6 +22,21 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
+      },
+    },
+  },
+  {
+    files: ["scripts/**/*.mjs", "examples/**/*.mjs", "apps/docs/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        Buffer: "readonly",
+        clearInterval: "readonly",
+        clearTimeout: "readonly",
+        console: "readonly",
+        process: "readonly",
+        URL: "readonly",
+        setInterval: "readonly",
+        setTimeout: "readonly",
       },
     },
   },
