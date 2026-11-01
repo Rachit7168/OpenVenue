@@ -41,9 +41,19 @@ jobs:
               '- 🧪 **CI Checks & Tests**: Please make sure all automated tests and checks pass. If tests fail, click on the check run details, inspect the logs, and push fixes to this branch.',
               '- 🤖 **AI Code Review**: If automated AI review comments or suggestions are posted on this PR, please take a moment to address them or reply to the threads.',
               '- 💬 **Collaborative Feedback**: If maintainers request changes, resolve them directly in the review comments or discussions.',
+            ];
+
+            if (pr.base && pr.base.ref === 'main' && (!pr.head || pr.head.ref !== 'dev')) {
+              lines.push(
+                '',
+                '> ⚠️ **Important Notice**: This pull request is currently opened against `main`. All contributions must target the `dev` branch. Please change the base branch of this PR to `dev` by clicking **Edit** next to the PR title.'
+              );
+            }
+
+            lines.push(
               '',
               'We truly appreciate your time and effort in making OpenVenue better!',
-            ];
+            );
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
