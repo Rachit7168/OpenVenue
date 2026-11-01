@@ -4787,6 +4787,185 @@
           }
         ],
         "zones": []
+      },
+      {
+        "id": "c0ffee00-0000-4000-8000-00000000012c",
+        "name": "Viewing gallery",
+        "level": 1,
+        "elevation": 4,
+        "height": 3,
+        "rooms": [
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000012d",
+            "name": "Lounge",
+            "boundary": [
+              {
+                "x": 0,
+                "z": 0
+              },
+              {
+                "x": 0,
+                "z": 8
+              },
+              {
+                "x": 16,
+                "z": 8
+              },
+              {
+                "x": 16,
+                "z": 0
+              }
+            ],
+            "floorMaterial": "wood"
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000136",
+            "name": "Meeting room",
+            "boundary": [
+              {
+                "x": 16,
+                "z": 0
+              },
+              {
+                "x": 16,
+                "z": 8
+              },
+              {
+                "x": 24,
+                "z": 8
+              },
+              {
+                "x": 24,
+                "z": 0
+              }
+            ],
+            "floorMaterial": "carpet"
+          }
+        ],
+        "walls": [
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000012e",
+            "start": {
+              "x": 0,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 8
+            },
+            "thickness": 0.2,
+            "height": 3
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-00000000012f",
+            "start": {
+              "x": 0,
+              "z": 8
+            },
+            "end": {
+              "x": 24,
+              "z": 8
+            },
+            "thickness": 0.2,
+            "height": 3
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000130",
+            "start": {
+              "x": 24,
+              "z": 8
+            },
+            "end": {
+              "x": 24,
+              "z": 0
+            },
+            "thickness": 0.2,
+            "height": 3
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000131",
+            "start": {
+              "x": 24,
+              "z": 0
+            },
+            "end": {
+              "x": 0,
+              "z": 0
+            },
+            "thickness": 0.2,
+            "height": 3,
+            "openings": [
+              {
+                "id": "c0ffee00-0000-4000-8000-000000000132",
+                "kind": "door",
+                "offset": 6,
+                "width": 1.4,
+                "height": 2.1,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000133",
+            "start": {
+              "x": 16,
+              "z": 0
+            },
+            "end": {
+              "x": 16,
+              "z": 8
+            },
+            "thickness": 0.2,
+            "height": 3
+          }
+        ],
+        "objects": [
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000137",
+            "type": "table",
+            "name": "Lounge table",
+            "transform": {
+              "position": {
+                "x": 6,
+                "y": 0,
+                "z": 4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.6,
+              "height": 0.75,
+              "depth": 0.8
+            }
+          },
+          {
+            "id": "c0ffee00-0000-4000-8000-000000000138",
+            "type": "table",
+            "name": "Meeting table",
+            "transform": {
+              "position": {
+                "x": 20,
+                "y": 0,
+                "z": 4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              }
+            },
+            "dimensions": {
+              "width": 1.6,
+              "height": 0.75,
+              "depth": 0.8
+            }
+          }
+        ],
+        "zones": []
       }
     ],
     "spawnPoints": [
@@ -4801,6 +4980,30 @@
         },
         "rotationY": 3.141592653589793,
         "role": "visitor"
+      },
+      {
+        "id": "c0ffee00-0000-4000-8000-000000000134",
+        "name": "Gallery entrance",
+        "floorId": "c0ffee00-0000-4000-8000-00000000012c",
+        "position": {
+          "x": 8,
+          "y": 4,
+          "z": 1.2
+        },
+        "rotationY": 3.141592653589793,
+        "role": "visitor"
+      },
+      {
+        "id": "c0ffee00-0000-4000-8000-000000000135",
+        "name": "Gallery exit",
+        "floorId": "c0ffee00-0000-4000-8000-00000000012c",
+        "position": {
+          "x": 4,
+          "y": 4,
+          "z": 1.2
+        },
+        "rotationY": 3.141592653589793,
+        "role": "exit"
       }
     ]
   }

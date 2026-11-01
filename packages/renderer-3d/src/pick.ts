@@ -28,6 +28,19 @@ export function entityIdFromHit(object: Object3D, instanceId?: number): string |
   return entityIdOf(object);
 }
 
+/** Floor id stored on the group that owns a hit mesh. */
+export function floorIdOf(object: Object3D): string | null {
+  let current: Object3D | null = object;
+  while (current) {
+    const id = current.userData.floorId;
+    if (typeof id === "string" && id.length > 0) {
+      return id;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
 /** Furniture id stored on a mesh, walking up to the venue group. */
 export function entityIdOf(object: Object3D): string | null {
   let current: Object3D | null = object;

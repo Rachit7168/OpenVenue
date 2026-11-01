@@ -20,8 +20,8 @@ export function patchVenueGroup(
   if (!commandType || !LIVE_EDITS.has(commandType)) {
     return false;
   }
-  const floor = document.venue.floors[0];
-  if (!floor) {
+  const floors = document.venue.floors;
+  if (floors.length === 0) {
     return false;
   }
   const meshes = new Map<string, THREE.Mesh>();
@@ -40,7 +40,7 @@ export function patchVenueGroup(
     }
   });
   const chairs = indexChairs(group);
-  const visible = floor.objects.filter((object) => shown(object));
+  const visible = floors.flatMap((floor) => floor.objects.filter((object) => shown(object)));
   if (
     visible.some(
       (object) => !meshes.has(object.id) && !chairs.has(object.id) && !models.has(object.id),

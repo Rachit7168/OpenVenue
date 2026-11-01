@@ -81,7 +81,12 @@ describe("glb models", () => {
       dimensions: { width: 1.2, height: 0.75, depth: 0.8 },
     });
     const group = buildVenueGroup(document);
-    const placed = group.children.find((child) => child.userData.entityId === "table-1");
+    let placed: THREE.Object3D | undefined;
+    group.traverse((child) => {
+      if (child.userData.entityId === "table-1") {
+        placed = child;
+      }
+    });
     if (!placed) {
       throw new Error("missing model");
     }

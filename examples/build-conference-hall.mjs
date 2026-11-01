@@ -156,6 +156,7 @@ const document = {
         ],
         zones: [],
       },
+      galleryFloor(height),
     ],
     spawnPoints: [
       {
@@ -166,9 +167,114 @@ const document = {
         rotationY: Math.PI,
         role: "visitor",
       },
+      {
+        id: id(308),
+        name: "Gallery entrance",
+        floorId: id(300),
+        position: { x: 8, y: height, z: 1.2 },
+        rotationY: Math.PI,
+        role: "visitor",
+      },
+      {
+        id: id(309),
+        name: "Gallery exit",
+        floorId: id(300),
+        position: { x: 4, y: height, z: 1.2 },
+        rotationY: Math.PI,
+        role: "exit",
+      },
     ],
   },
 };
+
+function galleryFloor(levelHeight) {
+  const galleryDepth = 8;
+  const split = 16;
+  const lounge = [
+    { x: 0, z: 0 },
+    { x: 0, z: galleryDepth },
+    { x: split, z: galleryDepth },
+    { x: split, z: 0 },
+  ];
+  const meeting = [
+    { x: split, z: 0 },
+    { x: split, z: galleryDepth },
+    { x: width, z: galleryDepth },
+    { x: width, z: 0 },
+  ];
+  const wall = (index, start, end, opening) => ({
+    id: id(index),
+    start,
+    end,
+    thickness: 0.2,
+    height: 3,
+    ...(opening ? { openings: [opening] } : {}),
+  });
+  const walls = [
+    wall(302, lounge[0], lounge[1]),
+    wall(303, lounge[1], { x: width, z: galleryDepth }),
+    wall(304, { x: width, z: galleryDepth }, meeting[3]),
+    wall(
+      305,
+      meeting[3],
+      lounge[0],
+      {
+        id: id(306),
+        kind: "door",
+        offset: 6,
+        width: 1.4,
+        height: 2.1,
+        sill: 0,
+      },
+    ),
+    wall(307, { x: split, z: 0 }, { x: split, z: galleryDepth }),
+  ];
+  return {
+    id: id(300),
+    name: "Viewing gallery",
+    level: 1,
+    elevation: levelHeight,
+    height: 3,
+    rooms: [
+      {
+        id: id(301),
+        name: "Lounge",
+        boundary: lounge,
+        floorMaterial: "wood",
+      },
+      {
+        id: id(310),
+        name: "Meeting room",
+        boundary: meeting,
+        floorMaterial: "carpet",
+      },
+    ],
+    walls,
+    objects: [
+      {
+        id: id(311),
+        type: "table",
+        name: "Lounge table",
+        transform: {
+          position: { x: 6, y: 0, z: 4 },
+          rotation: { x: 0, y: 0, z: 0 },
+        },
+        dimensions: { width: 1.6, height: 0.75, depth: 0.8 },
+      },
+      {
+        id: id(312),
+        type: "table",
+        name: "Meeting table",
+        transform: {
+          position: { x: 20, y: 0, z: 4 },
+          rotation: { x: 0, y: 0, z: 0 },
+        },
+        dimensions: { width: 1.6, height: 0.75, depth: 0.8 },
+      },
+    ],
+    zones: [],
+  };
+}
 
 if (chairs.length !== 200) {
   throw new Error(`expected 200 chairs, got ${chairs.length}`);

@@ -24,7 +24,12 @@ describe("plan and 3D sync", () => {
     });
     const store = new SceneStore(document);
     const group = buildVenueGroup(store.getDocument());
-    const mesh = group.children.find((child) => child.userData.entityId === "stage-1");
+    let mesh: { position: { x: number; z: number } } | undefined;
+    group.traverse((child) => {
+      if (child.userData.entityId === "stage-1") {
+        mesh = child;
+      }
+    });
     if (!mesh) {
       throw new Error("missing stage");
     }

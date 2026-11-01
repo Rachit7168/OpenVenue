@@ -2,7 +2,17 @@ import { createEmptyVenue } from "@openvenue/scene-schema";
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { materialPreset } from "./materials.js";
-import { buildVenueGroup } from "./scene.js";
+import { buildVenueGroup, MAP_FLOOR_GAP, MAP_WALL_HEIGHT } from "./scene.js";
+
+function nodesOf(group: THREE.Object3D): THREE.Object3D[] {
+  const nodes: THREE.Object3D[] = [];
+  group.traverse((child) => {
+    if (child !== group) {
+      nodes.push(child);
+    }
+  });
+  return nodes;
+}
 
 describe("buildVenueGroup", () => {
   it("builds a floor, a ceiling, and a wall with a door lintel", () => {
@@ -42,7 +52,7 @@ describe("buildVenueGroup", () => {
 
     const group = buildVenueGroup(document);
     const box = new THREE.Box3().setFromObject(group);
-    expect(group.children.length).toBeGreaterThanOrEqual(5);
+    expect(nodesOf(group).filter((child) => child instanceof THREE.Mesh).length).toBeGreaterThanOrEqual(5);
     expect(box.max.y).toBeGreaterThan(2.5);
     expect(box.max.x).toBeGreaterThan(9);
   });
@@ -71,7 +81,7 @@ describe("buildVenueGroup", () => {
 
     const group = buildVenueGroup(document);
     const windowGap = new THREE.Vector3(4.5, 1.6, 0);
-    const covered = group.children.some((child) => {
+    const covered = nodesOf(group).some((child) => {
       if (!(child instanceof THREE.Mesh)) {
         return false;
       }
@@ -79,7 +89,7 @@ describe("buildVenueGroup", () => {
     });
     expect(covered).toBe(false);
     expect(new THREE.Box3().setFromObject(group).max.x).toBeLessThanOrEqual(10.2);
-    const marker = group.children.find(
+    const marker = nodesOf(group).find(
       (child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry,
     );
     expect(marker?.position.y).toBeCloseTo(2.22);
@@ -126,14 +136,15 @@ describe("buildVenueGroup", () => {
     });
 
     const group = buildVenueGroup(document);
-    const slabs = group.children.filter(
+    const nodes = nodesOf(group);
+    const slabs = nodes.filter(
       (child) =>
         child instanceof THREE.Mesh &&
         !(child instanceof THREE.InstancedMesh) &&
         child.material === materialPreset("wood"),
     );
     expect(slabs.length).toBeGreaterThan(0);
-    const batches = group.children.filter((child) => child instanceof THREE.InstancedMesh);
+    const batches = nodes.filter((child) => child instanceof THREE.InstancedMesh);
     expect(batches).toHaveLength(2);
     const crowd = batches.find(
       (child) => child instanceof THREE.InstancedMesh && child.count === 200,
@@ -144,6 +155,69 @@ describe("buildVenueGroup", () => {
     expect(crowd.material).toBe(materialPreset("wood"));
     crowd.computeBoundingSphere();
     expect(crowd.boundingSphere?.radius ?? 0).toBeGreaterThan(2);
-    expect(group.children.some((child) => child.userData.entityId === "chair-0")).toBe(false);
+    expect(nodes.some((child) => child.userData.entityId === "chair-0")).toBe(false);
+  });
+
+  it("stacks every floor and draws the map as short separated plates", () => {
+    const document = createEmptyVenue();
+    const ground = document.venue.floors[0];
+    if (!ground) {
+      throw new Error("missing floor");
+    }
+    ground.rooms.push({
+      id: "hall",
+      name: "Hall",
+      boundary: [
+        { x: 0, z: 0 },
+        { x: 0, z: 8 },
+        { x: 10, z: 8 },
+        { x: 10, z: 0 },
+      ],
+    });
+    ground.walls.push({
+      id: "south",
+      start: { x: 0, z: 0 },
+      end: { x: 10, z: 0 },
+      thickness: 0.2,
+      height: 3,
+    });
+    const gallery = {
+      ...ground,
+      id: "gallery",
+      name: "Gallery",
+      level: 1,
+      elevation: 4,
+      rooms: ground.rooms.map((room) => ({ ...room, id: "gallery-room" })),
+      walls: ground.walls.map((wall) => ({ ...wall, id: "gallery-wall" })),
+      objects: [],
+      zones: [],
+    };
+    document.venue.floors.push(gallery);
+
+    const hall = buildVenueGroup(document);
+    const hallFloors = hall.children.filter((child) => child.userData.floorId);
+    expect(hallFloors.map((child) => child.position.y)).toEqual([0, 4]);
+    expect(new THREE.Box3().setFromObject(hall).max.y).toBeGreaterThan(6);
+
+    const map = buildVenueGroup(document, { style: "map" });
+    const plates = map.children.filter((child) => typeof child.userData.floorId === "string");
+    expect(plates[1]?.position.y).toBeCloseTo(4 + MAP_FLOOR_GAP);
+    const wall = nodesOf(plates[0] ?? map).find(
+      (child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.BoxGeometry,
+    );
+    if (!(wall instanceof THREE.Mesh) || !(wall.geometry instanceof THREE.BoxGeometry)) {
+      throw new Error("missing map wall");
+    }
+    expect(wall.geometry.parameters.height).toBeCloseTo(MAP_WALL_HEIGHT);
+    expect(
+      nodesOf(map).some(
+        (child) => child instanceof THREE.Mesh && child.material === materialPreset("concrete"),
+      ),
+    ).toBe(false);
+
+    const one = buildVenueGroup(document, { style: "map", floorId: "gallery" });
+    expect(one.children).toHaveLength(1);
+    expect(one.children[0]?.userData.floorId).toBe("gallery");
+    expect(one.children[0]?.position.y).toBeCloseTo(4);
   });
 });

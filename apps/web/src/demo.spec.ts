@@ -28,5 +28,9 @@ describe("conference hall example", () => {
       floor.walls.some((wall) => wall.openings?.some((opening) => opening.kind === "door")),
     ).toBe(true);
     expect(result.document.venue.spawnPoints[0]?.position.z).toBeGreaterThan(0);
+    expect(result.document.venue.floors.map((floor) => floor.name)).toEqual([
+      "Ground floor",
+      "Viewing gallery",
+    ]);
   });
 });

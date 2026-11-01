@@ -13,6 +13,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 const props = defineProps<{
   scene: SceneSource;
   cameraMode: CameraMode;
+  mapFloorId: string | null;
   eyeHeight: number;
   gizmoMode: GizmoMode;
   qualityMode: QualityMode;
@@ -24,6 +25,7 @@ const emit = defineEmits<{
   transform: [id: string, mode: GizmoMode, pose: ObjectPose];
   place: [assetId: string, point: { x: number; z: number }];
   exitWalk: [];
+  floor: [floorId: string];
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -53,6 +55,7 @@ onMounted(() => {
     onSelect: (id) => emit("select", id),
     onTransform: (id, mode, pose) => emit("transform", id, mode, pose),
     onExitWalk: () => emit("exitWalk"),
+    onFloor: (floorId) => emit("floor", floorId),
   });
   view.setDocument(props.scene.getDocument());
   unsubscribe = props.scene.subscribe((change) => {
@@ -61,6 +64,7 @@ onMounted(() => {
     }
   });
   view.setCameraMode(props.cameraMode);
+  view.setMapFloor(props.mapFloorId);
   view.setEyeHeight(props.eyeHeight);
   view.setGizmoMode(props.gizmoMode);
   view.setQuality(props.qualityMode);
@@ -76,6 +80,11 @@ onMounted(() => {
 watch(
   () => props.cameraMode,
   (mode) => view?.setCameraMode(mode),
+);
+
+watch(
+  () => props.mapFloorId,
+  (floorId) => view?.setMapFloor(floorId),
 );
 
 watch(
