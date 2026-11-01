@@ -286,9 +286,22 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     return hit ? entityIdFromHit(hit.object, hit.instanceId) : null;
   };
 
-  const pickFloorId = (clientX: number, clientY: number): string | null => {
-    const hit = pickHit(clientX, clientY);
-    return hit ? floorIdOf(hit.object) : null;
+  const tintMapSelection = () => {
+    if (!venue) {
+      return;
+    }
+    venue.traverse((child) => {
+      const color = child.userData.mapColor;
+      if (typeof color !== "string" || !(child instanceof THREE.Mesh)) {
+        return;
+      }
+      const material = child.material;
+      if (!(material instanceof THREE.MeshStandardMaterial)) {
+        return;
+      }
+      const chosen = mode === "map" && child.userData.entityId === selectedId;
+      material.color.set(chosen ? "#5eead4" : color);
+    });
   };
 
   const onPointerDown = (event: PointerEvent) => {
@@ -312,10 +325,12 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       return;
     }
     if (mode === "map" && mapFloorId === null) {
-      const floorId = pickFloorId(event.clientX, event.clientY);
+      const hit = pickHit(event.clientX, event.clientY);
+      const floorId = hit ? floorIdOf(hit.object) : null;
       if (floorId) {
         onFloor(floorId);
       }
+      onSelect(hit ? entityIdFromHit(hit.object, hit.instanceId) : null);
       return;
     }
     onSelect(pickId(event.clientX, event.clientY));
@@ -490,6 +505,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     scene.add(venue);
     scene.background = new THREE.Color(mode === "map" ? "#e8eaf6" : "#09090b");
     controls.zoomToCursor = mode === "map";
+    tintMapSelection();
     attachSelected();
     const replace = framedVenueId !== document.venue.id;
     if (!replace && !aimCamera) {
@@ -583,6 +599,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     },
     setSelected(id) {
       selectedId = id;
+      tintMapSelection();
       attachSelected();
     },
     setGizmoMode(next) {

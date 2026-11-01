@@ -419,6 +419,7 @@ function addFloor(
     slab.receiveShadow = !map;
     if (map) {
       slab.userData.entityId = room.id;
+      slab.userData.mapColor = mapRoomColors[index % mapRoomColors.length];
     }
     slab.userData.ownMaterial = map;
     group.add(slab);

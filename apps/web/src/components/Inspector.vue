@@ -237,12 +237,12 @@ function distribute() {
     class="flex h-full w-full flex-col overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200"
   >
     <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-400">Inspector</h2>
-    <p v-if="store.selection.length === 0" class="mt-3 text-zinc-400">
+    <p v-if="store.selection.length > 1" class="mt-3 text-zinc-300">
+      {{ store.selection.length }} selected
+    </p>
+    <p v-else-if="!room && !zone && !object && !spawn" class="mt-3 text-zinc-400">
       Select a room, table, or zone. Shift-click adds to the selection. Drag on empty floor to
       box-select.
-    </p>
-    <p v-else-if="store.selection.length > 1" class="mt-3 text-zinc-300">
-      {{ store.selection.length }} selected
     </p>
 
     <div v-if="selectedObjects.length > 1" class="mt-3 flex flex-wrap gap-2">

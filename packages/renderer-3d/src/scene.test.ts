@@ -52,7 +52,9 @@ describe("buildVenueGroup", () => {
 
     const group = buildVenueGroup(document);
     const box = new THREE.Box3().setFromObject(group);
-    expect(nodesOf(group).filter((child) => child instanceof THREE.Mesh).length).toBeGreaterThanOrEqual(5);
+    expect(
+      nodesOf(group).filter((child) => child instanceof THREE.Mesh).length,
+    ).toBeGreaterThanOrEqual(5);
     expect(box.max.y).toBeGreaterThan(2.5);
     expect(box.max.x).toBeGreaterThan(9);
   });
@@ -219,5 +221,7 @@ describe("buildVenueGroup", () => {
     expect(one.children).toHaveLength(1);
     expect(one.children[0]?.userData.floorId).toBe("gallery");
     expect(one.children[0]?.position.y).toBeCloseTo(4);
+    const room = nodesOf(one).find((child) => child.userData.entityId === "gallery-room");
+    expect(room?.userData.mapColor).toBe("#93c5fd");
   });
 });
