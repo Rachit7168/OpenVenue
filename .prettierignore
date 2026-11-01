@@ -5,3 +5,6 @@ pnpm-lock.yaml
 apps/api
 apps/web/public/draco
 .venv
+.cursor
+AGENTS.md
+CLAUDE.md
