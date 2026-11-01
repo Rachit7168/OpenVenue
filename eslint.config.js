@@ -26,6 +26,20 @@ export default tseslint.config(
     },
   },
   {
+    files: ["scripts/**/*.mjs", "examples/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        Buffer: "readonly",
+        clearInterval: "readonly",
+        clearTimeout: "readonly",
+        console: "readonly",
+        process: "readonly",
+        setInterval: "readonly",
+        setTimeout: "readonly",
+      },
+    },
+  },
+  {
     files: ["**/*.{ts,vue}"],
     rules: {
       "no-undef": "off",

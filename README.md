@@ -33,7 +33,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173. The landing page leads to the project list. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Checks lists planning warnings, such as a missing exit or furniture outside the room, and says they are not a safety certification. Capacity sums the room and the furniture, and the people figure is a planning estimate, not an approved occupancy number. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
+Open http://localhost:5173. The landing page leads to the project list. **New project** asks for a name, hall size, ceiling height, and either an empty hall or a rectangular room. The list stays after a reload. Open a project to rename it, save JSON, or load a file. Checks lists planning warnings, such as a missing exit or furniture outside the room, and says they are not a safety certification. Capacity sums the room and the furniture, and the people figure is a planning estimate, not an approved occupancy number. Timings for a 500-table hall and a 2,000-chair hall are in `docs/performance.md`. Export writes the same hall as JSON, an SVG or PNG plan, a one-page PDF, or a GLB. **Open JSON** checks the file against the schema and keeps the current venue if it is invalid. Use **Light** / **Dark** in the top bar to switch theme. The default is dark.
 
 ```bash
 pnpm build
