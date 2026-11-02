@@ -101,12 +101,38 @@ const cards = computed(() =>
     return {
       id: document.project.id,
       name: document.project.name,
-      updatedAt: document.project.metadata.updatedAt,
+      updatedAt: formatUpdatedAt(document.project.metadata.updatedAt),
       size,
       document,
     };
   }),
 );
+
+function formatUpdatedAt(value: unknown): string {
+  if (typeof value !== "string" || !value.trim()) {
+    return "Unknown update time";
+  }
+  const calendar = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);
+  if (!calendar) {
+    return "Unknown update time";
+  }
+  const year = Number(calendar[1]);
+  const month = Number(calendar[2]);
+  const day = Number(calendar[3]);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month < 1 || month > 12 || day < 1 || day > (daysInMonth[month - 1] ?? 0)) {
+    return "Unknown update time";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown update time";
+  }
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
 
 function createProject() {
   formError.value = "";
