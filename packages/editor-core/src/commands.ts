@@ -851,65 +851,6 @@ class UpdateFloorCommand implements EditorCommand {
   }
 }
 
-function assertFloorFields(floor: Pick<Floor, "name" | "elevation" | "height" | "level">): void {
-  if (floor.name.length < 1 || floor.name.length > 200) {
-    throw new CommandError("Floor name must be between 1 and 200 characters");
-  }
-  if (!Number.isFinite(floor.elevation)) {
-    throw new CommandError("Floor elevation must be a finite number");
-  }
-  if (!Number.isFinite(floor.height) || floor.height <= 0) {
-    throw new CommandError("Floor height must be positive");
-  }
-  if (!Number.isInteger(floor.level)) {
-    throw new CommandError("Floor level must be an integer");
-  }
-}
-
-function floorEntityIds(floor: Floor): string[] {
-  return [
-    floor.id,
-    ...floor.walls.flatMap((wall) => [
-      wall.id,
-      ...(wall.openings ?? []).map((opening) => opening.id),
-    ]),
-    ...floor.rooms.map((room) => room.id),
-    ...floor.objects.map((object) => object.id),
-    ...floor.zones.map((zone) => zone.id),
-  ];
-}
-
-function documentIds(document: VenueDocument): Set<string> {
-  const ids = new Set<string>([
-    document.project.id,
-    document.venue.id,
-    ...document.assets.map((asset) => asset.id),
-    ...document.venue.spawnPoints.map((spawn) => spawn.id),
-  ]);
-  for (const floor of document.venue.floors) {
-    for (const id of floorEntityIds(floor)) {
-      ids.add(id);
-    }
-  }
-  for (const area of document.venue.navigation?.walkableAreas ?? []) {
-    ids.add(area.id);
-  }
-  for (const waypoint of document.venue.navigation?.waypoints ?? []) {
-    ids.add(waypoint.id);
-  }
-  return ids;
-}
-
-function assertFloorIdsAreFree(document: VenueDocument, floor: Floor): void {
-  const used = documentIds(document);
-  for (const id of floorEntityIds(floor)) {
-    if (used.has(id)) {
-      throw new CommandError(`Id ${id} is already used`);
-    }
-    used.add(id);
-  }
-}
-
 function applyFloorPatch(
   document: VenueDocument,
   floorId: string,
