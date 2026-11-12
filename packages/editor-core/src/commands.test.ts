@@ -8,10 +8,12 @@ import {
 import { describe, expect, it } from "vitest";
 import {
   addAsset,
+  addFloor,
   addObject,
   addRoom,
   addWall,
   addZone,
+  updateFloor,
   renameEntity,
   setEntityFlag,
   updateZone,
@@ -330,5 +332,44 @@ describe("commands", () => {
     );
     expect(validateVenue(placed).valid).toBe(true);
     expect(stack.undo(placed).assets).toHaveLength(0);
+  });
+
+  it("adds a floor and updates its elevation with undo and redo", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue("Tower");
+    const upperId = "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e99";
+    document = stack.execute(
+      document,
+      addFloor({
+        id: upperId,
+        name: "Level 1",
+        level: 1,
+        elevation: 3.5,
+        height: 3.5,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    expect(document.venue.floors).toHaveLength(2);
+    expect(validateVenue(document).valid).toBe(true);
+
+    document = stack.execute(
+      document,
+      updateFloor(document, upperId, { elevation: 4.5, name: "Mezzanine" }),
+    );
+    expect(document.venue.floors[1]?.elevation).toBe(4.5);
+    expect(document.venue.floors[1]?.name).toBe("Mezzanine");
+
+    document = stack.undo(document);
+    expect(document.venue.floors[1]?.elevation).toBe(3.5);
+    expect(document.venue.floors[1]?.name).toBe("Level 1");
+
+    document = stack.undo(document);
+    expect(document.venue.floors).toHaveLength(1);
+
+    document = stack.redo(document);
+    expect(document.venue.floors).toHaveLength(2);
   });
 });

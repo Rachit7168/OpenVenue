@@ -127,7 +127,10 @@ const lengthLabel = computed(() => {
 });
 
 function floorOf(document: VenueDocument) {
-  return document.venue.floors[0];
+  return (
+    document.venue.floors.find((floor) => floor.id === store.activeFloorId) ??
+    document.venue.floors[0]
+  );
 }
 
 function place(point: PlanPoint): PlanPoint {
@@ -611,7 +614,7 @@ function onKey(event: KeyboardEvent) {
 }
 
 function onNudge(x: number, z: number) {
-  const floor = store.document.venue.floors[0];
+  const floor = store.activeFloor;
   if (!floor) {
     return;
   }
@@ -641,6 +644,7 @@ function onAssetDrop(point: PlanPoint, assetId: string) {
     assetId,
     point.x,
     point.z,
+    store.activeFloorId,
   );
   if (name) {
     note.value = `Placed ${name}`;
@@ -674,6 +678,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         class="min-h-0 flex-1"
         :document="store.document"
         :source="store.scene"
+        :floor-index="store.activeFloorIndex"
         :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
         :draft="shownDraft"
         :selected-ids="[...store.selection]"

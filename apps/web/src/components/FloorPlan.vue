@@ -27,6 +27,7 @@ const props = withDefaults(
     selectedIds?: string[];
     marquee?: PlanPoint[];
     message?: string;
+    floorIndex?: number;
   }>(),
   {
     source: undefined,
@@ -36,6 +37,7 @@ const props = withDefaults(
     selectedIds: () => [],
     marquee: () => [],
     message: "",
+    floorIndex: 0,
   },
 );
 
@@ -59,7 +61,7 @@ let observer: ResizeObserver | null = null;
 let unsubscribe: (() => void) | null = null;
 
 const drawing = ref(props.document);
-const scene = computed(() => planScene(drawing.value));
+const scene = computed(() => planScene(drawing.value, props.floorIndex));
 const wallLabels = computed(() => wallAnnotations(scene.value.walls));
 const openingLabels = computed(() => openingAnnotations(scene.value.openings));
 const objectLabels = computed(() => objectAnnotations(scene.value.objects));

@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
-import { groupCommands, moveObject, resizeObject, rotateObject } from "@openvenue/editor-core";
+import {
+  addFloor,
+  groupCommands,
+  moveObject,
+  resizeObject,
+  rotateObject,
+  updateFloor,
+} from "@openvenue/editor-core";
 import {
   exportVenueGlb,
   type CameraMode,
@@ -110,7 +117,7 @@ const selectedObjectId = computed(() => {
     return null;
   }
   const id = store.selection[0] ?? null;
-  const objects = store.document.venue.floors[0]?.objects ?? [];
+  const objects = store.document.venue.floors.flatMap((floor) => floor.objects);
   return id && objects.some((object) => object.id === id) ? id : null;
 });
 
@@ -119,11 +126,55 @@ function nearly(a: number, b: number): boolean {
 }
 
 function onPlaceAsset(assetId: string, point: { x: number; z: number }) {
-  placeCatalogueAsset(store.execute, store.document, assetId, point.x, point.z);
+  placeCatalogueAsset(
+    store.execute,
+    store.document,
+    assetId,
+    point.x,
+    point.z,
+    store.activeFloorId,
+  );
+}
+
+function createNextFloor() {
+  const sorted = mapFloors.value;
+  const topFloor = sorted[sorted.length - 1];
+  const nextLevel = topFloor ? topFloor.level + 1 : 0;
+  const nextElevation = topFloor ? topFloor.elevation + topFloor.height : 0;
+  const height = topFloor?.height ?? 3;
+  const floorId = crypto.randomUUID();
+  store.execute(
+    addFloor({
+      id: floorId,
+      name: `Level ${nextLevel}`,
+      level: nextLevel,
+      elevation: nextElevation,
+      height,
+      rooms: [],
+      walls: [],
+      objects: [],
+      zones: [],
+    }),
+  );
+  store.setActiveFloor(floorId);
+}
+
+function onFloorElevation(event: Event) {
+  const floor = store.activeFloor;
+  if (!floor) {
+    return;
+  }
+  const value = Number((event.target as HTMLInputElement).value);
+  if (!Number.isFinite(value) || nearly(value, floor.elevation)) {
+    return;
+  }
+  store.execute(updateFloor(store.document, floor.id, { elevation: value }));
 }
 
 function onObjectTransform(id: string, mode: GizmoMode, pose: ObjectPose) {
-  const object = store.document.venue.floors[0]?.objects.find((item) => item.id === id);
+  const object = store.document.venue.floors
+    .flatMap((floor) => floor.objects)
+    .find((item) => item.id === id);
   if (!object || (object as { locked?: unknown }).locked === true) {
     return;
   }
@@ -411,6 +462,49 @@ async function saveGlb() {
         >
           Both
         </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-1" role="group" aria-label="Floors">
+        <button
+          v-for="floor in mapFloors"
+          :key="floor.id"
+          type="button"
+          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          :aria-pressed="store.activeFloorId === floor.id"
+          :class="
+            store.activeFloorId === floor.id
+              ? 'bg-teal-400 text-zinc-950'
+              : 'bg-zinc-800 text-zinc-100 hover:bg-zinc-700'
+          "
+          :data-testid="`floor-switch-${floor.level}`"
+          @click="store.setActiveFloor(floor.id)"
+        >
+          {{ floor.name }}
+        </button>
+        <button
+          type="button"
+          class="focus-ring min-h-10 rounded-md border border-zinc-300 px-2.5 text-sm font-medium hover:bg-white dark:border-zinc-700 dark:hover:bg-zinc-900"
+          data-testid="add-floor"
+          @click="createNextFloor"
+        >
+          + Floor
+        </button>
+        <label
+          v-if="store.activeFloor"
+          class="ml-1 flex items-center gap-1 text-xs text-zinc-700 dark:text-zinc-300"
+        >
+          Elev (m)
+          <input
+            type="number"
+            step="0.5"
+            min="-20"
+            max="100"
+            class="focus-ring w-16 rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+            data-testid="floor-elevation"
+            aria-label="Active floor elevation in metres"
+            :value="store.activeFloor.elevation"
+            @change="onFloorElevation"
+          />
+        </label>
       </div>
       <div class="ml-auto flex flex-wrap items-center gap-2">
         <button
