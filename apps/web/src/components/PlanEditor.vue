@@ -21,7 +21,7 @@ import {
 import { distance, snapPoint, wallLength, type Vec2 } from "@openvenue/geometry";
 import type { PlanPoint } from "@openvenue/renderer-2d";
 import type { Polygon, SceneObject, VenueDocument, Zone } from "@openvenue/scene-schema";
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { commitPolygon, rectangleFromCorners } from "../plan/draw";
 import { hitHandle, idsInsideBox, toLocal } from "../plan/handles";
 import { hitPlan, type PlanHit } from "../plan/hit";
@@ -62,7 +62,7 @@ const selectionSummary = computed(() => {
   if (!id) {
     return "";
   }
-  const scene = planScene(store.document);
+  const scene = activeScene();
   const object = scene.objects.find((item) => item.id === id);
   if (object) {
     return `${object.name} · ${object.type} · ${object.width.toFixed(2)} × ${object.depth.toFixed(2)} m`;
@@ -127,8 +127,26 @@ const lengthLabel = computed(() => {
 });
 
 function floorOf(document: VenueDocument) {
-  return document.venue.floors[0];
+  return (
+    document.venue.floors.find((floor) => floor.id === store.activeFloorId) ??
+    document.venue.floors[0]
+  );
 }
+
+function activeScene(document = store.document) {
+  return planScene(document, store.activeFloorIndex);
+}
+
+watch(
+  () => store.activeFloorId,
+  () => {
+    draft.value = [];
+    preview.value = null;
+    movingId.value = null;
+    gesture.value = null;
+    marquee.value = [];
+  },
+);
 
 function place(point: PlanPoint): PlanPoint {
   const floor = floorOf(store.document);
@@ -221,7 +239,7 @@ function onDown(point: PlanPoint, shift = false) {
     return;
   }
   if (tool.value === "select") {
-    const scene = planScene(store.document);
+    const scene = activeScene();
     const only =
       store.selection.length === 1
         ? scene.objects.find((object) => object.id === store.selection[0])
@@ -280,7 +298,7 @@ function onDown(point: PlanPoint, shift = false) {
         id: crypto.randomUUID(),
         name: tool.value === "exit" ? "Exit" : "Entrance",
         floorId: floor.id,
-        position: { x: snapped.x, y: 0, z: snapped.z },
+        position: { x: snapped.x, y: floor.elevation, z: snapped.z },
         rotationY: 0,
         role: tool.value === "exit" ? "exit" : "visitor",
       }),
@@ -368,9 +386,7 @@ function onMove(point: PlanPoint) {
     return;
   }
   if ((gesture.value === "resize" || gesture.value === "rotate") && movingId.value) {
-    const sceneObject = planScene(store.document).objects.find(
-      (item) => item.id === movingId.value,
-    );
+    const sceneObject = activeScene().objects.find((item) => item.id === movingId.value);
     const source = floorOf(store.document)?.objects.find((item) => item.id === movingId.value);
     if (!sceneObject || !source) {
       return;
@@ -426,7 +442,7 @@ function onUp() {
   if (gesture.value === "box") {
     const [start, end] = marquee.value;
     if (start && end) {
-      store.setSelection(idsInsideBox(planScene(store.document), start, end));
+      store.setSelection(idsInsideBox(activeScene(), start, end));
       note.value =
         store.selection.length > 0 ? `${store.selection.length} selected` : "Nothing selected";
     }
@@ -438,37 +454,35 @@ function onUp() {
 }
 
 function duplicateSelection() {
-  const floor = floorOf(store.document);
-  if (!floor) {
-    return;
-  }
   const created: string[] = [];
   const commands = [];
-  for (const id of store.selection) {
-    if (isLocked(id)) {
-      continue;
-    }
-    const object = floor.objects.find((item) => item.id === id);
-    if (object) {
-      const copy = JSON.parse(JSON.stringify(object)) as SceneObject;
-      copy.id = crypto.randomUUID();
-      copy.name = `${object.name} copy`.slice(0, 200);
-      copy.transform.position.x += 0.5;
-      copy.transform.position.z += 0.5;
-      created.push(copy.id);
-      commands.push(addObject(floor.id, copy));
-    }
-    const zone = floor.zones.find((item) => item.id === id);
-    if (zone) {
-      const copy = JSON.parse(JSON.stringify(zone)) as Zone;
-      copy.id = crypto.randomUUID();
-      copy.name = `${zone.name} copy`.slice(0, 200);
-      copy.boundary = copy.boundary.map((corner) => ({
-        x: corner.x + 0.5,
-        z: corner.z + 0.5,
-      })) as Polygon;
-      created.push(copy.id);
-      commands.push(addZone(floor.id, copy));
+  for (const floor of store.document.venue.floors) {
+    for (const id of store.selection) {
+      if (isLocked(id)) {
+        continue;
+      }
+      const object = floor.objects.find((item) => item.id === id);
+      if (object) {
+        const copy = JSON.parse(JSON.stringify(object)) as SceneObject;
+        copy.id = crypto.randomUUID();
+        copy.name = `${object.name} copy`.slice(0, 200);
+        copy.transform.position.x += 0.5;
+        copy.transform.position.z += 0.5;
+        created.push(copy.id);
+        commands.push(addObject(floor.id, copy));
+      }
+      const zone = floor.zones.find((item) => item.id === id);
+      if (zone) {
+        const copy = JSON.parse(JSON.stringify(zone)) as Zone;
+        copy.id = crypto.randomUUID();
+        copy.name = `${zone.name} copy`.slice(0, 200);
+        copy.boundary = copy.boundary.map((corner) => ({
+          x: corner.x + 0.5,
+          z: corner.z + 0.5,
+        })) as Polygon;
+        created.push(copy.id);
+        commands.push(addZone(floor.id, copy));
+      }
     }
   }
   if (commands.length === 0) {
@@ -526,7 +540,7 @@ function placeDoor(point: PlanPoint, floorId: string) {
 }
 
 function removeOne(id: string) {
-  const scene = planScene(store.document);
+  const scene = activeScene();
   const hit: PlanHit | null = scene.objects.some((item) => item.id === id)
     ? { kind: "object", id }
     : scene.walls.some((item) => item.id === id)
@@ -611,12 +625,10 @@ function onKey(event: KeyboardEvent) {
 }
 
 function onNudge(x: number, z: number) {
-  const floor = store.document.venue.floors[0];
-  if (!floor) {
-    return;
-  }
   const selected = new Set(store.selection);
-  const objects = floor.objects.filter((object) => selected.has(object.id));
+  const objects = store.document.venue.floors
+    .flatMap((floor) => floor.objects)
+    .filter((object) => selected.has(object.id));
   if (objects.length === 0) {
     return;
   }
@@ -641,6 +653,7 @@ function onAssetDrop(point: PlanPoint, assetId: string) {
     assetId,
     point.x,
     point.z,
+    store.activeFloorId,
   );
   if (name) {
     note.value = `Placed ${name}`;
@@ -674,6 +687,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         class="min-h-0 flex-1"
         :document="store.document"
         :source="store.scene"
+        :floor-index="store.activeFloorIndex"
         :tool="tool === 'entrance' || tool === 'exit' ? 'spawn' : tool"
         :draft="shownDraft"
         :selected-ids="[...store.selection]"

@@ -1,5 +1,8 @@
+import { addFloor } from "@openvenue/editor-core";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it } from "vitest";
+import { placeCatalogueAsset } from "../assets/place";
+import { CATALOGUE } from "../assets/catalogue";
 import { useVenueStore } from "./venue";
 
 describe("venue store", () => {
@@ -67,5 +70,64 @@ describe("venue store", () => {
     store.loadJson(text, "late.json", token);
     expect(store.document.venue.name).toBe("Newer");
     expect(store.fileName).toBe("venue.json");
+  });
+
+  it("drops a file load that finishes after an edit", () => {
+    const store = useVenueStore();
+    const text = store.toJson();
+    if (!text) {
+      throw new Error("expected JSON");
+    }
+    const token = store.startLoad();
+    store.execute(
+      addFloor({
+        id: "11111111-1111-4111-8111-111111111112",
+        name: "Level 1",
+        level: 1,
+        elevation: 3,
+        height: 3,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    store.loadJson(text, "late.json", token);
+    expect(store.document.venue.floors).toHaveLength(2);
+  });
+
+  it("tracks active floor, switches floors, and places stairs on the active floor", () => {
+    const store = useVenueStore();
+    const upperId = "11111111-1111-4111-8111-111111111111";
+    store.execute(
+      addFloor({
+        id: upperId,
+        name: "Level 1",
+        level: 1,
+        elevation: 3,
+        height: 3,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    store.setActiveFloor(upperId);
+    expect(store.activeFloorIndex).toBe(1);
+    expect(store.activeFloor?.id).toBe(upperId);
+
+    const stairAsset = CATALOGUE.find((item) => item.name.toLowerCase().includes("stair"));
+    if (!stairAsset) {
+      throw new Error("expected stair asset in catalogue");
+    }
+    placeCatalogueAsset(store.execute, store.document, stairAsset.id, 2, 3, store.activeFloorId);
+    expect(store.document.venue.floors[0]?.objects).toHaveLength(0);
+    expect(store.document.venue.floors[1]?.objects).toHaveLength(1);
+
+    // Undoing object placement and floor addition falls back activeFloor to ground floor
+    store.undo();
+    store.undo();
+    expect(store.document.venue.floors).toHaveLength(1);
+    expect(store.activeFloorIndex).toBe(0);
   });
 });

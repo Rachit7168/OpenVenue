@@ -3,16 +3,19 @@ import { snapPoint } from "@openvenue/geometry";
 import type { VenueDocument } from "@openvenue/scene-schema";
 import { assetObject, findAsset } from "./catalogue";
 
-/** Snap a catalogue asset onto the ground floor. Returns the asset name. */
+/** Snap a catalogue asset onto the target floor (defaults to ground floor). Returns the asset name. */
 export function placeCatalogueAsset(
   execute: (command: EditorCommand) => void,
   document: VenueDocument,
   assetId: string,
   x: number,
   z: number,
+  floorId?: string,
 ): string | null {
   const asset = findAsset(assetId);
-  const floor = document.venue.floors[0];
+  const floor = floorId
+    ? document.venue.floors.find((item) => item.id === floorId)
+    : document.venue.floors[0];
   if (!asset || !floor) {
     return null;
   }

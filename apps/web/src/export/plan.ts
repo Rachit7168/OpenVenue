@@ -48,8 +48,8 @@ function points(values: readonly { x: number; z: number }[]): string {
 }
 
 /** Floor plan as SVG, with +Z up the page. */
-export function planSvg(document: VenueDocument): string {
-  const scene = planScene(document);
+export function planSvg(document: VenueDocument, floorIndex = 0): string {
+  const scene = planScene(document, floorIndex);
   const bounds = boundsOf(scene);
   const ppm = 24;
   const width = Math.max(1, Math.ceil((bounds.maxX - bounds.minX) * ppm));
@@ -106,8 +106,8 @@ function pathOf(
 }
 
 /** One-page vector floor plan. */
-export function planPdf(document: VenueDocument): Uint8Array {
-  const scene = planScene(document);
+export function planPdf(document: VenueDocument, floorIndex = 0): Uint8Array {
+  const scene = planScene(document, floorIndex);
   const bounds = boundsOf(scene);
   const pageWidth = 842;
   const pageHeight = 595;
@@ -324,8 +324,8 @@ function encodePng(width: number, height: number, rgb: Uint8Array): Uint8Array {
 }
 
 /** Raster floor plan. The same drawing as the SVG, packed as a PNG. */
-export function planPng(document: VenueDocument): Uint8Array {
-  const scene = planScene(document);
+export function planPng(document: VenueDocument, floorIndex = 0): Uint8Array {
+  const scene = planScene(document, floorIndex);
   const bounds = boundsOf(scene);
   const ppm = 16;
   const width = Math.max(1, Math.ceil((bounds.maxX - bounds.minX) * ppm));

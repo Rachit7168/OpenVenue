@@ -356,8 +356,15 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("dblclick", onDoubleClick);
 
+  let walkFloorId: string | null = null;
+
+  const walkFloor = () => {
+    const floors = lastDocument?.venue.floors ?? [];
+    return floors.find((floor) => floor.id === walkFloorId) ?? floors[0];
+  };
+
   const currentWalls = (): WalkWall[] => {
-    const floor = lastDocument?.venue.floors[0];
+    const floor = walkFloor();
     if (!floor) {
       return [];
     }
@@ -378,7 +385,8 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const applyWalker = () => {
-    perspective.position.set(walker.x, eyeHeight, walker.z);
+    const elevation = walkFloor()?.elevation ?? 0;
+    perspective.position.set(walker.x, elevation + eyeHeight, walker.z);
     perspective.rotation.order = "YXZ";
     perspective.rotation.set(walker.pitch, walker.yaw, 0);
     active = perspective;
@@ -388,6 +396,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     const spawn =
       lastDocument?.venue.spawnPoints.find((point) => point.role === "visitor") ??
       lastDocument?.venue.spawnPoints[0];
+    walkFloorId = spawn?.floorId ?? null;
     const walls = currentWalls();
     walker = spawn
       ? spawnWalker(spawn.position, spawn.rotationY, walls)

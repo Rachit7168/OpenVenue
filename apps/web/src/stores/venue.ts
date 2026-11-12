@@ -21,16 +21,35 @@ export const useVenueStore = defineStore("venue", () => {
   const fileName = ref("venue.json");
   const status = ref("New empty venue");
   const loadToken = ref(0);
+  const activeFloorId = ref(document.value.venue.floors[0]?.id ?? "");
 
   scene.subscribe((change) => {
     revision.value += 1;
     if (change.kind === "document") {
       document.value = change.document;
+      if (!change.document.venue.floors.some((floor) => floor.id === activeFloorId.value)) {
+        activeFloorId.value = change.document.venue.floors[0]?.id ?? "";
+      }
     }
     if (change.kind === "selection") {
       selection.value = [...change.selection.ids];
     }
   });
+
+  const activeFloorIndex = computed(() => {
+    const index = document.value.venue.floors.findIndex(
+      (floor) => floor.id === activeFloorId.value,
+    );
+    return index >= 0 ? index : 0;
+  });
+
+  const activeFloor = computed(() => document.value.venue.floors[activeFloorIndex.value]);
+
+  function setActiveFloor(floorId: string) {
+    if (document.value.venue.floors.some((floor) => floor.id === floorId)) {
+      activeFloorId.value = floorId;
+    }
+  }
 
   const canUndo = computed(() => {
     void revision.value;
@@ -160,6 +179,7 @@ export const useVenueStore = defineStore("venue", () => {
   }
 
   function execute(command: EditorCommand, options?: ExecuteOptions) {
+    invalidateLoads();
     try {
       scene.execute(command, options);
       issues.value = [];
@@ -186,6 +206,10 @@ export const useVenueStore = defineStore("venue", () => {
   return {
     document,
     selection,
+    activeFloorId,
+    activeFloorIndex,
+    activeFloor,
+    setActiveFloor,
     issues,
     fileName,
     status,
