@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import { applyOrthoFrustum, frameVenue, type CameraMode } from "./camera.js";
+import { createVisitorAvatar } from "./avatar.js";
 import {
   entityIdFromHit,
   entityIdOf,
@@ -40,6 +41,7 @@ export interface VenueView {
   setWalkClick(enabled: boolean): void;
   setWalkAxes(axes: { forward: number; strafe: number }): void;
   setEyeHeight(height: number): void;
+  setThirdPerson(enabled: boolean): void;
   setQuality(mode: QualityMode): void;
   setSelected(id: string | null): void;
   setGizmoMode(mode: GizmoMode): void;
@@ -127,6 +129,10 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let portalUntil = 0;
   let walker: Walker = { x: 0, z: 0, yaw: 0, pitch: 0 };
   let eyeHeight = DEFAULT_EYE_HEIGHT;
+  let thirdPerson = false;
+  const avatar = createVisitorAvatar();
+  avatar.visible = false;
+  scene.add(avatar);
   const pressed = new Set<string>();
   let walkAxes = { forward: 0, strafe: 0 };
   let lastTick = performance.now();
@@ -398,12 +404,33 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     );
   };
 
+  const syncAvatar = () => {
+    if (!lastDocument) {
+      avatar.visible = false;
+      return;
+    }
+    const elevation = displayedFloor()?.elevation ?? 0;
+    avatar.position.set(walker.x, elevation, walker.z);
+    avatar.rotation.y = walker.yaw;
+    avatar.visible = mode !== "walk" || thirdPerson;
+  };
+
   const applyWalker = () => {
     const elevation = displayedFloor()?.elevation ?? 0;
-    perspective.position.set(walker.x, elevation + eyeHeight, walker.z);
-    perspective.rotation.order = "YXZ";
-    perspective.rotation.set(walker.pitch, walker.yaw, 0);
+    if (thirdPerson) {
+      const dist = 2.6;
+      const camX = walker.x + Math.sin(walker.yaw) * dist;
+      const camZ = walker.z + Math.cos(walker.yaw) * dist;
+      const camY = elevation + eyeHeight + 0.8;
+      perspective.position.set(camX, camY, camZ);
+      perspective.lookAt(walker.x, elevation + eyeHeight * 0.85, walker.z);
+    } else {
+      perspective.position.set(walker.x, elevation + eyeHeight, walker.z);
+      perspective.rotation.order = "YXZ";
+      perspective.rotation.set(walker.pitch, walker.yaw, 0);
+    }
     active = perspective;
+    syncAvatar();
   };
 
   const beginWalk = () => {
@@ -626,7 +653,14 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     }
     if (!new THREE.Box3().setFromObject(venue).isEmpty()) {
       framedVenueId = document.venue.id;
+      const spawn =
+        document.venue.spawnPoints.find((point) => point.role === "visitor") ??
+        document.venue.spawnPoints[0];
+      if (spawn) {
+        walker = spawnWalker(spawn.position, spawn.rotationY, currentWalls());
+      }
     }
+    syncAvatar();
   };
 
   return {
@@ -661,6 +695,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       if (!rebuild) {
         aim(true);
       }
+      syncAvatar();
     },
     setMapFloor(floorId) {
       if (floorId === mapFloorId) {
@@ -671,6 +706,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       if (mode === "map" && lastDocument) {
         replaceDocument(lastDocument, true);
       }
+      syncAvatar();
     },
     setShownFloor(floorId) {
       if (floorId === shownFloorId) {
@@ -682,6 +718,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       if (mode !== "map" && lastDocument) {
         replaceDocument(lastDocument, true);
       }
+      syncAvatar();
     },
     setWalkTarget(point) {
       walkTarget = point;
@@ -699,6 +736,14 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
       eyeHeight = clampEyeHeight(height);
       if (mode === "walk") {
         applyWalker();
+      }
+    },
+    setThirdPerson(enabled) {
+      thirdPerson = enabled;
+      if (mode === "walk") {
+        applyWalker();
+      } else {
+        syncAvatar();
       }
     },
     setQuality(next) {

@@ -16,9 +16,26 @@ describe("venue blueprint templates", () => {
     }
 
     const floor = result.document.venue.floors[0]!;
+    const gallery = result.document.venue.floors[1]!;
     const chairs = floor.objects.filter((obj) => obj.type === "chair");
     expect(chairs).toHaveLength(200);
     expect(floor.objects.some((obj) => obj.name === "Stage")).toBe(true);
+    expect(
+      floor.objects.some(
+        (obj) => obj.name === "Stair flight" && obj.connectsToFloorId === gallery.id,
+      ),
+    ).toBe(true);
+    expect(
+      floor.objects.some((obj) => obj.name === "Lift car" && obj.connectsToFloorId === gallery.id),
+    ).toBe(true);
+    expect(
+      gallery.objects.some(
+        (obj) => obj.name === "Stair flight" && obj.connectsToFloorId === floor.id,
+      ),
+    ).toBe(true);
+    expect(
+      gallery.objects.some((obj) => obj.name === "Lift car" && obj.connectsToFloorId === floor.id),
+    ).toBe(true);
     expect(floor.walls.some((w) => w.openings?.some((o) => o.kind === "door"))).toBe(true);
   });
 

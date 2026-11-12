@@ -80,6 +80,7 @@ function onMapKey(event: KeyboardEvent) {
 onMounted(() => window.addEventListener("keydown", onMapKey));
 onBeforeUnmount(() => window.removeEventListener("keydown", onMapKey));
 const eyeHeight = ref(1.6);
+const thirdPerson = ref(false);
 const gizmoMode = ref<GizmoMode>("translate");
 const qualityMode = ref<QualityMode>("high");
 const stage = ref<{ fit: () => void; reset: () => void } | null>(null);
@@ -632,6 +633,17 @@ async function saveGlb() {
             />
           </label>
           <button
+            v-if="cameraMode === 'walk'"
+            type="button"
+            class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+            :aria-pressed="thirdPerson"
+            :class="thirdPerson ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+            data-testid="walk-avatar"
+            @click="thirdPerson = !thirdPerson"
+          >
+            Avatar
+          </button>
+          <button
             v-if="cameraMode !== 'walk' && cameraMode !== 'map'"
             type="button"
             class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
@@ -713,6 +725,7 @@ async function saveGlb() {
             :map-floor-id="mapFloorId"
             :shown-floor-id="store.activeFloorId"
             :eye-height="eyeHeight"
+            :third-person="thirdPerson"
             :gizmo-mode="gizmoMode"
             :quality-mode="qualityMode"
             :selected-id="cameraMode === 'map' ? (mapCard?.id ?? null) : selectedObjectId"
