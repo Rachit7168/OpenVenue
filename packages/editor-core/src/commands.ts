@@ -10,6 +10,7 @@ import type {
   Wall,
   Zone,
 } from "@openvenue/scene-schema";
+import { createId } from "@openvenue/scene-schema";
 import {
   cloneDocument,
   findObject,
@@ -1065,7 +1066,7 @@ export function setFloorLink(
       ? twinId
       : (twinId ??
         findPortalTwinId(document, objectId, targetFloorId) ??
-        globalThis.crypto.randomUUID());
+        createId());
   return new SetFloorLinkCommand(objectId, previous, targetFloorId, createdTwin);
 }
 
