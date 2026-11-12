@@ -1,6 +1,7 @@
 import type {
   Asset,
   BoxDimensions,
+  Floor,
   Room,
   SceneObject,
   SpawnPoint,
@@ -777,4 +778,109 @@ export function updateMaterial(
 ): EditorCommand {
   const found = findRoom(document, roomId);
   return new UpdateMaterialCommand(roomId, found.room.floorMaterial ?? null, material);
+}
+
+export type FloorPatch = Partial<Pick<Floor, "name" | "elevation" | "height" | "level">>;
+
+class AddFloorCommand implements EditorCommand {
+  readonly type = "ADD_FLOOR" as const;
+
+  constructor(private readonly floor: Floor) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    if (next.venue.floors.some((item) => item.id === this.floor.id)) {
+      throw new CommandError(`Floor ${this.floor.id} already exists`);
+    }
+    next.venue.floors.push(clone(this.floor));
+    return next;
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    const next = cloneDocument(document);
+    const index = next.venue.floors.findIndex((item) => item.id === this.floor.id);
+    if (index < 0) {
+      throw new CommandError(`Floor ${this.floor.id} is missing`);
+    }
+    next.venue.floors.splice(index, 1);
+    return next;
+  }
+}
+
+class UpdateFloorCommand implements EditorCommand {
+  readonly type = "UPDATE_FLOOR" as const;
+
+  constructor(
+    private readonly floorId: string,
+    private readonly before: FloorPatch,
+    private readonly after: FloorPatch,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return applyFloorPatch(document, this.floorId, this.after);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return applyFloorPatch(document, this.floorId, this.before);
+  }
+}
+
+function applyFloorPatch(
+  document: VenueDocument,
+  floorId: string,
+  patch: FloorPatch,
+): VenueDocument {
+  const next = cloneDocument(document);
+  const floor = requireFloor(next, floorId);
+  if (patch.name !== undefined) {
+    if (patch.name.length < 1 || patch.name.length > 200) {
+      throw new CommandError("Floor name must be between 1 and 200 characters");
+    }
+    floor.name = patch.name;
+  }
+  if (patch.elevation !== undefined) {
+    if (!Number.isFinite(patch.elevation)) {
+      throw new CommandError("Floor elevation must be a finite number");
+    }
+    floor.elevation = patch.elevation;
+  }
+  if (patch.height !== undefined) {
+    if (!Number.isFinite(patch.height) || patch.height <= 0) {
+      throw new CommandError("Floor height must be positive");
+    }
+    floor.height = patch.height;
+  }
+  if (patch.level !== undefined) {
+    if (!Number.isInteger(patch.level)) {
+      throw new CommandError("Floor level must be an integer");
+    }
+    floor.level = patch.level;
+  }
+  return next;
+}
+
+export function addFloor(floor: Floor): EditorCommand {
+  return new AddFloorCommand(clone(floor));
+}
+
+export function updateFloor(
+  document: VenueDocument,
+  floorId: string,
+  patch: FloorPatch,
+): EditorCommand {
+  const floor = requireFloor(document, floorId);
+  const before: FloorPatch = {};
+  if (patch.name !== undefined) {
+    before.name = floor.name;
+  }
+  if (patch.elevation !== undefined) {
+    before.elevation = floor.elevation;
+  }
+  if (patch.height !== undefined) {
+    before.height = floor.height;
+  }
+  if (patch.level !== undefined) {
+    before.level = floor.level;
+  }
+  return new UpdateFloorCommand(floorId, before, clone(patch));
 }

@@ -1,5 +1,6 @@
 export {
   addAsset,
+  addFloor,
   addObject,
   addRoom,
   addSpawn,
@@ -16,9 +17,11 @@ export {
   resizeObject,
   rotateObject,
   setEntityFlag,
+  updateFloor,
   updateMaterial,
   updateWall,
   updateZone,
+  type FloorPatch,
 } from "./commands.js";
 export {
   CAPACITY_NOTE,

@@ -19,7 +19,9 @@ export type CommandType =
   | "UPDATE_MATERIAL"
   | "RENAME"
   | "UPDATE_ZONE"
-  | "SET_FLAG";
+  | "SET_FLAG"
+  | "ADD_FLOOR"
+  | "UPDATE_FLOOR";
 
 export interface EditorCommand {
   readonly type: CommandType;
