@@ -2,6 +2,7 @@
 import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { safeContentRef, safeVenueUrl } from "./fetch";
 import {
   directory,
   liveSummary,
@@ -22,7 +23,11 @@ const canvas = ref<HTMLCanvasElement | null>(null);
 const map = ref<HTMLCanvasElement | null>(null);
 let view: VenueView | null = null;
 let audio: HTMLAudioElement | null = null;
+let ambient: HTMLAudioElement | null = null;
 let frame = 0;
+let contentGeneration = 0;
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
+const activeContentRef = ref<string | null>(null);
 
 const entries = computed(() => (document.value ? directory(document.value) : []));
 const live = computed(() => liveSummary(panel.value));
@@ -90,24 +95,59 @@ async function onFile(event: Event) {
 }
 
 async function openContent(contentRef: string | undefined) {
+  const generation = ++contentGeneration;
   if (!contentRef) {
+    activeContentRef.value = null;
     panel.value = { title: "This area", kind: "info", body: "No extra details are attached." };
     return;
   }
-  try {
-    const response = await fetch(contentRef);
-    panel.value = parseContent(response.ok ? await response.json() : null);
-  } catch {
-    panel.value = { title: "Details", kind: "info", body: "The content file could not be loaded." };
+  const safe = safeContentRef(contentRef);
+  if (!safe) {
+    activeContentRef.value = null;
+    panel.value = {
+      title: "Blocked link",
+      kind: "info",
+      body: "That content reference is not allowed.",
+    };
+    return;
   }
-  const source = panel.value.audio;
+  activeContentRef.value = safe;
+  status.value = "Loading zone details…";
+  try {
+    const response = await fetch(safe);
+    if (generation !== contentGeneration) {
+      return;
+    }
+    panel.value = parseContent(response.ok ? await response.json() : null);
+    status.value = document.value?.project.name ?? "Visitor";
+  } catch {
+    if (generation !== contentGeneration) {
+      return;
+    }
+    panel.value = { title: "Details", kind: "info", body: "The content file could not be loaded." };
+    status.value = document.value?.project.name ?? "Visitor";
+  }
   if (audio) {
     audio.pause();
     audio = null;
   }
+  const source = panel.value?.audio ? safeContentRef(panel.value.audio) : null;
   if (source && !muted.value) {
     audio = new Audio(source);
     void audio.play().catch(() => undefined);
+  }
+}
+
+function onSceneClick(event: MouseEvent) {
+  const current = document.value;
+  const here = view?.position();
+  const point = view?.floorPoint(event.clientX, event.clientY);
+  if (!current || !here?.floorId || !point) {
+    return;
+  }
+  const zone = zoneAt(current, here.floorId, point);
+  if (zone?.interaction && zone.interaction.type !== "none") {
+    void openContent(zone.interaction.contentRef);
   }
 }
 
@@ -144,6 +184,25 @@ function onMapClick(event: MouseEvent) {
 watch(muted, (value) => {
   if (value) {
     audio?.pause();
+    ambient?.pause();
+    return;
+  }
+  void ambient?.play().catch(() => undefined);
+  if (panel.value?.audio && audio) {
+    void audio.play().catch(() => undefined);
+  }
+});
+
+watch(panel, (value) => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+  if (value?.kind === "session-list" && activeContentRef.value) {
+    const ref = activeContentRef.value;
+    refreshTimer = setInterval(() => {
+      void openContent(ref);
+    }, 30_000);
   }
 });
 
@@ -154,6 +213,13 @@ onMounted(async () => {
   if (element) {
     try {
       view = mountVenueView(element);
+      view.setHandlers({
+        onSelect: () => undefined,
+        onTransform: () => undefined,
+        onFloor: (id) => {
+          floorId.value = id;
+        },
+      });
       view.setQuality(quality.value);
       view.setWalkClick(true);
     } catch {
@@ -162,14 +228,22 @@ onMounted(async () => {
   }
   const url = new URLSearchParams(window.location.search).get("url");
   if (url) {
-    status.value = "Loading venue…";
-    try {
-      const response = await fetch(url);
-      await openDocument(await response.text());
-    } catch {
-      status.value = "The venue link could not be loaded.";
+    const safe = safeVenueUrl(url);
+    if (!safe) {
+      status.value = "That venue link is not allowed.";
+    } else {
+      status.value = "Loading venue…";
+      try {
+        const response = await fetch(safe);
+        await openDocument(await response.text());
+      } catch {
+        status.value = "The venue link could not be loaded.";
+      }
     }
   }
+  ambient = new Audio("/ambience.mp3");
+  ambient.loop = true;
+  ambient.volume = 0.2;
   const loop = () => {
     drawMap();
     frame = requestAnimationFrame(loop);
@@ -179,7 +253,11 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(frame);
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+  }
   audio?.pause();
+  ambient?.pause();
   view?.dispose();
 });
 </script>
@@ -234,14 +312,20 @@ onBeforeUnmount(() => {
         <h2 style="font-size: 16px">{{ panel.title }}</h2>
         <p v-if="live">{{ live }}</p>
         <p v-if="panel.body">{{ panel.body }}</p>
+        <p v-if="panel.href">
+          <a :href="panel.href">{{ panel.href }}</a>
+        </p>
         <ul>
           <li v-for="item in panel.items ?? []" :key="item.name">
-            {{ item.name }}<span v-if="item.detail"> — {{ item.detail }}</span>
+            <a v-if="item.href" :href="item.href">{{ item.name }}</a>
+            <template v-else>{{ item.name }}</template>
+            <span v-if="item.price"> — {{ item.price }}</span>
+            <span v-else-if="item.detail"> — {{ item.detail }}</span>
           </li>
         </ul>
         <button type="button" @click="panel = null">Close</button>
       </section>
     </aside>
-    <canvas ref="canvas" style="width: 100%; height: 100%" />
+    <canvas ref="canvas" style="width: 100%; height: 100%" @click="onSceneClick" />
   </main>
 </template>

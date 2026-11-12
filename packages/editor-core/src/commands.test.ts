@@ -459,6 +459,54 @@ describe("commands", () => {
     expect(document.venue.floors[1]?.objects).toHaveLength(0);
   });
 
+  it("replaces the old landing when a stair link moves to another floor", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue("Tower");
+    const ground = floorOf(document);
+    const upperId = "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e99";
+    const mezzId = "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e98";
+    document = stack.execute(
+      document,
+      addFloor({
+        id: upperId,
+        name: "Level 1",
+        level: 1,
+        elevation: 3.5,
+        height: 3.5,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    document = stack.execute(
+      document,
+      addFloor({
+        id: mezzId,
+        name: "Level 2",
+        level: 2,
+        elevation: 7,
+        height: 3.5,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    const stairId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e31";
+    const twinId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e32";
+    document = stack.execute(
+      document,
+      groupCommands("ADD_OBJECT", [
+        addObject(ground.id, chair(stairId)),
+        setFloorLink(document, stairId, upperId, twinId),
+      ]),
+    );
+    document = stack.execute(document, setFloorLink(document, stairId, mezzId, twinId));
+    expect(document.venue.floors[1]?.objects).toHaveLength(0);
+    expect(document.venue.floors[2]?.objects).toHaveLength(1);
+  });
+
   it("rejects a floor that reuses an existing entity id", () => {
     const document = createEmptyVenue("Tower");
     const taken = floorOf(document).id;

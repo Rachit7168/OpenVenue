@@ -952,6 +952,28 @@ class SetFloorLinkCommand implements EditorCommand {
   }
 }
 
+function removePortalTwins(
+  next: VenueDocument,
+  sourceFloorId: string,
+  source: SceneObject,
+  keepId: string | null,
+): void {
+  const { x, z } = source.transform.position;
+  for (const floor of next.venue.floors) {
+    floor.objects = floor.objects.filter((object) => {
+      if (keepId && object.id === keepId) {
+        return true;
+      }
+      if (object.connectsToFloorId !== sourceFloorId) {
+        return true;
+      }
+      const dx = object.transform.position.x - x;
+      const dz = object.transform.position.z - z;
+      return dx * dx + dz * dz > 1e-4;
+    });
+  }
+}
+
 function applyFloorLink(
   document: VenueDocument,
   objectId: string,
@@ -961,6 +983,12 @@ function applyFloorLink(
 ): VenueDocument {
   const next = cloneDocument(document);
   const found = findObject(next, objectId);
+  if (creating && createdTwinId) {
+    for (const floor of next.venue.floors) {
+      floor.objects = floor.objects.filter((object) => object.id !== createdTwinId);
+    }
+  }
+  removePortalTwins(next, found.floor.id, found.object, null);
   if (targetFloorId) {
     requireFloor(next, targetFloorId);
     found.object.connectsToFloorId = targetFloorId;
@@ -999,6 +1027,28 @@ export function addFloor(floor: Floor): EditorCommand {
   return new AddFloorCommand(clone(floor));
 }
 
+function findPortalTwinId(
+  document: VenueDocument,
+  objectId: string,
+  targetFloorId: string,
+): string | null {
+  const existing = findObjectSafe(document, objectId);
+  if (!existing) {
+    return null;
+  }
+  const { x, z } = existing.object.transform.position;
+  const target = requireFloor(document, targetFloorId);
+  const twin = target.objects.find((object) => {
+    if (object.connectsToFloorId !== existing.floor.id) {
+      return false;
+    }
+    const dx = object.transform.position.x - x;
+    const dz = object.transform.position.z - z;
+    return dx * dx + dz * dz <= 1e-4;
+  });
+  return twin?.id ?? null;
+}
+
 export function setFloorLink(
   document: VenueDocument,
   objectId: string,
@@ -1010,7 +1060,13 @@ export function setFloorLink(
     existing && typeof existing.object.connectsToFloorId === "string"
       ? existing.object.connectsToFloorId
       : null;
-  return new SetFloorLinkCommand(objectId, previous, targetFloorId, twinId);
+  const createdTwin =
+    targetFloorId === null
+      ? twinId
+      : (twinId ??
+        findPortalTwinId(document, objectId, targetFloorId) ??
+        globalThis.crypto.randomUUID());
+  return new SetFloorLinkCommand(objectId, previous, targetFloorId, createdTwin);
 }
 
 /** The next floor a stair or lift should open onto, when one exists. */

@@ -470,6 +470,22 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
           portalUntil = performance.now() + 1200;
           shownFloorId = target;
           walkTarget = null;
+          const targetFloor = lastDocument?.venue.floors.find((item) => item.id === target);
+          const landing = targetFloor?.objects.find((item) => {
+            if (item.connectsToFloorId !== floor.id) {
+              return false;
+            }
+            const dx = item.transform.position.x - object.transform.position.x;
+            const dz = item.transform.position.z - object.transform.position.z;
+            return dx * dx + dz * dz <= 1e-4;
+          });
+          if (landing) {
+            walker = {
+              ...walker,
+              x: landing.transform.position.x,
+              z: landing.transform.position.z,
+            };
+          }
           if (lastDocument) {
             replaceDocument(lastDocument, true);
           }

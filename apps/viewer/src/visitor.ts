@@ -1,13 +1,16 @@
 import { pointInPolygon, polygonCentroid } from "@openvenue/geometry";
 import type { Floor, VenueDocument, Zone } from "@openvenue/scene-schema";
 
+export type VisitorContentKind = "menu" | "info" | "session-list" | "booth" | "link";
+
 export interface VisitorContent {
   title: string;
-  kind: "menu" | "info" | "session-list";
+  kind: VisitorContentKind;
   body?: string;
-  items?: { name: string; detail?: string }[];
+  items?: { name: string; detail?: string; price?: string; image?: string; href?: string }[];
   sessions?: { name: string; status: string; queueMinutes?: number }[];
   audio?: string;
+  href?: string;
 }
 
 export interface DirectoryEntry {
@@ -72,7 +75,13 @@ export function parseContent(value: unknown): VisitorContent {
     return { title: "Details", kind: "info" };
   }
   const record = value as Record<string, unknown>;
-  const kind = record.kind === "menu" || record.kind === "session-list" ? record.kind : "info";
+  const kind: VisitorContentKind =
+    record.kind === "menu" ||
+    record.kind === "session-list" ||
+    record.kind === "booth" ||
+    record.kind === "link"
+      ? record.kind
+      : "info";
   const items = Array.isArray(record.items)
     ? record.items.flatMap((item) => {
         if (
@@ -82,9 +91,27 @@ export function parseContent(value: unknown): VisitorContent {
         ) {
           return [];
         }
-        const entry = item as { name: string; detail?: unknown };
+        const entry = item as {
+          name: string;
+          detail?: unknown;
+          price?: unknown;
+          image?: unknown;
+          href?: unknown;
+          link?: unknown;
+        };
         return [
-          { name: entry.name, detail: typeof entry.detail === "string" ? entry.detail : undefined },
+          {
+            name: entry.name,
+            detail: typeof entry.detail === "string" ? entry.detail : undefined,
+            price: typeof entry.price === "string" ? entry.price : undefined,
+            image: typeof entry.image === "string" ? entry.image : undefined,
+            href:
+              typeof entry.href === "string"
+                ? entry.href
+                : typeof entry.link === "string"
+                  ? entry.link
+                  : undefined,
+          },
         ];
       })
     : undefined;
@@ -114,6 +141,7 @@ export function parseContent(value: unknown): VisitorContent {
     items,
     sessions,
     audio: typeof record.audio === "string" ? record.audio : undefined,
+    href: typeof record.href === "string" ? record.href : undefined,
   };
 }
 
