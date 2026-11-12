@@ -16,6 +16,7 @@ const props = defineProps<{
   mapFloorId: string | null;
   shownFloorId: string | null;
   eyeHeight: number;
+  thirdPerson?: boolean;
   gizmoMode: GizmoMode;
   qualityMode: QualityMode;
   selectedId: string | null;
@@ -68,6 +69,7 @@ onMounted(() => {
   view.setMapFloor(props.mapFloorId);
   view.setShownFloor(props.shownFloorId);
   view.setEyeHeight(props.eyeHeight);
+  view.setThirdPerson(Boolean(props.thirdPerson));
   view.setGizmoMode(props.gizmoMode);
   view.setQuality(props.qualityMode);
   view.setSelected(props.selectedId);
@@ -97,6 +99,11 @@ watch(
 watch(
   () => props.eyeHeight,
   (height) => view?.setEyeHeight(height),
+);
+
+watch(
+  () => props.thirdPerson,
+  (enabled) => view?.setThirdPerson(Boolean(enabled)),
 );
 
 watch(

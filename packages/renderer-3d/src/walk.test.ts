@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createVisitorAvatar } from "./avatar.js";
 import {
   applyLook,
   collisionSegments,
@@ -79,5 +80,11 @@ describe("first-person walking", () => {
       ahead = stepWalker(ahead, { forward: 1, strafe: 0 }, hall, 0.05);
     }
     expect(Math.hypot(ahead.x - walker.x, ahead.z - walker.z)).toBeGreaterThan(1);
+  });
+
+  it("builds a 3D visitor avatar group with body, head, visor, and floor ring", () => {
+    const avatar = createVisitorAvatar();
+    expect(avatar.name).toBe("visitor-avatar");
+    expect(avatar.children).toHaveLength(4);
   });
 });
