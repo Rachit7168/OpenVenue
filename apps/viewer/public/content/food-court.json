@@ -1,0 +1,10 @@
+{
+  "title": "Food court",
+  "kind": "session-list",
+  "body": "Counter service on this floor.",
+  "items": [
+    { "name": "Coffee", "detail": "Front counter" },
+    { "name": "Lunch bowl", "detail": "Hot counter" }
+  ],
+  "sessions": [{ "name": "Lunch service", "status": "open", "queueMinutes": 4 }]
+}

@@ -11,8 +11,10 @@ import {
   addFloor,
   addObject,
   addRoom,
+  addSpawn,
   addWall,
   addZone,
+  setFloorLink,
   updateFloor,
   renameEntity,
   setEntityFlag,
@@ -371,5 +373,89 @@ describe("commands", () => {
 
     document = stack.redo(document);
     expect(document.venue.floors).toHaveLength(2);
+  });
+
+  it("moves that floor's spawn markers when the elevation changes", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue("Tower");
+    const floor = floorOf(document);
+    document = stack.execute(
+      document,
+      addSpawn({
+        id: "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e21",
+        name: "Entrance",
+        floorId: floor.id,
+        position: { x: 1, y: floor.elevation, z: 2 },
+        rotationY: 0,
+        role: "visitor",
+      }),
+    );
+    document = stack.execute(document, updateFloor(document, floor.id, { elevation: 4 }));
+    expect(document.venue.spawnPoints[0]?.position.y).toBe(floor.elevation + 4);
+    document = stack.undo(document);
+    expect(document.venue.spawnPoints[0]?.position.y).toBe(floor.elevation);
+  });
+
+  it("rejects a floor whose elevation or name cannot be drawn", () => {
+    const document = createEmptyVenue("Tower");
+    expect(() =>
+      new CommandStack().execute(
+        document,
+        addFloor({
+          id: "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e98",
+          name: "",
+          level: 1,
+          elevation: 3,
+          height: 3,
+          rooms: [],
+          walls: [],
+          objects: [],
+          zones: [],
+        }),
+      ),
+    ).toThrow(CommandError);
+    expect(() =>
+      new CommandStack().execute(
+        document,
+        updateFloor(document, floorOf(document).id, { elevation: 500 }),
+      ),
+    ).toThrow(CommandError);
+  });
+
+  it("links a stair to the other floor and undoes both ends", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue("Tower");
+    const ground = floorOf(document);
+    const upperId = "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e99";
+    document = stack.execute(
+      document,
+      addFloor({
+        id: upperId,
+        name: "Level 1",
+        level: 1,
+        elevation: 3.5,
+        height: 3.5,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    const stairId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e31";
+    const twinId = "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e32";
+    document = stack.execute(
+      document,
+      groupCommands("ADD_OBJECT", [
+        addObject(ground.id, chair(stairId)),
+        setFloorLink(document, stairId, upperId, twinId),
+      ]),
+    );
+    const stair = document.venue.floors[0]?.objects.find((item) => item.id === stairId);
+    const twin = document.venue.floors[1]?.objects.find((item) => item.id === twinId);
+    expect(stair?.connectsToFloorId).toBe(upperId);
+    expect(twin?.connectsToFloorId).toBe(ground.id);
+    document = stack.undo(document);
+    expect(document.venue.floors[0]?.objects).toHaveLength(0);
+    expect(document.venue.floors[1]?.objects).toHaveLength(0);
   });
 });

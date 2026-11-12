@@ -21,7 +21,8 @@ export type CommandType =
   | "UPDATE_ZONE"
   | "SET_FLAG"
   | "ADD_FLOOR"
-  | "UPDATE_FLOOR";
+  | "UPDATE_FLOOR"
+  | "SET_FLOOR_LINK";
 
 export interface EditorCommand {
   readonly type: CommandType;

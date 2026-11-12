@@ -149,6 +149,22 @@ function faceOpenSpace(walker: Walker, walls: readonly WalkWall[]): Walker {
   return { ...walker, yaw: bestYaw };
 }
 
+export function stepToward(
+  walker: Walker,
+  target: { x: number; z: number },
+  walls: readonly WalkWall[],
+  dt: number,
+  speed = WALK_SPEED,
+): Walker {
+  const dx = target.x - walker.x;
+  const dz = target.z - walker.z;
+  if (Math.hypot(dx, dz) < 0.2) {
+    return walker;
+  }
+  const yaw = Math.atan2(-dx, -dz);
+  return stepWalker({ ...walker, yaw }, { forward: 1, strafe: 0 }, walls, dt, speed);
+}
+
 export function stepWalker(
   walker: Walker,
   axes: WalkAxes,

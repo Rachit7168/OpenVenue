@@ -4,19 +4,22 @@
   "private": true,
   "type": "module",
   "description": "Read-only visitor app. Separate from the editor so it can be embedded on an event site.",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@openvenue/geometry": "workspace:*",
+    "@openvenue/renderer-3d": "workspace:*",
+    "@openvenue/scene-schema": "workspace:*",
+    "vue": "^3.5.22"
   },
   "devDependencies": {
-    "typescript": "catalog:"
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "catalog:",
+    "vite": "^7.1.12",
+    "vitest": "catalog:"
   }
 }

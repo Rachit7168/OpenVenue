@@ -780,7 +780,31 @@ export function updateMaterial(
   return new UpdateMaterialCommand(roomId, found.room.floorMaterial ?? null, material);
 }
 
+export const MIN_FLOOR_ELEVATION = -20;
+export const MAX_FLOOR_ELEVATION = 100;
+
 export type FloorPatch = Partial<Pick<Floor, "name" | "elevation" | "height" | "level">>;
+
+function assertFloorFields(floor: Pick<Floor, "name" | "elevation" | "height" | "level">): void {
+  if (floor.name.length < 1 || floor.name.length > 200) {
+    throw new CommandError("Floor name must be between 1 and 200 characters");
+  }
+  if (
+    !Number.isFinite(floor.elevation) ||
+    floor.elevation < MIN_FLOOR_ELEVATION ||
+    floor.elevation > MAX_FLOOR_ELEVATION
+  ) {
+    throw new CommandError(
+      `Floor elevation must be between ${MIN_FLOOR_ELEVATION} and ${MAX_FLOOR_ELEVATION} metres`,
+    );
+  }
+  if (!Number.isFinite(floor.height) || floor.height <= 0) {
+    throw new CommandError("Floor height must be positive");
+  }
+  if (!Number.isInteger(floor.level)) {
+    throw new CommandError("Floor level must be an integer");
+  }
+}
 
 class AddFloorCommand implements EditorCommand {
   readonly type = "ADD_FLOOR" as const;
@@ -792,6 +816,7 @@ class AddFloorCommand implements EditorCommand {
     if (next.venue.floors.some((item) => item.id === this.floor.id)) {
       throw new CommandError(`Floor ${this.floor.id} already exists`);
     }
+    assertFloorFields(this.floor);
     next.venue.floors.push(clone(this.floor));
     return next;
   }
@@ -833,34 +858,119 @@ function applyFloorPatch(
   const next = cloneDocument(document);
   const floor = requireFloor(next, floorId);
   if (patch.name !== undefined) {
-    if (patch.name.length < 1 || patch.name.length > 200) {
-      throw new CommandError("Floor name must be between 1 and 200 characters");
-    }
     floor.name = patch.name;
   }
   if (patch.elevation !== undefined) {
-    if (!Number.isFinite(patch.elevation)) {
-      throw new CommandError("Floor elevation must be a finite number");
-    }
+    const delta = patch.elevation - floor.elevation;
     floor.elevation = patch.elevation;
+    for (const spawn of next.venue.spawnPoints) {
+      if (spawn.floorId === floorId) {
+        spawn.position = { ...spawn.position, y: spawn.position.y + delta };
+      }
+    }
   }
   if (patch.height !== undefined) {
-    if (!Number.isFinite(patch.height) || patch.height <= 0) {
-      throw new CommandError("Floor height must be positive");
-    }
     floor.height = patch.height;
   }
   if (patch.level !== undefined) {
-    if (!Number.isInteger(patch.level)) {
-      throw new CommandError("Floor level must be an integer");
-    }
     floor.level = patch.level;
+  }
+  assertFloorFields(floor);
+  return next;
+}
+
+function nearestOtherFloor(document: VenueDocument, floorId: string): Floor | undefined {
+  const floors = [...document.venue.floors].sort((left, right) => left.level - right.level);
+  const index = floors.findIndex((floor) => floor.id === floorId);
+  if (index < 0) {
+    return undefined;
+  }
+  return floors[index + 1] ?? floors[index - 1];
+}
+
+class SetFloorLinkCommand implements EditorCommand {
+  readonly type = "SET_FLOOR_LINK" as const;
+
+  constructor(
+    private readonly objectId: string,
+    private readonly previousTarget: string | null,
+    private readonly nextTarget: string | null,
+    private readonly createdTwinId: string | null,
+  ) {}
+
+  execute(document: VenueDocument): VenueDocument {
+    return applyFloorLink(document, this.objectId, this.nextTarget, this.createdTwinId, true);
+  }
+
+  undo(document: VenueDocument): VenueDocument {
+    return applyFloorLink(document, this.objectId, this.previousTarget, this.createdTwinId, false);
+  }
+}
+
+function applyFloorLink(
+  document: VenueDocument,
+  objectId: string,
+  targetFloorId: string | null,
+  createdTwinId: string | null,
+  creating: boolean,
+): VenueDocument {
+  const next = cloneDocument(document);
+  const found = findObject(next, objectId);
+  if (targetFloorId) {
+    requireFloor(next, targetFloorId);
+    found.object.connectsToFloorId = targetFloorId;
+    const twinId = createdTwinId;
+    if (creating && twinId && !findObjectSafe(next, twinId)) {
+      const twin = clone(found.object);
+      twin.id = twinId;
+      twin.connectsToFloorId = found.floor.id;
+      requireFloor(next, targetFloorId).objects.push(twin);
+    }
+  } else {
+    delete found.object.connectsToFloorId;
+  }
+  if (!creating && createdTwinId) {
+    for (const floor of next.venue.floors) {
+      floor.objects = floor.objects.filter((object) => object.id !== createdTwinId);
+    }
   }
   return next;
 }
 
+function findObjectSafe(
+  document: VenueDocument,
+  objectId: string,
+): { floor: Floor; object: SceneObject } | undefined {
+  for (const floor of document.venue.floors) {
+    const object = floor.objects.find((item) => item.id === objectId);
+    if (object) {
+      return { floor, object };
+    }
+  }
+  return undefined;
+}
+
 export function addFloor(floor: Floor): EditorCommand {
   return new AddFloorCommand(clone(floor));
+}
+
+export function setFloorLink(
+  document: VenueDocument,
+  objectId: string,
+  targetFloorId: string | null,
+  twinId: string | null = null,
+): EditorCommand {
+  const existing = findObjectSafe(document, objectId);
+  const previous =
+    existing && typeof existing.object.connectsToFloorId === "string"
+      ? existing.object.connectsToFloorId
+      : null;
+  return new SetFloorLinkCommand(objectId, previous, targetFloorId, twinId);
+}
+
+/** The next floor a stair or lift should open onto, when one exists. */
+export function circulationTarget(document: VenueDocument, floorId: string): string | null {
+  return nearestOtherFloor(document, floorId)?.id ?? null;
 }
 
 export function updateFloor(
