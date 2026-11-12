@@ -38,6 +38,7 @@ export interface VenueView {
   setShownFloor(floorId: string | null): void;
   setWalkTarget(point: { x: number; z: number } | null): void;
   setWalkClick(enabled: boolean): void;
+  setWalkAxes(axes: { forward: number; strafe: number }): void;
   setEyeHeight(height: number): void;
   setQuality(mode: QualityMode): void;
   setSelected(id: string | null): void;
@@ -127,6 +128,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let walker: Walker = { x: 0, z: 0, yaw: 0, pitch: 0 };
   let eyeHeight = DEFAULT_EYE_HEIGHT;
   const pressed = new Set<string>();
+  let walkAxes = { forward: 0, strafe: 0 };
   let lastTick = performance.now();
   let ignoreClick = false;
   let pointerDown: { x: number; y: number } | null = null;
@@ -439,8 +441,10 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     const dt = (now - lastTick) / 1000;
     lastTick = now;
     if (mode === "walk") {
-      const forward = (pressed.has("KeyW") ? 1 : 0) - (pressed.has("KeyS") ? 1 : 0);
-      const strafe = (pressed.has("KeyD") ? 1 : 0) - (pressed.has("KeyA") ? 1 : 0);
+      const forward =
+        walkAxes.forward + (pressed.has("KeyW") ? 1 : 0) - (pressed.has("KeyS") ? 1 : 0);
+      const strafe =
+        walkAxes.strafe + (pressed.has("KeyD") ? 1 : 0) - (pressed.has("KeyA") ? 1 : 0);
       const walls = currentWalls();
       if (forward !== 0 || strafe !== 0) {
         walkTarget = null;
@@ -684,6 +688,12 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     },
     setWalkClick(enabled) {
       walkClick = enabled;
+    },
+    setWalkAxes(axes) {
+      walkAxes = {
+        forward: Math.max(-1, Math.min(1, axes.forward)),
+        strafe: Math.max(-1, Math.min(1, axes.strafe)),
+      };
     },
     setEyeHeight(height) {
       eyeHeight = clampEyeHeight(height);

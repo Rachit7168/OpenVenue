@@ -2,7 +2,12 @@
 import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { safeContentRef, safeVenueUrl } from "./fetch";
+import {
+  publicContentFetchUrl,
+  publicVenueIdFromUrl,
+  safeContentRef,
+  safeVenueUrl,
+} from "./fetch";
 import {
   directory,
   liveSummary,
@@ -28,6 +33,9 @@ let frame = 0;
 let contentGeneration = 0;
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 const activeContentRef = ref<string | null>(null);
+const publicVenue = ref<{ venueId: string; apiOrigin: string } | null>(null);
+const walkForward = ref(0);
+const walkStrafe = ref(0);
 
 const entries = computed(() => (document.value ? directory(document.value) : []));
 const live = computed(() => liveSummary(panel.value));
@@ -90,6 +98,7 @@ async function onFile(event: Event) {
   if (!file) {
     return;
   }
+  publicVenue.value = null;
   status.value = "Loading venue…";
   await openDocument(await file.text());
 }
@@ -111,10 +120,14 @@ async function openContent(contentRef: string | undefined) {
     };
     return;
   }
-  activeContentRef.value = safe;
+  activeContentRef.value = contentRef;
   status.value = "Loading zone details…";
+  const fetchUrl =
+    publicVenue.value && !contentRef.includes("://")
+      ? publicContentFetchUrl(publicVenue.value.venueId, publicVenue.value.apiOrigin, contentRef)
+      : safe;
   try {
-    const response = await fetch(safe);
+    const response = await fetch(fetchUrl);
     if (generation !== contentGeneration) {
       return;
     }
@@ -136,6 +149,16 @@ async function openContent(contentRef: string | undefined) {
     audio = new Audio(source);
     void audio.play().catch(() => undefined);
   }
+}
+
+function applyWalkAxes() {
+  view?.setWalkAxes({ forward: walkForward.value, strafe: walkStrafe.value });
+}
+
+function setWalkStep(forward: number, strafe: number) {
+  walkForward.value = forward;
+  walkStrafe.value = strafe;
+  applyWalkAxes();
 }
 
 function onSceneClick(event: MouseEvent) {
@@ -230,10 +253,12 @@ onMounted(async () => {
   if (url) {
     const safe = safeVenueUrl(url);
     if (!safe) {
-      status.value = "That venue link is not allowed.";
+      status.value =
+        "That venue link is not allowed. Use a same-origin .json URL, a public /api/v1/public/venues/{id}/ URL, or set VITE_API_ORIGIN for your API host.";
     } else {
       status.value = "Loading venue…";
       try {
+        publicVenue.value = publicVenueIdFromUrl(safe);
         const response = await fetch(safe);
         await openDocument(await response.text());
       } catch {
@@ -263,17 +288,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main
-    style="
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      height: 100vh;
-      margin: 0;
-      background: #09090b;
-      color: #f4f4f5;
-      font-family: sans-serif;
-    "
-  >
+  <main class="viewer-shell">
     <aside style="padding: 16px; overflow: auto; border-right: 1px solid #27272a">
       <h1 style="font-size: 18px; margin: 0 0 8px">Visitor</h1>
       <p style="font-size: 13px; color: #a1a1aa">{{ status }}</p>
@@ -326,6 +341,110 @@ onBeforeUnmount(() => {
         <button type="button" @click="panel = null">Close</button>
       </section>
     </aside>
-    <canvas ref="canvas" style="width: 100%; height: 100%" @click="onSceneClick" />
+    <div class="viewer-stage">
+      <canvas ref="canvas" class="viewer-canvas" @click="onSceneClick" />
+      <div
+        class="touch-walk"
+        aria-label="Walk controls"
+        @pointerleave="setWalkStep(0, 0)"
+        @pointerup="setWalkStep(0, 0)"
+        @pointercancel="setWalkStep(0, 0)"
+      >
+        <button
+          type="button"
+          aria-label="Walk forward"
+          @pointerdown="setWalkStep(1, 0)"
+          @pointerup="setWalkStep(0, 0)"
+        >
+          ↑
+        </button>
+        <div class="touch-walk-row">
+          <button
+            type="button"
+            aria-label="Strafe left"
+            @pointerdown="setWalkStep(0, -1)"
+            @pointerup="setWalkStep(0, 0)"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            aria-label="Strafe right"
+            @pointerdown="setWalkStep(0, 1)"
+            @pointerup="setWalkStep(0, 0)"
+          >
+            →
+          </button>
+        </div>
+        <button
+          type="button"
+          aria-label="Walk back"
+          @pointerdown="setWalkStep(-1, 0)"
+          @pointerup="setWalkStep(0, 0)"
+        >
+          ↓
+        </button>
+      </div>
+    </div>
   </main>
 </template>
+
+<style scoped>
+.viewer-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  height: 100dvh;
+  margin: 0;
+  background: #09090b;
+  color: #f4f4f5;
+  font-family: sans-serif;
+}
+
+.viewer-stage {
+  position: relative;
+  min-height: 40vh;
+}
+
+.viewer-canvas {
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+.touch-walk {
+  display: none;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  gap: 4px;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.9;
+}
+
+.touch-walk-row {
+  display: flex;
+  gap: 8px;
+}
+
+.touch-walk button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background: #18181b;
+  color: inherit;
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .viewer-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(50vh, 1fr);
+  }
+
+  .touch-walk {
+    display: flex;
+  }
+}
+</style>
