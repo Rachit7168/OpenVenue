@@ -1064,9 +1064,7 @@ export function setFloorLink(
   const createdTwin =
     targetFloorId === null
       ? twinId
-      : (twinId ??
-        findPortalTwinId(document, objectId, targetFloorId) ??
-        createId());
+      : (twinId ?? findPortalTwinId(document, objectId, targetFloorId) ?? createId());
   return new SetFloorLinkCommand(objectId, previous, targetFloorId, createdTwin);
 }
 

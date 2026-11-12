@@ -2,12 +2,7 @@
 import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import {
-  publicContentFetchUrl,
-  publicVenueIdFromUrl,
-  safeContentRef,
-  safeVenueUrl,
-} from "./fetch";
+import { publicContentFetchUrl, publicVenueIdFromUrl, safeContentRef, safeVenueUrl } from "./fetch";
 import {
   directory,
   liveSummary,
