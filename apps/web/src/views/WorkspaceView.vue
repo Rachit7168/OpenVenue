@@ -524,7 +524,7 @@ async function saveGlb() {
             Eye
             <input
               v-model.number="eyeHeight"
-              class="w-16 rounded-md border border-zinc-700 bg-zinc-950 px-1 py-1 text-sm text-zinc-100"
+              class="focus-ring w-16 rounded-md border border-zinc-700 bg-zinc-950 px-1 py-1 text-sm text-zinc-100"
               type="number"
               min="0.4"
               max="2.4"
