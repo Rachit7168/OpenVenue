@@ -126,14 +126,14 @@ function nearly(a: number, b: number): boolean {
 }
 
 function onPlaceAsset(assetId: string, point: { x: number; z: number }) {
-  placeCatalogueAsset(
-    store.execute,
-    store.document,
-    assetId,
-    point.x,
-    point.z,
-    store.activeFloorId,
-  );
+  const floorId =
+    cameraMode.value === "map" ? (mapFloorId.value ?? store.activeFloorId) : store.activeFloorId;
+  placeCatalogueAsset(store.execute, store.document, assetId, point.x, point.z, floorId);
+}
+
+function showFloor(floorId: string) {
+  store.setActiveFloor(floorId);
+  mapFloorId.value = floorId;
 }
 
 function createNextFloor() {
@@ -156,7 +156,7 @@ function createNextFloor() {
       zones: [],
     }),
   );
-  store.setActiveFloor(floorId);
+  showFloor(floorId);
 }
 
 function onFloorElevation(event: Event) {
@@ -164,8 +164,12 @@ function onFloorElevation(event: Event) {
   if (!floor) {
     return;
   }
-  const value = Number((event.target as HTMLInputElement).value);
-  if (!Number.isFinite(value) || nearly(value, floor.elevation)) {
+  const raw = (event.target as HTMLInputElement).value.trim();
+  if (raw === "") {
+    return;
+  }
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < -20 || value > 100 || nearly(value, floor.elevation)) {
     return;
   }
   store.execute(updateFloor(store.document, floor.id, { elevation: value }));
@@ -476,7 +480,7 @@ async function saveGlb() {
               : 'bg-zinc-800 text-zinc-100 hover:bg-zinc-700'
           "
           :data-testid="`floor-switch-${floor.level}`"
-          @click="store.setActiveFloor(floor.id)"
+          @click="showFloor(floor.id)"
         >
           {{ floor.name }}
         </button>
@@ -707,12 +711,13 @@ async function saveGlb() {
             :scene="store.scene"
             :camera-mode="cameraMode"
             :map-floor-id="mapFloorId"
+            :shown-floor-id="store.activeFloorId"
             :eye-height="eyeHeight"
             :gizmo-mode="gizmoMode"
             :quality-mode="qualityMode"
             :selected-id="cameraMode === 'map' ? (mapCard?.id ?? null) : selectedObjectId"
             @exit-walk="cameraMode = 'orbit'"
-            @floor="mapFloorId = $event"
+            @floor="showFloor($event)"
             @select="store.setSelection($event ? [$event] : [])"
             @transform="onObjectTransform"
             @place="onPlaceAsset"

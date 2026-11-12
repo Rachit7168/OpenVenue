@@ -90,18 +90,18 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 
 ## Layout
 
-| Path                    | Role                                        |
-| ----------------------- | ------------------------------------------- |
-| `apps/web`              | Vue 3 editor shell                          |
-| `apps/docs`             | Getting started, schema, assets, changelog  |
-| `apps/viewer`           | Future read-only visitor app                |
-| `apps/api`              | Optional Django API                         |
-| `packages/scene-schema` | `venue.json` schema, types, validator       |
-| `packages/geometry`     | Plan math, snapping, walls, and rooms       |
-| `packages/editor-core`  | Undoable commands                           |
-| `packages/scene-engine` | Document store for the 2D plan and later 3D |
-| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid          |
-| `packages/renderer-3d`  | Three.js hall built from the venue document |
+| Path                    | Role                                                          |
+| ----------------------- | ------------------------------------------------------------- |
+| `apps/web`              | Vue 3 editor shell                                            |
+| `apps/docs`             | Getting started, schema, assets, changelog                    |
+| `apps/viewer`           | Read-only visitor app (`pnpm --filter @openvenue/viewer dev`) |
+| `apps/api`              | Optional Django API                                           |
+| `packages/scene-schema` | `venue.json` schema, types, validator                         |
+| `packages/geometry`     | Plan math, snapping, walls, and rooms                         |
+| `packages/editor-core`  | Undoable commands                                             |
+| `packages/scene-engine` | Document store for the 2D plan and later 3D                   |
+| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid                            |
+| `packages/renderer-3d`  | Three.js hall built from the venue document                   |
 
 ## License
 

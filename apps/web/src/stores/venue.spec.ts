@@ -121,8 +121,10 @@ describe("venue store", () => {
       throw new Error("expected stair asset in catalogue");
     }
     placeCatalogueAsset(store.execute, store.document, stairAsset.id, 2, 3, store.activeFloorId);
-    expect(store.document.venue.floors[0]?.objects).toHaveLength(0);
-    expect(store.document.venue.floors[1]?.objects).toHaveLength(1);
+    const ground = store.document.venue.floors[0]?.objects[0];
+    const placed = store.document.venue.floors[1]?.objects[0];
+    expect(placed?.connectsToFloorId).toBe(store.document.venue.floors[0]?.id);
+    expect(ground?.connectsToFloorId).toBe(upperId);
 
     // Undoing object placement and floor addition falls back activeFloor to ground floor
     store.undo();

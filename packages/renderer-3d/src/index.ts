@@ -13,3 +13,4 @@ export { exportVenueGlb } from "./export.js";
 export { buildVenueGroup } from "./scene.js";
 export { patchVenueGroup } from "./sync.js";
 export { mountVenueView, type VenueView } from "./view.js";
+export { stepToward } from "./walk.js";

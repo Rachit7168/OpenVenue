@@ -14,6 +14,7 @@ const props = defineProps<{
   scene: SceneSource;
   cameraMode: CameraMode;
   mapFloorId: string | null;
+  shownFloorId: string | null;
   eyeHeight: number;
   gizmoMode: GizmoMode;
   qualityMode: QualityMode;
@@ -65,6 +66,7 @@ onMounted(() => {
   });
   view.setCameraMode(props.cameraMode);
   view.setMapFloor(props.mapFloorId);
+  view.setShownFloor(props.shownFloorId);
   view.setEyeHeight(props.eyeHeight);
   view.setGizmoMode(props.gizmoMode);
   view.setQuality(props.qualityMode);
@@ -85,6 +87,11 @@ watch(
 watch(
   () => props.mapFloorId,
   (floorId) => view?.setMapFloor(floorId),
+);
+
+watch(
+  () => props.shownFloorId,
+  (floorId) => view?.setShownFloor(floorId),
 );
 
 watch(

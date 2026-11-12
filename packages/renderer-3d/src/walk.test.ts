@@ -4,6 +4,7 @@ import {
   collisionSegments,
   PITCH_LIMIT,
   spawnWalker,
+  stepToward,
   stepWalker,
   type WalkWall,
 } from "./walk.js";
@@ -16,6 +17,13 @@ const hall: WalkWall[] = [
 ];
 
 describe("first-person walking", () => {
+  it("turns to face a clicked point and walks toward it", () => {
+    const started = { x: 2, z: 2, yaw: 0, pitch: 0 };
+    const walked = stepToward(started, { x: 2, z: 6 }, [], 1);
+    expect(walked.z).toBeGreaterThan(started.z);
+    expect(walked.x).toBeCloseTo(started.x);
+  });
+
   it("walks forward and looks without pitching past straight up", () => {
     const started = { x: 5, z: 4, yaw: 0, pitch: 0 };
     const walked = stepWalker(started, { forward: 1, strafe: 0 }, [], 1);

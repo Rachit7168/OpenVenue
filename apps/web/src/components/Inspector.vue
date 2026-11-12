@@ -6,6 +6,7 @@ import {
   resizeObject,
   rotateObject,
   setEntityFlag,
+  setFloorLink,
   updateMaterial,
   updateZone,
 } from "@openvenue/editor-core";
@@ -36,6 +37,9 @@ const zone = computed(() =>
 const object = computed(() =>
   floors.value.flatMap((floor) => floor.objects).find((item) => item.id === focusId.value),
 );
+const objectFloor = computed(() =>
+  floors.value.find((floor) => floor.objects.some((item) => item.id === object.value?.id)),
+);
 const spawn = computed(() =>
   store.document.venue.spawnPoints.find((item) => item.id === focusId.value),
 );
@@ -46,6 +50,17 @@ const hidden = computed(() =>
     ...store.document.venue.spawnPoints,
   ].filter((item) => item.visible === false),
 );
+
+const canLink = computed(() => {
+  const current = object.value;
+  if (!current) {
+    return false;
+  }
+  const name = current.name.toLowerCase();
+  return (
+    typeof current.connectsToFloorId === "string" || name.includes("stair") || name.includes("lift")
+  );
+});
 
 const floorMaterials = ["concrete", "wood", "carpet", "glass"];
 
@@ -66,6 +81,15 @@ function numeric(event: Event): number | null {
 
 function run(command: Parameters<typeof store.execute>[0]) {
   store.execute(command);
+}
+
+function commitLink(event: Event) {
+  const current = object.value;
+  if (!current) {
+    return;
+  }
+  const value = text(event);
+  run(setFloorLink(store.document, current.id, value === "" ? null : value, crypto.randomUUID()));
 }
 
 function commitName(event: Event) {
@@ -299,6 +323,23 @@ function distribute() {
       </label>
 
       <template v-if="object">
+        <label v-if="canLink" class="text-xs text-zinc-300">
+          Connects to
+          <select
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            :value="typeof object.connectsToFloorId === 'string' ? object.connectsToFloorId : ''"
+            @change="commitLink"
+          >
+            <option value="">None</option>
+            <option
+              v-for="floor in floors.filter((item) => item.id !== objectFloor?.id)"
+              :key="floor.id"
+              :value="floor.id"
+            >
+              {{ floor.name }}
+            </option>
+          </select>
+        </label>
         <div class="grid grid-cols-2 gap-2">
           <label class="text-xs text-zinc-300">
             X

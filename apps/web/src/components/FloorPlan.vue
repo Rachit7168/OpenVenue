@@ -330,6 +330,14 @@ watch(
     measure();
   },
 );
+
+watch(
+  () => props.floorIndex,
+  () => {
+    fitted.value = false;
+    measure();
+  },
+);
 </script>
 
 <template>

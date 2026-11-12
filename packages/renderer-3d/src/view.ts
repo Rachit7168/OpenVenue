@@ -21,6 +21,7 @@ import {
   collisionSegments,
   DEFAULT_EYE_HEIGHT,
   spawnWalker,
+  stepToward,
   stepWalker,
   clampEyeHeight,
   type WalkWall,
@@ -34,6 +35,10 @@ export interface VenueView {
   applyChange(document: VenueDocument, commandType: string | null): void;
   setCameraMode(mode: CameraMode): void;
   setMapFloor(floorId: string | null): void;
+  setShownFloor(floorId: string | null): void;
+  setWalkTarget(point: { x: number; z: number } | null): void;
+  setWalkClick(enabled: boolean): void;
+  setWalkAxes(axes: { forward: number; strafe: number }): void;
   setEyeHeight(height: number): void;
   setQuality(mode: QualityMode): void;
   setSelected(id: string | null): void;
@@ -47,6 +52,7 @@ export interface VenueView {
   fit(): void;
   reset(): void;
   floorPoint(clientX: number, clientY: number): { x: number; z: number } | null;
+  position(): { x: number; z: number; floorId: string | null };
   resize(width: number, height: number): void;
   dispose(): void;
 }
@@ -115,9 +121,14 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   let onExitWalk: () => void = () => undefined;
   let onFloor: (floorId: string) => void = () => undefined;
   let mapFloorId: string | null = null;
+  let shownFloorId: string | null = null;
+  let walkTarget: { x: number; z: number } | null = null;
+  let walkClick = false;
+  let portalUntil = 0;
   let walker: Walker = { x: 0, z: 0, yaw: 0, pitch: 0 };
   let eyeHeight = DEFAULT_EYE_HEIGHT;
   const pressed = new Set<string>();
+  let walkAxes = { forward: 0, strafe: 0 };
   let lastTick = performance.now();
   let ignoreClick = false;
   let pointerDown: { x: number; y: number } | null = null;
@@ -262,7 +273,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
 
   const sceneOptions = (): BuildVenueOptions => ({
     style: mode === "map" ? "map" : "hall",
-    floorId: mode === "map" ? mapFloorId : null,
+    floorId: mode === "map" ? mapFloorId : shownFloorId,
   });
 
   const pickHit = (clientX: number, clientY: number) => {
@@ -356,15 +367,18 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("dblclick", onDoubleClick);
 
-  let walkFloorId: string | null = null;
-
-  const walkFloor = () => {
+  const displayedFloor = () => {
     const floors = lastDocument?.venue.floors ?? [];
-    return floors.find((floor) => floor.id === walkFloorId) ?? floors[0];
+    const id = mode === "map" ? mapFloorId : shownFloorId;
+    return (id ? floors.find((floor) => floor.id === id) : undefined) ?? floors[0];
+  };
+
+  const syncDropPlane = () => {
+    floorPlane.constant = -(displayedFloor()?.elevation ?? 0);
   };
 
   const currentWalls = (): WalkWall[] => {
-    const floor = walkFloor();
+    const floor = displayedFloor();
     if (!floor) {
       return [];
     }
@@ -385,7 +399,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const applyWalker = () => {
-    const elevation = walkFloor()?.elevation ?? 0;
+    const elevation = displayedFloor()?.elevation ?? 0;
     perspective.position.set(walker.x, elevation + eyeHeight, walker.z);
     perspective.rotation.order = "YXZ";
     perspective.rotation.set(walker.pitch, walker.yaw, 0);
@@ -393,10 +407,21 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const beginWalk = () => {
+    const floor = displayedFloor();
+    const spawns = lastDocument?.venue.spawnPoints ?? [];
     const spawn =
-      lastDocument?.venue.spawnPoints.find((point) => point.role === "visitor") ??
-      lastDocument?.venue.spawnPoints[0];
-    walkFloorId = spawn?.floorId ?? null;
+      spawns.find((point) => point.role === "visitor" && point.floorId === floor?.id) ??
+      spawns.find((point) => point.floorId === floor?.id) ??
+      spawns.find((point) => point.role === "visitor") ??
+      spawns[0];
+    if (spawn && mode !== "map" && spawn.floorId !== shownFloorId) {
+      shownFloorId = spawn.floorId;
+      if (lastDocument) {
+        replaceDocument(lastDocument, true);
+      }
+      syncDropPlane();
+      onFloor(spawn.floorId);
+    }
     const walls = currentWalls();
     walker = spawn
       ? spawnWalker(spawn.position, spawn.rotationY, walls)
@@ -416,9 +441,63 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     const dt = (now - lastTick) / 1000;
     lastTick = now;
     if (mode === "walk") {
-      const forward = (pressed.has("KeyW") ? 1 : 0) - (pressed.has("KeyS") ? 1 : 0);
-      const strafe = (pressed.has("KeyD") ? 1 : 0) - (pressed.has("KeyA") ? 1 : 0);
-      walker = stepWalker(walker, { forward, strafe }, currentWalls(), dt);
+      const forward =
+        walkAxes.forward + (pressed.has("KeyW") ? 1 : 0) - (pressed.has("KeyS") ? 1 : 0);
+      const strafe =
+        walkAxes.strafe + (pressed.has("KeyD") ? 1 : 0) - (pressed.has("KeyA") ? 1 : 0);
+      const walls = currentWalls();
+      if (forward !== 0 || strafe !== 0) {
+        walkTarget = null;
+        walker = stepWalker(walker, { forward, strafe }, walls, dt);
+      } else if (walkTarget) {
+        const next = stepToward(walker, walkTarget, walls, dt);
+        const arrived =
+          Math.hypot(next.x - walkTarget.x, next.z - walkTarget.z) < 0.25 &&
+          Math.hypot(walker.x - walkTarget.x, walker.z - walkTarget.z) < 0.25;
+        walker = next;
+        if (arrived) {
+          walkTarget = null;
+        }
+      }
+      const floor = displayedFloor();
+      if (floor && performance.now() >= portalUntil) {
+        for (const object of floor.objects) {
+          const target = object.connectsToFloorId;
+          if (typeof target !== "string") {
+            continue;
+          }
+          const dx = object.transform.position.x - walker.x;
+          const dz = object.transform.position.z - walker.z;
+          if (dx * dx + dz * dz > 0.64) {
+            continue;
+          }
+          portalUntil = performance.now() + 1200;
+          shownFloorId = target;
+          walkTarget = null;
+          const targetFloor = lastDocument?.venue.floors.find((item) => item.id === target);
+          const landing = targetFloor?.objects.find((item) => {
+            if (item.connectsToFloorId !== floor.id) {
+              return false;
+            }
+            const dx = item.transform.position.x - object.transform.position.x;
+            const dz = item.transform.position.z - object.transform.position.z;
+            return dx * dx + dz * dz <= 1e-4;
+          });
+          if (landing) {
+            walker = {
+              ...walker,
+              x: landing.transform.position.x,
+              z: landing.transform.position.z,
+            };
+          }
+          if (lastDocument) {
+            replaceDocument(lastDocument, true);
+          }
+          syncDropPlane();
+          onFloor(target);
+          break;
+        }
+      }
       applyWalker();
     } else {
       controls.update();
@@ -457,8 +536,27 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     walker = { ...walker, yaw: look.yaw, pitch: look.pitch };
   };
 
-  const onCanvasClick = () => {
-    if (mode !== "walk" || document.pointerLockElement === canvas) {
+  const onCanvasClick = (event: MouseEvent) => {
+    if (mode !== "walk") {
+      return;
+    }
+    if (walkClick) {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) {
+        return;
+      }
+      pointer.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(pointer, active);
+      const hit = raycaster.ray.intersectPlane(floorPlane, floorHit);
+      if (hit) {
+        walkTarget = { x: hit.x, z: hit.z };
+      }
+      return;
+    }
+    if (document.pointerLockElement === canvas) {
       return;
     }
     void canvas.requestPointerLock();
@@ -504,6 +602,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
 
   const replaceDocument = (document: VenueDocument, aimCamera = false) => {
     lastDocument = document;
+    syncDropPlane();
     chairSlot = null;
     gizmo.detach();
     if (venue) {
@@ -568,9 +667,33 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         return;
       }
       mapFloorId = floorId;
+      syncDropPlane();
       if (mode === "map" && lastDocument) {
         replaceDocument(lastDocument, true);
       }
+    },
+    setShownFloor(floorId) {
+      if (floorId === shownFloorId) {
+        return;
+      }
+      shownFloorId = floorId;
+      walkTarget = null;
+      syncDropPlane();
+      if (mode !== "map" && lastDocument) {
+        replaceDocument(lastDocument, true);
+      }
+    },
+    setWalkTarget(point) {
+      walkTarget = point;
+    },
+    setWalkClick(enabled) {
+      walkClick = enabled;
+    },
+    setWalkAxes(axes) {
+      walkAxes = {
+        forward: Math.max(-1, Math.min(1, axes.forward)),
+        strafe: Math.max(-1, Math.min(1, axes.strafe)),
+      };
     },
     setEyeHeight(height) {
       eyeHeight = clampEyeHeight(height);
@@ -592,6 +715,9 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         return;
       }
       aim(true);
+    },
+    position() {
+      return { x: walker.x, z: walker.z, floorId: displayedFloor()?.id ?? null };
     },
     floorPoint(clientX, clientY) {
       const rect = canvas.getBoundingClientRect();

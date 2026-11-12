@@ -17,6 +17,8 @@ export {
   resizeObject,
   rotateObject,
   setEntityFlag,
+  setFloorLink,
+  circulationTarget,
   updateFloor,
   updateMaterial,
   updateWall,

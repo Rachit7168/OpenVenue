@@ -11,6 +11,27 @@ const ceilingMaterial = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide,
 });
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "#f5f5f4", roughness: 0.72 });
+
+function nameSprite(label: string, x: number, y: number, z: number): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 64;
+  const context = canvas.getContext("2d");
+  if (context) {
+    context.fillStyle = "#0f172a";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#f8fafc";
+    context.font = "28px sans-serif";
+    context.fillText(label.slice(0, 18), 12, 42);
+  }
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }),
+  );
+  sprite.position.set(x, y, z);
+  sprite.scale.set(1.8, 0.45, 1);
+  sprite.name = `sign:${label}`;
+  return sprite;
+}
 const objectColors: Record<string, string> = {
   table: "#d4b483",
   chair: "#e7e5e4",
@@ -466,6 +487,16 @@ function addFloor(
     group.add(mesh);
   }
   addChairs(group, chairs, map ? mapFurnitureMaterial("chair") : materialPreset("wood"));
+  if (!map && typeof document !== "undefined") {
+    for (const zone of floor.zones) {
+      if (!shown(zone) || zone.boundary.length < 1) {
+        continue;
+      }
+      const x = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
+      const z = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
+      group.add(nameSprite(zone.name, x, 2.2, z));
+    }
+  }
 
   if (!map) {
     for (const spawn of document.venue.spawnPoints) {
