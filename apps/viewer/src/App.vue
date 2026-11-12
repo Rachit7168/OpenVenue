@@ -31,6 +31,7 @@ const activeContentRef = ref<string | null>(null);
 const publicVenue = ref<{ venueId: string; apiOrigin: string } | null>(null);
 const walkForward = ref(0);
 const walkStrafe = ref(0);
+const hoverZoneId = ref<string | null>(null);
 
 const entries = computed(() => (document.value ? directory(document.value) : []));
 const live = computed(() => liveSummary(panel.value));
@@ -60,6 +61,28 @@ function drawMap() {
     context.beginPath();
     context.moveTo(start.x, start.y);
     context.lineTo(end.x, end.y);
+    context.stroke();
+  }
+  for (const zone of floor.zones) {
+    const interactive = zone.interaction?.type && zone.interaction.type !== "none";
+    if (!interactive || zone.boundary.length < 3) {
+      continue;
+    }
+    const active = hoverZoneId.value === zone.id;
+    context.beginPath();
+    const first = project(zone.boundary[0]!.x, zone.boundary[0]!.z);
+    context.moveTo(first.x, first.y);
+    for (let index = 1; index < zone.boundary.length; index += 1) {
+      const point = project(zone.boundary[index]!.x, zone.boundary[index]!.z);
+      context.lineTo(point.x, point.y);
+    }
+    context.closePath();
+    if (active) {
+      context.fillStyle = "rgba(45, 212, 191, 0.35)";
+      context.fill();
+    }
+    context.strokeStyle = active ? "#2dd4bf" : "#52525b";
+    context.lineWidth = active ? 2 : 1;
     context.stroke();
   }
   const spawn = current ? visitorSpawn(current) : null;
@@ -154,6 +177,28 @@ function setWalkStep(forward: number, strafe: number) {
   walkForward.value = forward;
   walkStrafe.value = strafe;
   applyWalkAxes();
+}
+
+function itemImageSrc(image: string | undefined): string | null {
+  return image ? safeContentRef(image) : null;
+}
+
+function onSceneHover(event: MouseEvent) {
+  const current = document.value;
+  const here = view?.position();
+  const point = view?.floorPoint(event.clientX, event.clientY);
+  if (!current || !here?.floorId || !point) {
+    hoverZoneId.value = null;
+    return;
+  }
+  const zone = zoneAt(current, here.floorId, point);
+  const next =
+    zone?.interaction && zone.interaction.type !== "none" && zone.interaction.contentRef
+      ? zone.id
+      : null;
+  if (hoverZoneId.value !== next) {
+    hoverZoneId.value = next;
+  }
 }
 
 function onSceneClick(event: MouseEvent) {
@@ -325,8 +370,14 @@ onBeforeUnmount(() => {
         <p v-if="panel.href">
           <a :href="panel.href">{{ panel.href }}</a>
         </p>
-        <ul>
+        <ul class="content-items">
           <li v-for="item in panel.items ?? []" :key="item.name">
+            <img
+              v-if="itemImageSrc(item.image)"
+              :src="itemImageSrc(item.image) ?? undefined"
+              :alt="item.name"
+              class="content-item-image"
+            />
             <a v-if="item.href" :href="item.href">{{ item.name }}</a>
             <template v-else>{{ item.name }}</template>
             <span v-if="item.price"> — {{ item.price }}</span>
@@ -337,7 +388,13 @@ onBeforeUnmount(() => {
       </section>
     </aside>
     <div class="viewer-stage">
-      <canvas ref="canvas" class="viewer-canvas" @click="onSceneClick" />
+      <canvas
+        ref="canvas"
+        class="viewer-canvas"
+        @click="onSceneClick"
+        @mousemove="onSceneHover"
+        @mouseleave="hoverZoneId = null"
+      />
       <div
         class="touch-walk"
         aria-label="Walk controls"
@@ -420,6 +477,18 @@ onBeforeUnmount(() => {
 .touch-walk-row {
   display: flex;
   gap: 8px;
+}
+
+.content-items {
+  padding-left: 18px;
+}
+
+.content-item-image {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 4px 0 6px;
+  border-radius: 6px;
 }
 
 .touch-walk button {
