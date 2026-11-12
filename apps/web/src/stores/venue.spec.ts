@@ -72,6 +72,30 @@ describe("venue store", () => {
     expect(store.fileName).toBe("venue.json");
   });
 
+  it("drops a file load that finishes after an edit", () => {
+    const store = useVenueStore();
+    const text = store.toJson();
+    if (!text) {
+      throw new Error("expected JSON");
+    }
+    const token = store.startLoad();
+    store.execute(
+      addFloor({
+        id: "11111111-1111-4111-8111-111111111112",
+        name: "Level 1",
+        level: 1,
+        elevation: 3,
+        height: 3,
+        rooms: [],
+        walls: [],
+        objects: [],
+        zones: [],
+      }),
+    );
+    store.loadJson(text, "late.json", token);
+    expect(store.document.venue.floors).toHaveLength(2);
+  });
+
   it("tracks active floor, switches floors, and places stairs on the active floor", () => {
     const store = useVenueStore();
     const upperId = "11111111-1111-4111-8111-111111111111";

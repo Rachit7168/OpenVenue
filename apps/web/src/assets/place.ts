@@ -13,9 +13,9 @@ export function placeCatalogueAsset(
   floorId?: string,
 ): string | null {
   const asset = findAsset(assetId);
-  const floor =
-    (floorId ? document.venue.floors.find((item) => item.id === floorId) : undefined) ??
-    document.venue.floors[0];
+  const floor = floorId
+    ? document.venue.floors.find((item) => item.id === floorId)
+    : document.venue.floors[0];
   if (!asset || !floor) {
     return null;
   }

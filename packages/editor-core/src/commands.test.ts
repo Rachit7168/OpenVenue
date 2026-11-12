@@ -372,4 +372,41 @@ describe("commands", () => {
     document = stack.redo(document);
     expect(document.venue.floors).toHaveLength(2);
   });
+
+  it("rejects a floor with an invalid name or a reused entity id", () => {
+    const document = createEmptyVenue("Tower");
+    const stack = new CommandStack();
+    expect(() =>
+      stack.execute(
+        document,
+        addFloor({
+          id: "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e98",
+          name: "",
+          level: 1,
+          elevation: 3,
+          height: 3,
+          rooms: [],
+          walls: [],
+          objects: [],
+          zones: [],
+        }),
+      ),
+    ).toThrow(CommandError);
+    expect(() =>
+      stack.execute(
+        document,
+        addFloor({
+          id: "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e97",
+          name: "Level 1",
+          level: 1,
+          elevation: 3,
+          height: 3,
+          rooms: [],
+          walls: [],
+          objects: [chair(floorOf(document).id)],
+          zones: [],
+        }),
+      ),
+    ).toThrow(CommandError);
+  });
 });

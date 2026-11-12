@@ -17,33 +17,35 @@ const store = useVenueStore();
 
 const interactions = ["none", "info-panel", "link", "menu", "session-list"] as const;
 
-const floor = computed(() => store.document.venue.floors[0]);
+const floors = computed(() => store.document.venue.floors);
 
-const selectedObjects = computed(
-  () => floor.value?.objects.filter((object) => store.selection.includes(object.id)) ?? [],
+const selectedObjects = computed(() =>
+  floors.value
+    .flatMap((floor) => floor.objects)
+    .filter((object) => store.selection.includes(object.id)),
 );
 
 const focusId = computed(() => (store.selection.length === 1 ? store.selection[0] : undefined));
 
-const room = computed(() => floor.value?.rooms.find((item) => item.id === focusId.value));
-const zone = computed(() => floor.value?.zones.find((item) => item.id === focusId.value));
-const object = computed(() => floor.value?.objects.find((item) => item.id === focusId.value));
+const room = computed(() =>
+  floors.value.flatMap((floor) => floor.rooms).find((item) => item.id === focusId.value),
+);
+const zone = computed(() =>
+  floors.value.flatMap((floor) => floor.zones).find((item) => item.id === focusId.value),
+);
+const object = computed(() =>
+  floors.value.flatMap((floor) => floor.objects).find((item) => item.id === focusId.value),
+);
 const spawn = computed(() =>
   store.document.venue.spawnPoints.find((item) => item.id === focusId.value),
 );
 
-const hidden = computed(() => {
-  const current = floor.value;
-  if (!current) {
-    return [];
-  }
-  return [
-    ...current.rooms,
-    ...current.zones,
-    ...current.objects,
+const hidden = computed(() =>
+  [
+    ...floors.value.flatMap((floor) => [...floor.rooms, ...floor.zones, ...floor.objects]),
     ...store.document.venue.spawnPoints,
-  ].filter((item) => item.visible === false);
-});
+  ].filter((item) => item.visible === false),
+);
 
 const floorMaterials = ["concrete", "wood", "carpet", "glass"];
 
