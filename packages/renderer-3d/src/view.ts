@@ -397,7 +397,8 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   };
 
   const applyWalker = () => {
-    perspective.position.set(walker.x, eyeHeight, walker.z);
+    const elevation = displayedFloor()?.elevation ?? 0;
+    perspective.position.set(walker.x, elevation + eyeHeight, walker.z);
     perspective.rotation.order = "YXZ";
     perspective.rotation.set(walker.pitch, walker.yaw, 0);
     active = perspective;
@@ -405,9 +406,20 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
 
   const beginWalk = () => {
     const floor = displayedFloor();
-    const spawns =
-      lastDocument?.venue.spawnPoints.filter((point) => point.floorId === floor?.id) ?? [];
-    const spawn = spawns.find((point) => point.role === "visitor") ?? spawns[0];
+    const spawns = lastDocument?.venue.spawnPoints ?? [];
+    const spawn =
+      spawns.find((point) => point.role === "visitor" && point.floorId === floor?.id) ??
+      spawns.find((point) => point.floorId === floor?.id) ??
+      spawns.find((point) => point.role === "visitor") ??
+      spawns[0];
+    if (spawn && mode !== "map" && spawn.floorId !== shownFloorId) {
+      shownFloorId = spawn.floorId;
+      if (lastDocument) {
+        replaceDocument(lastDocument, true);
+      }
+      syncDropPlane();
+      onFloor(spawn.floorId);
+    }
     const walls = currentWalls();
     walker = spawn
       ? spawnWalker(spawn.position, spawn.rotationY, walls)

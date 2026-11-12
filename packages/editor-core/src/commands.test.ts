@@ -458,4 +458,25 @@ describe("commands", () => {
     expect(document.venue.floors[0]?.objects).toHaveLength(0);
     expect(document.venue.floors[1]?.objects).toHaveLength(0);
   });
+
+  it("rejects a floor that reuses an existing entity id", () => {
+    const document = createEmptyVenue("Tower");
+    const taken = floorOf(document).id;
+    expect(() =>
+      new CommandStack().execute(
+        document,
+        addFloor({
+          id: "9f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e97",
+          name: "Level 1",
+          level: 1,
+          elevation: 3,
+          height: 3,
+          rooms: [],
+          walls: [],
+          objects: [chair(taken)],
+          zones: [],
+        }),
+      ),
+    ).toThrow(CommandError);
+  });
 });

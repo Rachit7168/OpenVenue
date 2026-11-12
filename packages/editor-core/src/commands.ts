@@ -817,6 +817,7 @@ class AddFloorCommand implements EditorCommand {
       throw new CommandError(`Floor ${this.floor.id} already exists`);
     }
     assertFloorFields(this.floor);
+    assertFloorIdsAreFree(next, this.floor);
     next.venue.floors.push(clone(this.floor));
     return next;
   }
@@ -877,6 +878,50 @@ function applyFloorPatch(
   }
   assertFloorFields(floor);
   return next;
+}
+
+function floorEntityIds(floor: Floor): string[] {
+  return [
+    floor.id,
+    ...floor.walls.flatMap((wall) => [
+      wall.id,
+      ...(wall.openings ?? []).map((opening) => opening.id),
+    ]),
+    ...floor.rooms.map((room) => room.id),
+    ...floor.objects.map((object) => object.id),
+    ...floor.zones.map((zone) => zone.id),
+  ];
+}
+
+function documentIds(document: VenueDocument): Set<string> {
+  const ids = new Set<string>([
+    document.project.id,
+    document.venue.id,
+    ...document.assets.map((asset) => asset.id),
+    ...document.venue.spawnPoints.map((spawn) => spawn.id),
+  ]);
+  for (const floor of document.venue.floors) {
+    for (const id of floorEntityIds(floor)) {
+      ids.add(id);
+    }
+  }
+  for (const area of document.venue.navigation?.walkableAreas ?? []) {
+    ids.add(area.id);
+  }
+  for (const waypoint of document.venue.navigation?.waypoints ?? []) {
+    ids.add(waypoint.id);
+  }
+  return ids;
+}
+
+function assertFloorIdsAreFree(document: VenueDocument, floor: Floor): void {
+  const used = documentIds(document);
+  for (const id of floorEntityIds(floor)) {
+    if (used.has(id)) {
+      throw new CommandError(`Id ${id} is already used`);
+    }
+    used.add(id);
+  }
 }
 
 function nearestOtherFloor(document: VenueDocument, floorId: string): Floor | undefined {

@@ -179,6 +179,7 @@ export const useVenueStore = defineStore("venue", () => {
   }
 
   function execute(command: EditorCommand, options?: ExecuteOptions) {
+    invalidateLoads();
     try {
       scene.execute(command, options);
       issues.value = [];

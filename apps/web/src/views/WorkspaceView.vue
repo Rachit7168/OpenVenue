@@ -405,15 +405,15 @@ function save() {
 }
 
 function saveSvg() {
-  download(planSvg(store.document), "image/svg+xml", venueFile("svg"));
+  download(planSvg(store.document, store.activeFloorIndex), "image/svg+xml", venueFile("svg"));
 }
 
 function savePng() {
-  download(planPng(store.document), "image/png", venueFile("png"));
+  download(planPng(store.document, store.activeFloorIndex), "image/png", venueFile("png"));
 }
 
 function savePdf() {
-  download(planPdf(store.document), "application/pdf", venueFile("pdf"));
+  download(planPdf(store.document, store.activeFloorIndex), "application/pdf", venueFile("pdf"));
 }
 
 async function saveGlb() {

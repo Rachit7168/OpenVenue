@@ -454,37 +454,35 @@ function onUp() {
 }
 
 function duplicateSelection() {
-  const floor = floorOf(store.document);
-  if (!floor) {
-    return;
-  }
   const created: string[] = [];
   const commands = [];
-  for (const id of store.selection) {
-    if (isLocked(id)) {
-      continue;
-    }
-    const object = floor.objects.find((item) => item.id === id);
-    if (object) {
-      const copy = JSON.parse(JSON.stringify(object)) as SceneObject;
-      copy.id = crypto.randomUUID();
-      copy.name = `${object.name} copy`.slice(0, 200);
-      copy.transform.position.x += 0.5;
-      copy.transform.position.z += 0.5;
-      created.push(copy.id);
-      commands.push(addObject(floor.id, copy));
-    }
-    const zone = floor.zones.find((item) => item.id === id);
-    if (zone) {
-      const copy = JSON.parse(JSON.stringify(zone)) as Zone;
-      copy.id = crypto.randomUUID();
-      copy.name = `${zone.name} copy`.slice(0, 200);
-      copy.boundary = copy.boundary.map((corner) => ({
-        x: corner.x + 0.5,
-        z: corner.z + 0.5,
-      })) as Polygon;
-      created.push(copy.id);
-      commands.push(addZone(floor.id, copy));
+  for (const floor of store.document.venue.floors) {
+    for (const id of store.selection) {
+      if (isLocked(id)) {
+        continue;
+      }
+      const object = floor.objects.find((item) => item.id === id);
+      if (object) {
+        const copy = JSON.parse(JSON.stringify(object)) as SceneObject;
+        copy.id = crypto.randomUUID();
+        copy.name = `${object.name} copy`.slice(0, 200);
+        copy.transform.position.x += 0.5;
+        copy.transform.position.z += 0.5;
+        created.push(copy.id);
+        commands.push(addObject(floor.id, copy));
+      }
+      const zone = floor.zones.find((item) => item.id === id);
+      if (zone) {
+        const copy = JSON.parse(JSON.stringify(zone)) as Zone;
+        copy.id = crypto.randomUUID();
+        copy.name = `${zone.name} copy`.slice(0, 200);
+        copy.boundary = copy.boundary.map((corner) => ({
+          x: corner.x + 0.5,
+          z: corner.z + 0.5,
+        })) as Polygon;
+        created.push(copy.id);
+        commands.push(addZone(floor.id, copy));
+      }
     }
   }
   if (commands.length === 0) {
@@ -627,12 +625,10 @@ function onKey(event: KeyboardEvent) {
 }
 
 function onNudge(x: number, z: number) {
-  const floor = store.activeFloor;
-  if (!floor) {
-    return;
-  }
   const selected = new Set(store.selection);
-  const objects = floor.objects.filter((object) => selected.has(object.id));
+  const objects = store.document.venue.floors
+    .flatMap((floor) => floor.objects)
+    .filter((object) => selected.has(object.id));
   if (objects.length === 0) {
     return;
   }
