@@ -3,6 +3,8 @@ import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { publicContentFetchUrl, publicVenueIdFromUrl, safeContentRef, safeVenueUrl } from "./fetch";
+import DialogChrome from "./DialogChrome.vue";
+import { trapTabKey } from "./focus";
 import {
   findCategories,
   floorsForChrome,
@@ -16,6 +18,7 @@ import {
   type MapPlace,
   type MapViewMode,
 } from "./map";
+import { clearChromePopover, closeChromePanels, openChromePopover } from "./panels";
 import {
   liveSummary,
   mapProjection,
@@ -40,7 +43,24 @@ const expandedCategory = ref<string | null>(null);
 const hintsVisible = ref(true);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const map2d = ref<HTMLCanvasElement | null>(null);
+const dialogChrome = ref<InstanceType<typeof DialogChrome> | null>(null);
+const findPanel = computed(() => dialogChrome.value?.findPanel ?? null);
+const searchPanel = computed(() => dialogChrome.value?.searchPanel ?? null);
+const popoverPanel = computed(() => dialogChrome.value?.popoverPanel ?? null);
+const mapPan = ref({ x: 0, y: 0 });
+const mapZoom = ref(1);
+const mapPointers = new Map<number, { x: number; y: number }>();
+let mapDrag: {
+  pointerId: number;
+  button: number;
+  x: number;
+  y: number;
+  panX: number;
+  panY: number;
+} | null = null;
+let mapPinch: { distance: number; zoom: number } | null = null;
 let view: VenueView | null = null;
+let restoreFocus: HTMLElement | null = null;
 let audio: HTMLAudioElement | null = null;
 let ambient: HTMLAudioElement | null = null;
 let frame = 0;
@@ -124,6 +144,8 @@ function applyCameraForMode() {
 
 function setFloorFilter(next: string | null) {
   floorId.value = next;
+  mapPan.value = { x: 0, y: 0 };
+  mapZoom.value = 1;
   if (viewMode.value === "walk") {
     if (next) {
       view?.setShownFloor(next);
@@ -171,10 +193,13 @@ function drawMap2d() {
   const stack = floors.length > 1;
   const sliceHeight = stack ? height / floors.length : height;
   const placesById = new Map(mapPlaces(current).map((place) => [place.id, place]));
+  const showIcons = mapZoom.value >= 0.85;
   floors.forEach((floor, index) => {
     const offsetY = stack ? (floors.length - 1 - index) * sliceHeight : 0;
     const project = mapProjection(floor, width, sliceHeight - 16).toScreen;
     context.save();
+    context.translate(mapPan.value.x, mapPan.value.y);
+    context.scale(mapZoom.value, mapZoom.value);
     context.translate(0, offsetY + 8);
     context.strokeStyle = "#64748b";
     context.lineWidth = 2;
@@ -207,27 +232,44 @@ function drawMap2d() {
       context.strokeStyle = active ? "#0f172a" : "#475569";
       context.lineWidth = active ? 2.5 : 1;
       context.stroke();
-      const centre = project(place?.x ?? 0, place?.z ?? 0);
-      context.fillStyle = "#0f172a";
-      context.font = "12px sans-serif";
-      context.textAlign = "center";
-      context.fillText(iconGlyph(place?.icon ?? "other"), centre.x, centre.y + 4);
+      if (showIcons) {
+        const centre = project(place?.x ?? 0, place?.z ?? 0);
+        context.fillStyle = "#0f172a";
+        context.font = "12px sans-serif";
+        context.textAlign = "center";
+        context.fillText(iconGlyph(place?.icon ?? "other"), centre.x, centre.y + 4);
+      }
     }
     for (const marker of floorMarkers(floor)) {
       const point = project(marker.position.x, marker.position.z);
       const yaw = marker.rotationY ?? 0;
-      context.fillStyle = marker.kind === "exit" ? "#fb7185" : "#1d4ed8";
       context.save();
       context.translate(point.x, point.y);
-      // Canvas Y is down; negate yaw so 0 points "up" the plan (+Z in mapProjection).
-      context.rotate(-yaw);
-      context.beginPath();
-      context.moveTo(0, -6);
-      context.lineTo(5, 4);
-      context.lineTo(-5, 4);
-      context.closePath();
-      context.fill();
+      if (marker.kind === "stair" || marker.kind === "elevator") {
+        context.fillStyle = "#34d399";
+        context.fillRect(-5, -5, 10, 10);
+        context.fillStyle = "#0f172a";
+        context.font = "9px sans-serif";
+        context.textAlign = "center";
+        context.fillText(marker.kind === "stair" ? "S" : "↑", 0, 3);
+      } else {
+        // mapProjection maps +Z to canvas +Y; schema/3D treat yaw 0 as +Z.
+        context.fillStyle = marker.kind === "exit" ? "#fb7185" : "#1d4ed8";
+        context.rotate(yaw);
+        context.beginPath();
+        context.moveTo(0, 6);
+        context.lineTo(5, -4);
+        context.lineTo(-5, -4);
+        context.closePath();
+        context.fill();
+      }
       context.restore();
+      if (marker.label) {
+        context.fillStyle = "#334155";
+        context.font = "10px sans-serif";
+        context.textAlign = "center";
+        context.fillText(marker.label, point.x, point.y + 14);
+      }
     }
     context.fillStyle = "#334155";
     context.font = "bold 12px sans-serif";
@@ -384,9 +426,21 @@ async function openContent(contentRef: string | undefined, fallback?: MapPlace) 
   }
 }
 
-async function selectPlace(place: MapPlace, closePanels = true) {
+async function selectPlace(place: MapPlace, dismissPanels = true) {
   stopContentRefresh();
+  captureRestoreFocus();
   selectedPlaceId.value = place.id;
+  if (dismissPanels) {
+    findOpen.value = false;
+    searchOpen.value = false;
+  }
+  const chrome = openChromePopover({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: false,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
   popover.value = place;
   view?.setSelected(place.id);
   if (viewMode.value === "walk") {
@@ -395,10 +449,6 @@ async function selectPlace(place: MapPlace, closePanels = true) {
     view?.setWalkTarget({ x: place.x, z: place.z });
   } else if (floorId.value !== null && floorId.value !== place.floorId) {
     setFloorFilter(place.floorId);
-  }
-  if (closePanels) {
-    findOpen.value = false;
-    searchOpen.value = false;
   }
   await openContent(place.contentRef, place);
   writeUrl();
@@ -409,12 +459,18 @@ function clearSelection() {
   stopContentRefresh();
   contentGeneration += 1;
   selectedPlaceId.value = null;
+  clearChromePopover({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: true,
+  });
   popover.value = null;
   panel.value = null;
   activeContentRef.value = null;
   view?.setSelected(null);
   writeUrl();
   drawMap2d();
+  void nextTick(() => restoreChromeFocus());
 }
 
 function applyWalkAxes() {
@@ -476,10 +532,153 @@ function onSceneClick(event: MouseEvent) {
   }
 }
 
-function onMap2dClick(event: MouseEvent) {
+function map2dLocalPoint(event: {
+  clientX: number;
+  clientY: number;
+}): { x: number; y: number } | null {
+  const surface = map2d.value;
+  if (!surface) {
+    return null;
+  }
+  const bounds = surface.getBoundingClientRect();
+  const localX = ((event.clientX - bounds.left) / bounds.width) * surface.width;
+  const localY = ((event.clientY - bounds.top) / bounds.height) * surface.height;
+  return {
+    x: (localX - mapPan.value.x) / mapZoom.value,
+    y: (localY - mapPan.value.y) / mapZoom.value,
+  };
+}
+
+function pointerDistance(): number {
+  const points = [...mapPointers.values()];
+  if (points.length < 2) {
+    return 0;
+  }
+  return Math.hypot(points[0]!.x - points[1]!.x, points[0]!.y - points[1]!.y);
+}
+
+function beginMapDrag(event: PointerEvent) {
+  mapPinch = null;
+  mapDrag = {
+    pointerId: event.pointerId,
+    button: event.button,
+    x: event.clientX,
+    y: event.clientY,
+    panX: mapPan.value.x,
+    panY: mapPan.value.y,
+  };
+}
+
+function beginMapPinch() {
+  mapDrag = null;
+  const distance = pointerDistance();
+  if (distance <= 0) {
+    mapPinch = null;
+    return;
+  }
+  mapPinch = { distance, zoom: mapZoom.value };
+}
+
+function onMap2dPointerDown(event: PointerEvent) {
+  if (viewMode.value !== "2d") {
+    return;
+  }
+  mapPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  if (mapPointers.size >= 2) {
+    beginMapPinch();
+    return;
+  }
+  beginMapDrag(event);
+}
+
+function onMap2dPointerMove(event: PointerEvent) {
+  if (!mapPointers.has(event.pointerId)) {
+    return;
+  }
+  mapPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (mapPinch && mapPointers.size >= 2) {
+    const distance = pointerDistance();
+    if (distance > 0 && mapPinch.distance > 0) {
+      mapZoom.value = Math.min(3, Math.max(0.5, mapPinch.zoom * (distance / mapPinch.distance)));
+      drawMap2d();
+    }
+    return;
+  }
+  if (!mapDrag || mapDrag.pointerId !== event.pointerId) {
+    return;
+  }
+  mapPan.value = {
+    x: mapDrag.panX + (event.clientX - mapDrag.x),
+    y: mapDrag.panY + (event.clientY - mapDrag.y),
+  };
+  drawMap2d();
+}
+
+function onMap2dPointerUp(event: PointerEvent) {
+  if (!mapPointers.has(event.pointerId)) {
+    return;
+  }
+  mapPointers.delete(event.pointerId);
+  if (mapPinch) {
+    mapPinch = null;
+    mapDrag = null;
+    if (mapPointers.size === 1) {
+      const remaining = mapPointers.entries().next().value;
+      if (remaining) {
+        const [pointerId, point] = remaining;
+        mapDrag = {
+          pointerId,
+          button: 0,
+          x: point.x,
+          y: point.y,
+          panX: mapPan.value.x,
+          panY: mapPan.value.y,
+        };
+      }
+    }
+    return;
+  }
+  if (!mapDrag || mapDrag.pointerId !== event.pointerId) {
+    return;
+  }
+  const moved = Math.hypot(event.clientX - mapDrag.x, event.clientY - mapDrag.y) > 6;
+  const primary = mapDrag.button === 0;
+  mapDrag = null;
+  if (!moved && primary) {
+    onMap2dClick(event);
+  }
+}
+
+function onMap2dPointerCancel(event: PointerEvent) {
+  mapPointers.delete(event.pointerId);
+  if (mapDrag?.pointerId === event.pointerId) {
+    mapDrag = null;
+  }
+  if (mapPointers.size < 2) {
+    mapPinch = null;
+  }
+  if (mapPointers.size === 0) {
+    mapDrag = null;
+    mapPinch = null;
+  }
+}
+
+function onMap2dWheel(event: WheelEvent) {
+  if (viewMode.value !== "2d") {
+    return;
+  }
+  event.preventDefault();
+  const factor = event.deltaY > 0 ? 0.9 : 1.1;
+  mapZoom.value = Math.min(3, Math.max(0.5, mapZoom.value * factor));
+  drawMap2d();
+}
+
+function onMap2dClick(event: { clientX: number; clientY: number }) {
   const current = document.value;
   const surface = map2d.value;
-  if (!current || !surface) {
+  const local = map2dLocalPoint(event);
+  if (!current || !surface || !local) {
     return;
   }
   const floors =
@@ -489,9 +688,8 @@ function onMap2dClick(event: MouseEvent) {
   if (floors.length === 0) {
     return;
   }
-  const bounds = surface.getBoundingClientRect();
-  const localX = ((event.clientX - bounds.left) / bounds.width) * surface.width;
-  const localY = ((event.clientY - bounds.top) / bounds.height) * surface.height;
+  const localX = local.x;
+  const localY = local.y;
   const stack = floors.length > 1;
   const sliceHeight = stack ? surface.height / floors.length : surface.height;
   const index = stack ? Math.min(floors.length - 1, Math.floor(localY / sliceHeight)) : 0;
@@ -516,15 +714,96 @@ function toggleCategory(category: FindCategory) {
   expandedCategory.value = expandedCategory.value === category.id ? null : category.id;
 }
 
+function chromeFocusFallback(): HTMLElement | null {
+  return window.document.querySelector<HTMLElement>("[data-map-chrome='find']");
+}
+
+function captureRestoreFocus() {
+  const active = window.document.activeElement as HTMLElement | null;
+  if (!active || !active.isConnected) {
+    if (!restoreFocus?.isConnected) {
+      restoreFocus = chromeFocusFallback();
+    }
+    return;
+  }
+  const insideDialog =
+    !!findPanel.value?.contains(active) ||
+    !!searchPanel.value?.contains(active) ||
+    !!popoverPanel.value?.contains(active);
+  if (insideDialog) {
+    if (!restoreFocus?.isConnected) {
+      restoreFocus = chromeFocusFallback();
+    }
+    return;
+  }
+  restoreFocus = active;
+}
+
+function restoreChromeFocus() {
+  if (findOpen.value || searchOpen.value || popover.value) {
+    return;
+  }
+  const target = restoreFocus?.isConnected ? restoreFocus : chromeFocusFallback();
+  target?.focus();
+  restoreFocus = null;
+}
+
+function dismissPopoverForPanel() {
+  if (!popover.value) {
+    return;
+  }
+  stopContentRefresh();
+  contentGeneration += 1;
+  selectedPlaceId.value = null;
+  popover.value = null;
+  panel.value = null;
+  activeContentRef.value = null;
+  view?.setSelected(null);
+  writeUrl();
+  drawMap2d();
+}
+
+function openFind() {
+  captureRestoreFocus();
+  dismissPopoverForPanel();
+  dialogChrome.value?.openFind();
+}
+
+function openSearch() {
+  captureRestoreFocus();
+  dismissPopoverForPanel();
+  dialogChrome.value?.openSearch();
+}
+
+function closePanels() {
+  dialogChrome.value?.closePanels();
+  const chrome = closeChromePanels({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: !!popover.value,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
+  void nextTick(() => restoreChromeFocus());
+}
+
 function onKeydown(event: KeyboardEvent) {
   const target = event.target as HTMLElement | null;
   const typing =
     target &&
     (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+  if (findOpen.value && findPanel.value && trapTabKey(findPanel.value, event)) {
+    return;
+  }
+  if (searchOpen.value && searchPanel.value && trapTabKey(searchPanel.value, event)) {
+    return;
+  }
+  if (popover.value && popoverPanel.value && trapTabKey(popoverPanel.value, event)) {
+    return;
+  }
   if (event.key === "Escape") {
     if (findOpen.value || searchOpen.value) {
-      findOpen.value = false;
-      searchOpen.value = false;
+      closePanels();
       return;
     }
     if (popover.value) {
@@ -539,16 +818,15 @@ function onKeydown(event: KeyboardEvent) {
   }
   if (event.key === "f" || event.key === "F") {
     event.preventDefault();
-    findOpen.value = !findOpen.value;
-    searchOpen.value = false;
+    if (findOpen.value) {
+      closePanels();
+    } else {
+      openFind();
+    }
   }
   if (event.key === "/") {
     event.preventDefault();
-    searchOpen.value = true;
-    findOpen.value = false;
-    void nextTick(() => {
-      window.document.getElementById("map-search-input")?.focus();
-    });
+    openSearch();
   }
 }
 
@@ -742,139 +1020,106 @@ onBeforeUnmount(() => {
         ref="map2d"
         class="viewer-canvas map-2d"
         aria-label="2D venue map"
-        @click="onMap2dClick"
+        @pointerdown="onMap2dPointerDown"
+        @pointermove="onMap2dPointerMove"
+        @pointerup="onMap2dPointerUp"
+        @pointercancel="onMap2dPointerCancel($event)"
+        @wheel.prevent="onMap2dWheel"
       />
 
-      <aside v-if="findOpen" class="side-panel" role="dialog" aria-label="Find a place">
-        <header>
-          <h2>Find a place</h2>
-          <button type="button" class="ghost" aria-label="Close find" @click="findOpen = false">
-            ×
-          </button>
-        </header>
-        <div class="category-list">
-          <section v-for="category in categories" :key="category.id">
-            <button
-              type="button"
-              class="category-row"
-              :aria-expanded="expandedCategory === category.id"
-              @click="toggleCategory(category)"
-            >
-              <span>{{ category.label }}</span>
-              <span>{{ category.count }}</span>
-            </button>
-            <div v-if="expandedCategory === category.id" class="category-places">
-              <div v-for="group in category.byFloor" :key="group.floorId">
-                <p class="level-label">LEVEL {{ group.floorLevel }}</p>
-                <button
-                  v-for="place in group.places"
-                  :key="place.id"
-                  type="button"
-                  class="place-row"
-                  @click="selectPlace(place)"
-                >
-                  <span>{{ iconGlyph(place.icon) }}</span>
-                  {{ place.name }}
-                </button>
-              </div>
-            </div>
-          </section>
-        </div>
-      </aside>
-
-      <aside v-if="searchOpen" class="side-panel" role="dialog" aria-label="Search the map">
-        <header>
-          <h2>Search the map</h2>
-          <button type="button" class="ghost" aria-label="Close search" @click="searchOpen = false">
-            ×
-          </button>
-        </header>
-        <label class="search-field">
-          <span class="sr-only">Rooms, food, floors</span>
-          <input
-            id="map-search-input"
-            v-model="searchQuery"
-            type="search"
-            placeholder="Rooms, food, floors…"
-          />
-        </label>
-        <button
-          v-for="place in searchResults"
-          :key="place.id"
-          type="button"
-          class="place-row"
-          @click="selectPlace(place)"
-        >
-          <span>{{ iconGlyph(place.icon) }}</span>
-          <span>
-            {{ place.name }}
-            <small>L{{ place.floorLevel }} · {{ place.categoryLabel }}</small>
-          </span>
-        </button>
-      </aside>
-
-      <article v-if="popover" class="place-popover" role="dialog" :aria-label="popover.name">
-        <button type="button" class="ghost close" aria-label="Close" @click="clearSelection">
-          ×
-        </button>
-        <div class="popover-body">
-          <div class="popover-icon" aria-hidden="true">{{ iconGlyph(popover.icon) }}</div>
-          <div>
-            <h2>{{ panel?.title || popover.name }}</h2>
-            <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
-            <p v-if="panel?.body || popover.blurb">{{ panel?.body || popover.blurb }}</p>
-            <p v-if="live" class="live">{{ live }}</p>
-            <div v-if="panel?.links?.length || popover.links.length" class="link-row">
-              <a
-                v-for="link in panel?.links?.length ? panel.links : popover.links"
-                :key="link.href"
-                :href="link.href"
-                target="_blank"
-                rel="noopener noreferrer"
+      <DialogChrome
+        ref="dialogChrome"
+        v-model:find-open="findOpen"
+        v-model:search-open="searchOpen"
+        v-model:search-query="searchQuery"
+        :popover-open="!!popover"
+        :popover-label="popover?.name ?? 'Place details'"
+        @dismiss-popover="dismissPopoverForPanel"
+        @close-popover="clearSelection"
+      >
+        <template #find>
+          <div class="category-list">
+            <section v-for="category in categories" :key="category.id">
+              <button
+                type="button"
+                class="category-row"
+                :aria-expanded="expandedCategory === category.id"
+                @click="toggleCategory(category)"
               >
-                {{ link.label }}
-              </a>
-            </div>
-            <ul v-if="panel?.items?.length" class="content-items">
-              <li v-for="item in panel.items" :key="item.name">
-                <img
-                  v-if="itemImageSrc(item.image)"
-                  :src="itemImageSrc(item.image) ?? undefined"
-                  :alt="item.name"
-                  class="content-item-image"
-                />
-                <a v-if="item.href" :href="item.href">{{ item.name }}</a>
-                <template v-else>{{ item.name }}</template>
-                <span v-if="item.price"> — {{ item.price }}</span>
-                <span v-else-if="item.detail"> — {{ item.detail }}</span>
-              </li>
-            </ul>
+                <span>{{ category.label }}</span>
+                <span>{{ category.count }}</span>
+              </button>
+              <div v-if="expandedCategory === category.id" class="category-places">
+                <div v-for="group in category.byFloor" :key="group.floorId">
+                  <p class="level-label">LEVEL {{ group.floorLevel }}</p>
+                  <button
+                    v-for="place in group.places"
+                    :key="place.id"
+                    type="button"
+                    class="place-row"
+                    @click="selectPlace(place)"
+                  >
+                    <span>{{ iconGlyph(place.icon) }}</span>
+                    {{ place.name }}
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </article>
-
-      <div class="chrome-left">
-        <button
-          type="button"
-          :aria-pressed="findOpen"
-          @click="
-            findOpen = !findOpen;
-            searchOpen = false;
-          "
-        >
-          Find
-        </button>
-        <button
-          type="button"
-          :aria-pressed="searchOpen"
-          @click="
-            searchOpen = !searchOpen;
-            findOpen = false;
-          "
-        >
-          Search
-        </button>
-      </div>
+        </template>
+        <template #search>
+          <button
+            v-for="place in searchResults"
+            :key="place.id"
+            type="button"
+            class="place-row"
+            role="option"
+            @click="selectPlace(place)"
+          >
+            <span>{{ iconGlyph(place.icon) }}</span>
+            <span>
+              {{ place.name }}
+              <small>L{{ place.floorLevel }} · {{ place.categoryLabel }}</small>
+            </span>
+          </button>
+        </template>
+        <template #popover>
+          <div v-if="popover" class="popover-body">
+            <div class="popover-icon" aria-hidden="true">{{ iconGlyph(popover.icon) }}</div>
+            <div>
+              <h2>{{ panel?.title || popover.name }}</h2>
+              <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
+              <p v-if="panel?.body || popover.blurb">{{ panel?.body || popover.blurb }}</p>
+              <p v-if="live" class="live">{{ live }}</p>
+              <div v-if="panel?.links?.length || popover.links.length" class="link-row">
+                <a
+                  v-for="link in panel?.links?.length ? panel.links : popover.links"
+                  :key="link.href"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ link.label }}
+                </a>
+              </div>
+              <ul v-if="panel?.items?.length" class="content-items">
+                <li v-for="item in panel.items" :key="item.name">
+                  <img
+                    v-if="itemImageSrc(item.image)"
+                    :src="itemImageSrc(item.image) ?? undefined"
+                    :alt="item.name"
+                    class="content-item-image"
+                  />
+                  <a v-if="item.href" :href="item.href">{{ item.name }}</a>
+                  <template v-else>{{ item.name }}</template>
+                  <span v-if="item.price"> — {{ item.price }}</span>
+                  <span v-else-if="item.detail"> — {{ item.detail }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </template>
+      </DialogChrome>
 
       <div class="chrome-right" role="radiogroup" aria-label="Floor filter">
         <button
@@ -1048,6 +1293,13 @@ onBeforeUnmount(() => {
   height: 100%;
   display: block;
   background: #e8eaf6;
+}
+.map-2d {
+  touch-action: none;
+  cursor: grab;
+}
+.map-2d:active {
+  cursor: grabbing;
 }
 .side-panel {
   position: absolute;
@@ -1233,7 +1485,30 @@ onBeforeUnmount(() => {
     align-items: stretch;
   }
   .side-panel {
-    bottom: 120px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    bottom: 140px;
+    max-height: min(50vh, 420px);
+  }
+  .place-popover {
+    top: auto;
+    bottom: 140px;
+    width: calc(100% - 24px);
+  }
+  .chrome-left,
+  .chrome-right {
+    bottom: 12px;
+  }
+  .chrome-left button,
+  .chrome-right button {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 14px;
+  }
+  .touch-walk {
+    right: 72px;
+    bottom: 72px;
   }
 }
 </style>

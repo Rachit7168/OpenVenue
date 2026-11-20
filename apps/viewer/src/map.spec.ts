@@ -5,6 +5,7 @@ import {
   floorsForChrome,
   mapPlaces,
   mergePlaceDetails,
+  placesForFloorFilter,
   safeExternalHref,
   searchPlaces,
   zoneMapColor,
@@ -141,5 +142,26 @@ describe("map helpers", () => {
     const document = demo();
     expect(floorsForChrome(document).map((floor) => floor.label)).toEqual(["L2", "L0"]);
     expect(searchPlaces(document, "   ")).toEqual([]);
+  });
+
+  it("filters places to the selected floor", () => {
+    const document = demo();
+    const upper = document.venue.floors[1]!.id;
+    const ground = document.venue.floors[0]!.id;
+    expect(
+      placesForFloorFilter(document, null)
+        .map((place) => place.name)
+        .sort(),
+    ).toEqual(["Food Court", "Gnosis", "Jasmine Stage 4", "Press room"]);
+    expect(
+      placesForFloorFilter(document, upper)
+        .map((place) => place.name)
+        .sort(),
+    ).toEqual(["Gnosis", "Press room"]);
+    expect(
+      placesForFloorFilter(document, ground)
+        .map((place) => place.name)
+        .sort(),
+    ).toEqual(["Food Court", "Jasmine Stage 4"]);
   });
 });

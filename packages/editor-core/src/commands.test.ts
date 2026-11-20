@@ -375,6 +375,38 @@ describe("commands", () => {
     expect(document.venue.floors).toHaveLength(2);
   });
 
+  it("updates and undoes floor mapMarkers", () => {
+    const stack = new CommandStack();
+    let document = createEmptyVenue("Tower");
+    const floor = floorOf(document);
+    const previous = [
+      {
+        id: "a1b2c3d4-e5f6-4789-a012-3456789abcde",
+        kind: "entrance" as const,
+        position: { x: 1, z: 2 },
+        rotationY: 0,
+        label: "Main",
+      },
+    ];
+    const next = [
+      {
+        id: "b2c3d4e5-f6a7-4890-b123-456789abcdef",
+        kind: "exit" as const,
+        position: { x: 3, z: 4 },
+        rotationY: Math.PI,
+        label: "Side",
+      },
+    ];
+    document = stack.execute(document, updateFloor(document, floor.id, { mapMarkers: previous }));
+    expect(document.venue.floors[0]?.mapMarkers).toEqual(previous);
+    document = stack.execute(document, updateFloor(document, floor.id, { mapMarkers: next }));
+    expect(document.venue.floors[0]?.mapMarkers).toEqual(next);
+    document = stack.undo(document);
+    expect(document.venue.floors[0]?.mapMarkers).toEqual(previous);
+    document = stack.undo(document);
+    expect(document.venue.floors[0]?.mapMarkers).toBeUndefined();
+  });
+
   it("moves that floor's spawn markers when the elevation changes", () => {
     const stack = new CommandStack();
     let document = createEmptyVenue("Tower");

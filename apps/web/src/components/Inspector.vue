@@ -7,10 +7,11 @@ import {
   rotateObject,
   setEntityFlag,
   setFloorLink,
+  updateFloor,
   updateMaterial,
   updateZone,
 } from "@openvenue/editor-core";
-import type { Interaction, Zone } from "@openvenue/scene-schema";
+import type { Interaction, MapMarker, Zone } from "@openvenue/scene-schema";
 import { computed } from "vue";
 import { useVenueStore } from "../stores/venue";
 
@@ -41,8 +42,14 @@ const mapIcons = [
   "tent",
   "other",
 ] as const;
+const markerKinds = ["entrance", "arrow", "stair", "elevator", "exit"] as const;
 
 const floors = computed(() => store.document.venue.floors);
+const activeFloor = computed(() => store.activeFloor);
+const floorMarkers = computed(() => activeFloor.value?.mapMarkers ?? []);
+const showFloorMarkers = computed(
+  () => !room.value && !zone.value && !object.value && !spawn.value && store.selection.length === 0,
+);
 
 const selectedObjects = computed(() =>
   floors.value
@@ -289,6 +296,71 @@ function linksEditorValue(zoneValue: Zone): string {
     .join("\n");
 }
 
+function commitMarkers(next: MapMarker[]) {
+  const floor = activeFloor.value;
+  if (!floor) {
+    return;
+  }
+  run(updateFloor(store.document, floor.id, { mapMarkers: next }));
+}
+
+function floorPlanCentroid(floor: {
+  walls: { start: { x: number; z: number }; end: { x: number; z: number } }[];
+  rooms: { boundary: { x: number; z: number }[] }[];
+  zones: { boundary: { x: number; z: number }[] }[];
+}): { x: number; z: number } {
+  const points = [
+    ...floor.walls.flatMap((wall) => [wall.start, wall.end]),
+    ...floor.rooms.flatMap((room) => room.boundary),
+    ...floor.zones.flatMap((zone) => zone.boundary),
+  ];
+  if (points.length === 0) {
+    return { x: 0, z: 0 };
+  }
+  const sum = points.reduce((acc, point) => ({ x: acc.x + point.x, z: acc.z + point.z }), {
+    x: 0,
+    z: 0,
+  });
+  return { x: sum.x / points.length, z: sum.z / points.length };
+}
+
+function addMarker() {
+  const floor = activeFloor.value;
+  if (!floor) {
+    return;
+  }
+  const marker: MapMarker = {
+    id: crypto.randomUUID(),
+    kind: "entrance",
+    position: floorPlanCentroid(floor),
+    rotationY: 0,
+    label: "Entrance",
+  };
+  commitMarkers([...(floor.mapMarkers ?? []), marker]);
+}
+
+function updateMarker(index: number, patch: Partial<MapMarker>) {
+  const floor = activeFloor.value;
+  if (!floor) {
+    return;
+  }
+  const markers = [...(floor.mapMarkers ?? [])];
+  const current = markers[index];
+  if (!current) {
+    return;
+  }
+  markers[index] = { ...current, ...patch };
+  commitMarkers(markers);
+}
+
+function removeMarker(index: number) {
+  const floor = activeFloor.value;
+  if (!floor) {
+    return;
+  }
+  commitMarkers((floor.mapMarkers ?? []).filter((_, i) => i !== index));
+}
+
 function commitFlag(flag: "locked" | "visible", event: Event) {
   const id = focusId.value;
   if (!id || !(event.target instanceof HTMLInputElement)) {
@@ -355,8 +427,104 @@ function distribute() {
     </p>
     <p v-else-if="!room && !zone && !object && !spawn" class="mt-3 text-zinc-300">
       Select a room, table, or zone. Shift-click adds to the selection. Drag on empty floor to
-      box-select.
+      box-select. With nothing selected, edit map markers for the active floor below.
     </p>
+
+    <div v-if="showFloorMarkers && activeFloor" class="mt-4 space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          Map markers · {{ activeFloor.name }}
+        </h3>
+        <button
+          type="button"
+          class="focus-ring min-h-10 rounded-md bg-zinc-800 px-3 text-xs text-zinc-100"
+          @click="addMarker"
+        >
+          Add marker
+        </button>
+      </div>
+      <p v-if="floorMarkers.length === 0" class="text-xs text-zinc-500">
+        Entrances, stairs, and exits shown on the visitor map.
+      </p>
+      <div
+        v-for="(marker, index) in floorMarkers"
+        :key="marker.id"
+        class="space-y-2 rounded-md border border-zinc-800 p-2"
+      >
+        <label class="block text-xs text-zinc-300">
+          Kind
+          <select
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            :value="marker.kind"
+            @change="updateMarker(index, { kind: text($event) as MapMarker['kind'] })"
+          >
+            <option v-for="kind in markerKinds" :key="kind" :value="kind">{{ kind }}</option>
+          </select>
+        </label>
+        <label class="block text-xs text-zinc-300">
+          Label
+          <input
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            :value="typeof marker.label === 'string' ? marker.label : ''"
+            @change="updateMarker(index, { label: text($event).slice(0, 80) || undefined })"
+          />
+        </label>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="text-xs text-zinc-300">
+            X
+            <input
+              class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+              :value="marker.position.x"
+              @change="
+                (event) => {
+                  const value = numeric(event);
+                  if (value !== null) {
+                    updateMarker(index, { position: { ...marker.position, x: value } });
+                  }
+                }
+              "
+            />
+          </label>
+          <label class="text-xs text-zinc-300">
+            Z
+            <input
+              class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+              :value="marker.position.z"
+              @change="
+                (event) => {
+                  const value = numeric(event);
+                  if (value !== null) {
+                    updateMarker(index, { position: { ...marker.position, z: value } });
+                  }
+                }
+              "
+            />
+          </label>
+          <label class="text-xs text-zinc-300">
+            Yaw °
+            <input
+              class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+              :value="Math.round(((marker.rotationY ?? 0) * 180) / Math.PI)"
+              @change="
+                (event) => {
+                  const value = numeric(event);
+                  if (value !== null) {
+                    updateMarker(index, { rotationY: (value * Math.PI) / 180 });
+                  }
+                }
+              "
+            />
+          </label>
+        </div>
+        <button
+          type="button"
+          class="focus-ring min-h-10 rounded-md px-2 text-xs text-rose-300 hover:underline"
+          @click="removeMarker(index)"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
 
     <div v-if="selectedObjects.length > 1" class="mt-3 flex flex-wrap gap-2">
       <button

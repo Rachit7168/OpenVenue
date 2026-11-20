@@ -664,6 +664,11 @@ function addFloor(
       arrow.rotation.set(Math.PI / 2, marker.rotationY ?? 0, 0);
       arrow.userData.ownMaterial = true;
       group.add(arrow);
+      if (marker.label && typeof document !== "undefined") {
+        group.add(
+          nameSprite(marker.label, marker.position.x, MAP_SLAB_DEPTH + 0.95, marker.position.z),
+        );
+      }
     }
   }
 

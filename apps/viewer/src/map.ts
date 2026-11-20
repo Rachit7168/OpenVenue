@@ -286,6 +286,15 @@ export function floorsForChrome(
     }));
 }
 
+/** Places visible when a single floor filter is active (null = all floors). */
+export function placesForFloorFilter(document: VenueDocument, floorId: string | null): MapPlace[] {
+  const places = mapPlaces(document);
+  if (floorId === null) {
+    return places;
+  }
+  return places.filter((place) => place.floorId === floorId);
+}
+
 export function mergePlaceDetails(
   place: MapPlace,
   content: { body?: string; links?: MapLink[]; icon?: string; title?: string },

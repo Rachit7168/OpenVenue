@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visitor map · OpenVenue</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <strong>OpenVenue</strong>
+        <nav>
+          <a href="index.html">Getting started</a>
+          <a href="schema.html">Schema</a>
+          <a href="viewer.html" aria-current="page">Visitor map</a>
+          <a href="assets.html">Assets</a>
+          <a href="changelog.html">Release notes</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <h1>Visitor map</h1>
+      <p>
+        <code>apps/viewer</code> is a read-only, embeddable venue map. It loads a
+        <code>venue.json</code> (and optional content files) without the editor shell.
+      </p>
+      <h2>Run locally</h2>
+      <pre><code>pnpm --filter @openvenue/viewer dev</code></pre>
+      <p>
+        The demo venue opens by default. You can also pass
+        <code>?url=/examples/map-demo.venue.json</code> or any same-origin <code>.json</code> venue
+        URL.
+      </p>
+      <h2>Author map places</h2>
+      <p>In the editor, select a zone and set:</p>
+      <ul>
+        <li><code>category</code> — Find panel group (stages, food-drink, … or a custom key)</li>
+        <li>
+          <code>icon</code> / <code>mapColor</code> / <code>blurb</code> — map markers and popover
+        </li>
+        <li><code>links</code> — one per line as <code>Label|https://…</code></li>
+        <li><code>interaction.contentRef</code> — richer menu/booth JSON outside the venue file</li>
+      </ul>
+      <p>
+        Floors may include <code>mapMarkers</code> (entrance, arrow, stair, elevator, exit) for
+        circulation cues. See <a href="schema.html">Schema</a> for field details.
+      </p>
+      <h2>Visitor controls</h2>
+      <ul>
+        <li><strong>2D / 3D / Walk</strong> — shared Find, Search, floor filter, and selection</li>
+        <li>
+          <strong>F</strong> Find · <strong>/</strong> Search · <strong>Esc</strong> close / All
+          floors
+        </li>
+        <li>
+          Deep links:
+          <code>?view=2d|3d|walk&amp;floor=&lt;id&gt;&amp;place=&lt;zone-id&gt;&amp;url=…</code>
+        </li>
+      </ul>
+      <h2>Embed</h2>
+      <p>
+        Host the viewer build and point <code>?url=</code> at a public venue JSON (or a public venue
+        API URL). Keep content references same-origin or served through the public content endpoint.
+      </p>
+    </main>
+  </body>
+</html>
