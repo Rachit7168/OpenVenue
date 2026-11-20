@@ -3,6 +3,7 @@ import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { publicContentFetchUrl, publicVenueIdFromUrl, safeContentRef, safeVenueUrl } from "./fetch";
+import { focusFirst, trapTabKey } from "./focus";
 import {
   findCategories,
   floorsForChrome,
@@ -40,7 +41,14 @@ const expandedCategory = ref<string | null>(null);
 const hintsVisible = ref(true);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const map2d = ref<HTMLCanvasElement | null>(null);
+const findPanel = ref<HTMLElement | null>(null);
+const searchPanel = ref<HTMLElement | null>(null);
+const popoverPanel = ref<HTMLElement | null>(null);
+const mapPan = ref({ x: 0, y: 0 });
+const mapZoom = ref(1);
+let mapDrag: { x: number; y: number; panX: number; panY: number } | null = null;
 let view: VenueView | null = null;
+let restoreFocus: HTMLElement | null = null;
 let audio: HTMLAudioElement | null = null;
 let ambient: HTMLAudioElement | null = null;
 let frame = 0;
@@ -124,6 +132,8 @@ function applyCameraForMode() {
 
 function setFloorFilter(next: string | null) {
   floorId.value = next;
+  mapPan.value = { x: 0, y: 0 };
+  mapZoom.value = 1;
   if (viewMode.value === "walk") {
     if (next) {
       view?.setShownFloor(next);
@@ -171,10 +181,13 @@ function drawMap2d() {
   const stack = floors.length > 1;
   const sliceHeight = stack ? height / floors.length : height;
   const placesById = new Map(mapPlaces(current).map((place) => [place.id, place]));
+  const showIcons = mapZoom.value >= 0.85;
   floors.forEach((floor, index) => {
     const offsetY = stack ? (floors.length - 1 - index) * sliceHeight : 0;
     const project = mapProjection(floor, width, sliceHeight - 16).toScreen;
     context.save();
+    context.translate(mapPan.value.x, mapPan.value.y);
+    context.scale(mapZoom.value, mapZoom.value);
     context.translate(0, offsetY + 8);
     context.strokeStyle = "#64748b";
     context.lineWidth = 2;
@@ -207,11 +220,13 @@ function drawMap2d() {
       context.strokeStyle = active ? "#0f172a" : "#475569";
       context.lineWidth = active ? 2.5 : 1;
       context.stroke();
-      const centre = project(place?.x ?? 0, place?.z ?? 0);
-      context.fillStyle = "#0f172a";
-      context.font = "12px sans-serif";
-      context.textAlign = "center";
-      context.fillText(iconGlyph(place?.icon ?? "other"), centre.x, centre.y + 4);
+      if (showIcons) {
+        const centre = project(place?.x ?? 0, place?.z ?? 0);
+        context.fillStyle = "#0f172a";
+        context.font = "12px sans-serif";
+        context.textAlign = "center";
+        context.fillText(iconGlyph(place?.icon ?? "other"), centre.x, centre.y + 4);
+      }
     }
     for (const marker of floorMarkers(floor)) {
       const point = project(marker.position.x, marker.position.z);
@@ -384,7 +399,7 @@ async function openContent(contentRef: string | undefined, fallback?: MapPlace) 
   }
 }
 
-async function selectPlace(place: MapPlace, closePanels = true) {
+async function selectPlace(place: MapPlace, dismissPanels = true) {
   stopContentRefresh();
   selectedPlaceId.value = place.id;
   popover.value = place;
@@ -396,9 +411,8 @@ async function selectPlace(place: MapPlace, closePanels = true) {
   } else if (floorId.value !== null && floorId.value !== place.floorId) {
     setFloorFilter(place.floorId);
   }
-  if (closePanels) {
-    findOpen.value = false;
-    searchOpen.value = false;
+  if (dismissPanels) {
+    closePanels();
   }
   await openContent(place.contentRef, place);
   writeUrl();
@@ -476,10 +490,77 @@ function onSceneClick(event: MouseEvent) {
   }
 }
 
-function onMap2dClick(event: MouseEvent) {
+function map2dLocalPoint(event: {
+  clientX: number;
+  clientY: number;
+}): { x: number; y: number } | null {
+  const surface = map2d.value;
+  if (!surface) {
+    return null;
+  }
+  const bounds = surface.getBoundingClientRect();
+  const localX = ((event.clientX - bounds.left) / bounds.width) * surface.width;
+  const localY = ((event.clientY - bounds.top) / bounds.height) * surface.height;
+  return {
+    x: (localX - mapPan.value.x) / mapZoom.value,
+    y: (localY - mapPan.value.y) / mapZoom.value,
+  };
+}
+
+function onMap2dPointerDown(event: PointerEvent) {
+  if (viewMode.value !== "2d") {
+    return;
+  }
+  mapDrag = {
+    x: event.clientX,
+    y: event.clientY,
+    panX: mapPan.value.x,
+    panY: mapPan.value.y,
+  };
+  (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+}
+
+function onMap2dPointerMove(event: PointerEvent) {
+  if (!mapDrag) {
+    return;
+  }
+  mapPan.value = {
+    x: mapDrag.panX + (event.clientX - mapDrag.x),
+    y: mapDrag.panY + (event.clientY - mapDrag.y),
+  };
+  drawMap2d();
+}
+
+function onMap2dPointerUp(event: PointerEvent) {
+  if (!mapDrag) {
+    return;
+  }
+  const moved = Math.hypot(event.clientX - mapDrag.x, event.clientY - mapDrag.y) > 6;
+  mapDrag = null;
+  if (!moved) {
+    onMap2dClick(event);
+  }
+}
+
+function onMap2dPointerCancel() {
+  mapDrag = null;
+}
+
+function onMap2dWheel(event: WheelEvent) {
+  if (viewMode.value !== "2d") {
+    return;
+  }
+  event.preventDefault();
+  const factor = event.deltaY > 0 ? 0.9 : 1.1;
+  mapZoom.value = Math.min(3, Math.max(0.5, mapZoom.value * factor));
+  drawMap2d();
+}
+
+function onMap2dClick(event: { clientX: number; clientY: number }) {
   const current = document.value;
   const surface = map2d.value;
-  if (!current || !surface) {
+  const local = map2dLocalPoint(event);
+  if (!current || !surface || !local) {
     return;
   }
   const floors =
@@ -489,9 +570,8 @@ function onMap2dClick(event: MouseEvent) {
   if (floors.length === 0) {
     return;
   }
-  const bounds = surface.getBoundingClientRect();
-  const localX = ((event.clientX - bounds.left) / bounds.width) * surface.width;
-  const localY = ((event.clientY - bounds.top) / bounds.height) * surface.height;
+  const localX = local.x;
+  const localY = local.y;
   const stack = floors.length > 1;
   const sliceHeight = stack ? surface.height / floors.length : surface.height;
   const index = stack ? Math.min(floors.length - 1, Math.floor(localY / sliceHeight)) : 0;
@@ -516,15 +596,46 @@ function toggleCategory(category: FindCategory) {
   expandedCategory.value = expandedCategory.value === category.id ? null : category.id;
 }
 
+function openFind() {
+  restoreFocus = window.document.activeElement as HTMLElement | null;
+  searchOpen.value = false;
+  findOpen.value = true;
+  void nextTick(() => focusFirst(findPanel.value));
+}
+
+function openSearch() {
+  restoreFocus = window.document.activeElement as HTMLElement | null;
+  findOpen.value = false;
+  searchOpen.value = true;
+  void nextTick(() => {
+    window.document.getElementById("map-search-input")?.focus();
+  });
+}
+
+function closePanels() {
+  findOpen.value = false;
+  searchOpen.value = false;
+  restoreFocus?.focus();
+  restoreFocus = null;
+}
+
 function onKeydown(event: KeyboardEvent) {
   const target = event.target as HTMLElement | null;
   const typing =
     target &&
     (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+  if (findOpen.value && findPanel.value && trapTabKey(findPanel.value, event)) {
+    return;
+  }
+  if (searchOpen.value && searchPanel.value && trapTabKey(searchPanel.value, event)) {
+    return;
+  }
+  if (popover.value && popoverPanel.value && trapTabKey(popoverPanel.value, event)) {
+    return;
+  }
   if (event.key === "Escape") {
     if (findOpen.value || searchOpen.value) {
-      findOpen.value = false;
-      searchOpen.value = false;
+      closePanels();
       return;
     }
     if (popover.value) {
@@ -539,16 +650,15 @@ function onKeydown(event: KeyboardEvent) {
   }
   if (event.key === "f" || event.key === "F") {
     event.preventDefault();
-    findOpen.value = !findOpen.value;
-    searchOpen.value = false;
+    if (findOpen.value) {
+      closePanels();
+    } else {
+      openFind();
+    }
   }
   if (event.key === "/") {
     event.preventDefault();
-    searchOpen.value = true;
-    findOpen.value = false;
-    void nextTick(() => {
-      window.document.getElementById("map-search-input")?.focus();
-    });
+    openSearch();
   }
 }
 
@@ -599,6 +709,12 @@ watch(panel, (value) => {
 
 watch(quality, (value) => view?.setQuality(value));
 watch([document, floorId, selectedPlaceId, viewMode], () => drawMap2d());
+
+watch(popover, (next) => {
+  if (next) {
+    void nextTick(() => focusFirst(popoverPanel.value));
+  }
+});
 
 onMounted(async () => {
   window.addEventListener("keydown", onKeydown);
@@ -742,13 +858,25 @@ onBeforeUnmount(() => {
         ref="map2d"
         class="viewer-canvas map-2d"
         aria-label="2D venue map"
-        @click="onMap2dClick"
+        @pointerdown="onMap2dPointerDown"
+        @pointermove="onMap2dPointerMove"
+        @pointerup="onMap2dPointerUp"
+        @pointercancel="onMap2dPointerCancel"
+        @wheel.prevent="onMap2dWheel"
       />
 
-      <aside v-if="findOpen" class="side-panel" role="dialog" aria-label="Find a place">
+      <aside
+        v-if="findOpen"
+        ref="findPanel"
+        class="side-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Find a place"
+        tabindex="-1"
+      >
         <header>
-          <h2>Find a place</h2>
-          <button type="button" class="ghost" aria-label="Close find" @click="findOpen = false">
+          <h2 id="find-title">Find a place</h2>
+          <button type="button" class="ghost" aria-label="Close find" @click="closePanels">
             ×
           </button>
         </header>
@@ -782,10 +910,18 @@ onBeforeUnmount(() => {
         </div>
       </aside>
 
-      <aside v-if="searchOpen" class="side-panel" role="dialog" aria-label="Search the map">
+      <aside
+        v-if="searchOpen"
+        ref="searchPanel"
+        class="side-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search the map"
+        tabindex="-1"
+      >
         <header>
-          <h2>Search the map</h2>
-          <button type="button" class="ghost" aria-label="Close search" @click="searchOpen = false">
+          <h2 id="search-title">Search the map</h2>
+          <button type="button" class="ghost" aria-label="Close search" @click="closePanels">
             ×
           </button>
         </header>
@@ -795,25 +931,38 @@ onBeforeUnmount(() => {
             id="map-search-input"
             v-model="searchQuery"
             type="search"
+            role="searchbox"
             placeholder="Rooms, food, floors…"
+            aria-controls="search-results"
           />
         </label>
-        <button
-          v-for="place in searchResults"
-          :key="place.id"
-          type="button"
-          class="place-row"
-          @click="selectPlace(place)"
-        >
-          <span>{{ iconGlyph(place.icon) }}</span>
-          <span>
-            {{ place.name }}
-            <small>L{{ place.floorLevel }} · {{ place.categoryLabel }}</small>
-          </span>
-        </button>
+        <div id="search-results" role="listbox" aria-label="Search results">
+          <button
+            v-for="place in searchResults"
+            :key="place.id"
+            type="button"
+            class="place-row"
+            role="option"
+            @click="selectPlace(place)"
+          >
+            <span>{{ iconGlyph(place.icon) }}</span>
+            <span>
+              {{ place.name }}
+              <small>L{{ place.floorLevel }} · {{ place.categoryLabel }}</small>
+            </span>
+          </button>
+        </div>
       </aside>
 
-      <article v-if="popover" class="place-popover" role="dialog" :aria-label="popover.name">
+      <article
+        v-if="popover"
+        ref="popoverPanel"
+        class="place-popover"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="popover.name"
+        tabindex="-1"
+      >
         <button type="button" class="ghost close" aria-label="Close" @click="clearSelection">
           ×
         </button>
@@ -857,20 +1006,14 @@ onBeforeUnmount(() => {
         <button
           type="button"
           :aria-pressed="findOpen"
-          @click="
-            findOpen = !findOpen;
-            searchOpen = false;
-          "
+          @click="findOpen ? closePanels() : openFind()"
         >
           Find
         </button>
         <button
           type="button"
           :aria-pressed="searchOpen"
-          @click="
-            searchOpen = !searchOpen;
-            findOpen = false;
-          "
+          @click="searchOpen ? closePanels() : openSearch()"
         >
           Search
         </button>
@@ -1048,6 +1191,13 @@ onBeforeUnmount(() => {
   height: 100%;
   display: block;
   background: #e8eaf6;
+}
+.map-2d {
+  touch-action: none;
+  cursor: grab;
+}
+.map-2d:active {
+  cursor: grabbing;
 }
 .side-panel {
   position: absolute;
@@ -1233,7 +1383,30 @@ onBeforeUnmount(() => {
     align-items: stretch;
   }
   .side-panel {
-    bottom: 120px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    bottom: 140px;
+    max-height: min(50vh, 420px);
+  }
+  .place-popover {
+    top: auto;
+    bottom: 140px;
+    width: calc(100% - 24px);
+  }
+  .chrome-left,
+  .chrome-right {
+    bottom: 12px;
+  }
+  .chrome-left button,
+  .chrome-right button {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 14px;
+  }
+  .touch-walk {
+    right: 72px;
+    bottom: 72px;
   }
 }
 </style>

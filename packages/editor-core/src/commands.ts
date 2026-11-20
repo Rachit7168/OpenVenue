@@ -784,7 +784,9 @@ export function updateMaterial(
 export const MIN_FLOOR_ELEVATION = -20;
 export const MAX_FLOOR_ELEVATION = 100;
 
-export type FloorPatch = Partial<Pick<Floor, "name" | "elevation" | "height" | "level">>;
+export type FloorPatch = Partial<
+  Pick<Floor, "name" | "elevation" | "height" | "level" | "mapMarkers">
+>;
 
 function assertFloorFields(floor: Pick<Floor, "name" | "elevation" | "height" | "level">): void {
   if (floor.name.length < 1 || floor.name.length > 200) {
@@ -876,6 +878,9 @@ function applyFloorPatch(
   }
   if (patch.level !== undefined) {
     floor.level = patch.level;
+  }
+  if (patch.mapMarkers !== undefined) {
+    floor.mapMarkers = clone(patch.mapMarkers);
   }
   assertFloorFields(floor);
   return next;
@@ -1091,6 +1096,9 @@ export function updateFloor(
   }
   if (patch.level !== undefined) {
     before.level = floor.level;
+  }
+  if (patch.mapMarkers !== undefined) {
+    before.mapMarkers = clone(floor.mapMarkers ?? []);
   }
   return new UpdateFloorCommand(floorId, before, clone(patch));
 }

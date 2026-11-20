@@ -90,18 +90,18 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 
 ## Layout
 
-| Path                    | Role                                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/web`              | Vue 3 editor shell                                                                                                              |
-| `apps/docs`             | Getting started, schema, assets, changelog                                                                                      |
-| `apps/viewer`           | Map-first visitor app (2D/3D Find/Search); `pnpm --filter @openvenue/viewer dev` then open `?url=/examples/map-demo.venue.json` |
-| `apps/api`              | Optional Django API                                                                                                             |
-| `packages/scene-schema` | `venue.json` schema, types, validator                                                                                           |
-| `packages/geometry`     | Plan math, snapping, walls, and rooms                                                                                           |
-| `packages/editor-core`  | Undoable commands                                                                                                               |
-| `packages/scene-engine` | Document store for the 2D plan and later 3D                                                                                     |
-| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid                                                                                              |
-| `packages/renderer-3d`  | Three.js hall built from the venue document                                                                                     |
+| Path                    | Role                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web`              | Vue 3 editor shell                                                                                                                    |
+| `apps/docs`             | Getting started, schema, assets, changelog                                                                                            |
+| `apps/viewer`           | Map-first visitor app (2D/3D Find/Search); `pnpm --filter @openvenue/viewer dev` (loads map demo). Docs: `apps/docs/site/viewer.html` |
+| `apps/api`              | Optional Django API                                                                                                                   |
+| `packages/scene-schema` | `venue.json` schema, types, validator                                                                                                 |
+| `packages/geometry`     | Plan math, snapping, walls, and rooms                                                                                                 |
+| `packages/editor-core`  | Undoable commands                                                                                                                     |
+| `packages/scene-engine` | Document store for the 2D plan and later 3D                                                                                           |
+| `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid                                                                                                    |
+| `packages/renderer-3d`  | Three.js hall built from the venue document                                                                                           |
 
 For API-backed sign-in, run the API (`apps/api`) and set `VITE_API_URL=/api/v1` in a root `.env.development` file (the web dev server proxies `/api` to port 8000). Staff can manage accounts at `http://localhost:8000/admin/`.
 
