@@ -8,6 +8,13 @@ const searchOpen = defineModel<boolean>("searchOpen", { default: false });
 const popoverOpen = defineModel<boolean>("popoverOpen", { default: false });
 const searchQuery = defineModel<string>("searchQuery", { default: "" });
 
+withDefaults(
+  defineProps<{
+    popoverLabel?: string;
+  }>(),
+  { popoverLabel: "Place details" },
+);
+
 const emit = defineEmits<{
   dismissPopover: [];
   closePopover: [];
@@ -156,7 +163,7 @@ defineExpose({
       data-testid="place-popover"
       role="dialog"
       aria-modal="true"
-      aria-label="Place details"
+      :aria-label="popoverLabel"
       tabindex="-1"
     >
       <button type="button" class="ghost close" aria-label="Close" @click="closePopover">×</button>

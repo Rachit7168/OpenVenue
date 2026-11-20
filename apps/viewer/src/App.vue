@@ -1033,6 +1033,7 @@ onBeforeUnmount(() => {
         v-model:search-open="searchOpen"
         v-model:search-query="searchQuery"
         :popover-open="!!popover"
+        :popover-label="popover?.name ?? 'Place details'"
         @dismiss-popover="dismissPopoverForPanel"
         @close-popover="clearSelection"
       >
