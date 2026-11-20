@@ -345,7 +345,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     if (mode === "map" && mapFloorId === null && hit) {
       const floorId = floorIdOf(hit.object);
       // Clicking a bare floor slab (room) focuses that level; POI zones select in place.
-      if (floorId && entityId && lastDocument?.venue.floors.some((floor) => floor.id === entityId)) {
+      if (
+        floorId &&
+        entityId &&
+        lastDocument?.venue.floors.some((floor) => floor.id === entityId)
+      ) {
         onFloor(entityId);
         return;
       }

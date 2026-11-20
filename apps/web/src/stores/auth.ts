@@ -104,7 +104,8 @@ export const useAuthStore = defineStore("auth", () => {
       if (epoch !== sessionEpoch) {
         return;
       }
-      const unauthorized = caught instanceof ApiError && (caught.status === 401 || caught.status === 403);
+      const unauthorized =
+        caught instanceof ApiError && (caught.status === 401 || caught.status === 403);
       if (unauthorized) {
         persist(null);
       } else if (!user.value) {

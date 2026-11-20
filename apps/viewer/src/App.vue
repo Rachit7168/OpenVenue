@@ -61,7 +61,7 @@ const floorButtons = computed(() => (document.value ? floorsForChrome(document.v
 const live = computed(() => liveSummary(panel.value));
 const selectedPlace = computed(() =>
   document.value && selectedPlaceId.value
-    ? mapPlaces(document.value).find((place) => place.id === selectedPlaceId.value) ?? null
+    ? (mapPlaces(document.value).find((place) => place.id === selectedPlaceId.value) ?? null)
     : null,
 );
 
@@ -190,10 +190,8 @@ function drawMap2d() {
       context.strokeStyle = active ? "#0f172a" : "#475569";
       context.lineWidth = active ? 2.5 : 1;
       context.stroke();
-      const cx =
-        zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
-      const cz =
-        zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
+      const cx = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
+      const cz = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
       const centre = project(cx, cz);
       context.fillStyle = "#0f172a";
       context.font = "12px sans-serif";
@@ -639,7 +637,11 @@ onBeforeUnmount(() => {
             Walk
           </button>
         </div>
-        <button type="button" class="ghost" @click="quality = quality === 'simple' ? 'high' : 'simple'">
+        <button
+          type="button"
+          class="ghost"
+          @click="quality = quality === 'simple' ? 'high' : 'simple'"
+        >
           {{ quality === "simple" ? "Simple" : "High" }}
         </button>
         <button type="button" class="ghost" @click="muted = !muted">
@@ -678,12 +680,7 @@ onBeforeUnmount(() => {
         @click="onMap2dClick"
       />
 
-      <aside
-        v-if="findOpen"
-        class="side-panel"
-        role="dialog"
-        aria-label="Find a place"
-      >
+      <aside v-if="findOpen" class="side-panel" role="dialog" aria-label="Find a place">
         <header>
           <h2>Find a place</h2>
           <button type="button" class="ghost" aria-label="Close find" @click="findOpen = false">
@@ -720,12 +717,7 @@ onBeforeUnmount(() => {
         </div>
       </aside>
 
-      <aside
-        v-if="searchOpen"
-        class="side-panel"
-        role="dialog"
-        aria-label="Search the map"
-      >
+      <aside v-if="searchOpen" class="side-panel" role="dialog" aria-label="Search the map">
         <header>
           <h2>Search the map</h2>
           <button type="button" class="ghost" aria-label="Close search" @click="searchOpen = false">
@@ -767,9 +759,9 @@ onBeforeUnmount(() => {
             <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
             <p v-if="popover.blurb || panel?.body">{{ popover.blurb || panel?.body }}</p>
             <p v-if="live" class="live">{{ live }}</p>
-            <div v-if="(popover.links.length || panel?.links?.length)" class="link-row">
+            <div v-if="popover.links.length || panel?.links?.length" class="link-row">
               <a
-                v-for="link in popover.links.length ? popover.links : panel?.links ?? []"
+                v-for="link in popover.links.length ? popover.links : (panel?.links ?? [])"
                 :key="link.href"
                 :href="link.href"
                 target="_blank"
@@ -797,13 +789,23 @@ onBeforeUnmount(() => {
       </article>
 
       <div class="chrome-left">
-        <button type="button" :aria-pressed="findOpen" @click="findOpen = !findOpen; searchOpen = false">
+        <button
+          type="button"
+          :aria-pressed="findOpen"
+          @click="
+            findOpen = !findOpen;
+            searchOpen = false;
+          "
+        >
           Find
         </button>
         <button
           type="button"
           :aria-pressed="searchOpen"
-          @click="searchOpen = !searchOpen; findOpen = false"
+          @click="
+            searchOpen = !searchOpen;
+            findOpen = false;
+          "
         >
           Search
         </button>
@@ -839,18 +841,38 @@ onBeforeUnmount(() => {
         @pointerup="setWalkStep(0, 0)"
         @pointercancel="setWalkStep(0, 0)"
       >
-        <button type="button" aria-label="Walk forward" @pointerdown="setWalkStep(1, 0)" @pointerup="setWalkStep(0, 0)">
+        <button
+          type="button"
+          aria-label="Walk forward"
+          @pointerdown="setWalkStep(1, 0)"
+          @pointerup="setWalkStep(0, 0)"
+        >
           ↑
         </button>
         <div class="touch-walk-row">
-          <button type="button" aria-label="Strafe left" @pointerdown="setWalkStep(0, -1)" @pointerup="setWalkStep(0, 0)">
+          <button
+            type="button"
+            aria-label="Strafe left"
+            @pointerdown="setWalkStep(0, -1)"
+            @pointerup="setWalkStep(0, 0)"
+          >
             ←
           </button>
-          <button type="button" aria-label="Strafe right" @pointerdown="setWalkStep(0, 1)" @pointerup="setWalkStep(0, 0)">
+          <button
+            type="button"
+            aria-label="Strafe right"
+            @pointerdown="setWalkStep(0, 1)"
+            @pointerup="setWalkStep(0, 0)"
+          >
             →
           </button>
         </div>
-        <button type="button" aria-label="Walk back" @pointerdown="setWalkStep(-1, 0)" @pointerup="setWalkStep(0, 0)">
+        <button
+          type="button"
+          aria-label="Walk back"
+          @pointerdown="setWalkStep(-1, 0)"
+          @pointerup="setWalkStep(0, 0)"
+        >
           ↓
         </button>
       </div>

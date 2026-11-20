@@ -90,9 +90,7 @@
             "icon": "food",
             "mapColor": "#86efac",
             "blurb": "Coffee, lunch, and the venue menu.",
-            "links": [
-              { "label": "Menu", "href": "https://example.com/menu", "kind": "website" }
-            ],
+            "links": [{ "label": "Menu", "href": "https://example.com/menu", "kind": "website" }],
             "boundary": [
               { "x": 0, "z": 0 },
               { "x": 6, "z": 0 },

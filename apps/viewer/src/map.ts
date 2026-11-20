@@ -201,7 +201,9 @@ export function floorMarkers(floor: Floor): MapMarker[] {
   return Array.isArray(floor.mapMarkers) ? floor.mapMarkers : [];
 }
 
-export function floorsForChrome(document: VenueDocument): { id: string; label: string; level: number }[] {
+export function floorsForChrome(
+  document: VenueDocument,
+): { id: string; label: string; level: number }[] {
   return [...document.venue.floors]
     .sort((a, b) => b.level - a.level || b.elevation - a.elevation)
     .map((floor) => ({

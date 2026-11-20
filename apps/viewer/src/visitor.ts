@@ -144,7 +144,11 @@ export function parseContent(value: unknown): VisitorContent {
     : undefined;
   const links = Array.isArray(record.links)
     ? record.links.flatMap((item) => {
-        if (!item || typeof item !== "object" || typeof (item as { href?: unknown }).href !== "string") {
+        if (
+          !item ||
+          typeof item !== "object" ||
+          typeof (item as { href?: unknown }).href !== "string"
+        ) {
           return [];
         }
         const entry = item as { href: string; label?: unknown; kind?: unknown };

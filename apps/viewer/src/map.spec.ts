@@ -1,12 +1,6 @@
 import { createEmptyVenue, type VenueDocument } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
-import {
-  findCategories,
-  floorsForChrome,
-  mapPlaces,
-  searchPlaces,
-  zoneMapColor,
-} from "./map.js";
+import { findCategories, floorsForChrome, mapPlaces, searchPlaces, zoneMapColor } from "./map.js";
 
 function demo(): VenueDocument {
   const document = createEmptyVenue("Campus");

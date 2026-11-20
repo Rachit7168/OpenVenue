@@ -46,7 +46,13 @@ const MAP_ICON_GLYPH: Record<string, string> = {
   other: "•",
 };
 
-function mapIconSprite(icon: string, x: number, y: number, z: number, entityId: string): THREE.Sprite {
+function mapIconSprite(
+  icon: string,
+  x: number,
+  y: number,
+  z: number,
+  entityId: string,
+): THREE.Sprite {
   const canvas = document.createElement("canvas");
   canvas.width = 128;
   canvas.height = 128;
@@ -582,9 +588,7 @@ function addFloor(
       slab.userData.ownMaterial = true;
       group.add(slab);
       if (typeof document !== "undefined") {
-        group.add(
-          mapIconSprite(zoneMapIcon(zone), x, MAP_SLAB_DEPTH + 0.85, z, zone.id),
-        );
+        group.add(mapIconSprite(zoneMapIcon(zone), x, MAP_SLAB_DEPTH + 0.85, z, zone.id));
       }
     } else if (typeof document !== "undefined") {
       group.add(nameSprite(zone.name, x, 2.2, z));
@@ -596,7 +600,11 @@ function addFloor(
         continue;
       }
       const color =
-        marker.kind === "exit" ? "#fb7185" : marker.kind === "stair" || marker.kind === "elevator" ? "#34d399" : "#1d4ed8";
+        marker.kind === "exit"
+          ? "#fb7185"
+          : marker.kind === "stair" || marker.kind === "elevator"
+            ? "#34d399"
+            : "#1d4ed8";
       const arrow = new THREE.Mesh(
         new THREE.ConeGeometry(0.22, 0.55, 8),
         new THREE.MeshStandardMaterial({ color, roughness: 0.7 }),
