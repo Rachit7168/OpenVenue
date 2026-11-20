@@ -298,11 +298,6 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     return raycaster.intersectObject(venue, true)[0] ?? null;
   };
 
-  const pickId = (clientX: number, clientY: number): string | null => {
-    const hit = pickHit(clientX, clientY);
-    return hit ? entityIdFromHit(hit.object, hit.instanceId) : null;
-  };
-
   const tintMapSelection = () => {
     if (!venue) {
       return;
