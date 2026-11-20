@@ -304,6 +304,26 @@ function commitMarkers(next: MapMarker[]) {
   run(updateFloor(store.document, floor.id, { mapMarkers: next }));
 }
 
+function floorPlanCentroid(floor: {
+  walls: { start: { x: number; z: number }; end: { x: number; z: number } }[];
+  rooms: { boundary: { x: number; z: number }[] }[];
+  zones: { boundary: { x: number; z: number }[] }[];
+}): { x: number; z: number } {
+  const points = [
+    ...floor.walls.flatMap((wall) => [wall.start, wall.end]),
+    ...floor.rooms.flatMap((room) => room.boundary),
+    ...floor.zones.flatMap((zone) => zone.boundary),
+  ];
+  if (points.length === 0) {
+    return { x: 0, z: 0 };
+  }
+  const sum = points.reduce((acc, point) => ({ x: acc.x + point.x, z: acc.z + point.z }), {
+    x: 0,
+    z: 0,
+  });
+  return { x: sum.x / points.length, z: sum.z / points.length };
+}
+
 function addMarker() {
   const floor = activeFloor.value;
   if (!floor) {
@@ -312,7 +332,7 @@ function addMarker() {
   const marker: MapMarker = {
     id: crypto.randomUUID(),
     kind: "entrance",
-    position: { x: 0, z: 0 },
+    position: floorPlanCentroid(floor),
     rotationY: 0,
     label: "Entrance",
   };

@@ -18,6 +18,13 @@ import {
   type MapViewMode,
 } from "./map";
 import {
+  clearChromePopover,
+  closeChromePanels,
+  openChromePopover,
+  openFindChrome,
+  openSearchChrome,
+} from "./panels";
+import {
   liveSummary,
   mapProjection,
   parseContent,
@@ -46,7 +53,16 @@ const searchPanel = ref<HTMLElement | null>(null);
 const popoverPanel = ref<HTMLElement | null>(null);
 const mapPan = ref({ x: 0, y: 0 });
 const mapZoom = ref(1);
-let mapDrag: { x: number; y: number; panX: number; panY: number } | null = null;
+const mapPointers = new Map<number, { x: number; y: number }>();
+let mapDrag: {
+  pointerId: number;
+  button: number;
+  x: number;
+  y: number;
+  panX: number;
+  panY: number;
+} | null = null;
+let mapPinch: { distance: number; zoom: number } | null = null;
 let view: VenueView | null = null;
 let restoreFocus: HTMLElement | null = null;
 let audio: HTMLAudioElement | null = null;
@@ -231,18 +247,33 @@ function drawMap2d() {
     for (const marker of floorMarkers(floor)) {
       const point = project(marker.position.x, marker.position.z);
       const yaw = marker.rotationY ?? 0;
-      context.fillStyle = marker.kind === "exit" ? "#fb7185" : "#1d4ed8";
       context.save();
       context.translate(point.x, point.y);
-      // Canvas Y is down; negate yaw so 0 points "up" the plan (+Z in mapProjection).
-      context.rotate(-yaw);
-      context.beginPath();
-      context.moveTo(0, -6);
-      context.lineTo(5, 4);
-      context.lineTo(-5, 4);
-      context.closePath();
-      context.fill();
+      if (marker.kind === "stair" || marker.kind === "elevator") {
+        context.fillStyle = "#34d399";
+        context.fillRect(-5, -5, 10, 10);
+        context.fillStyle = "#0f172a";
+        context.font = "9px sans-serif";
+        context.textAlign = "center";
+        context.fillText(marker.kind === "stair" ? "S" : "↑", 0, 3);
+      } else {
+        // mapProjection maps +Z to canvas +Y; schema/3D treat yaw 0 as +Z.
+        context.fillStyle = marker.kind === "exit" ? "#fb7185" : "#1d4ed8";
+        context.rotate(yaw);
+        context.beginPath();
+        context.moveTo(0, 6);
+        context.lineTo(5, -4);
+        context.lineTo(-5, -4);
+        context.closePath();
+        context.fill();
+      }
       context.restore();
+      if (marker.label) {
+        context.fillStyle = "#334155";
+        context.font = "10px sans-serif";
+        context.textAlign = "center";
+        context.fillText(marker.label, point.x, point.y + 14);
+      }
     }
     context.fillStyle = "#334155";
     context.font = "bold 12px sans-serif";
@@ -401,7 +432,19 @@ async function openContent(contentRef: string | undefined, fallback?: MapPlace) 
 
 async function selectPlace(place: MapPlace, dismissPanels = true) {
   stopContentRefresh();
+  captureRestoreFocus();
   selectedPlaceId.value = place.id;
+  if (dismissPanels) {
+    findOpen.value = false;
+    searchOpen.value = false;
+  }
+  const chrome = openChromePopover({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: false,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
   popover.value = place;
   view?.setSelected(place.id);
   if (viewMode.value === "walk") {
@@ -410,9 +453,6 @@ async function selectPlace(place: MapPlace, dismissPanels = true) {
     view?.setWalkTarget({ x: place.x, z: place.z });
   } else if (floorId.value !== null && floorId.value !== place.floorId) {
     setFloorFilter(place.floorId);
-  }
-  if (dismissPanels) {
-    closePanels();
   }
   await openContent(place.contentRef, place);
   writeUrl();
@@ -423,12 +463,18 @@ function clearSelection() {
   stopContentRefresh();
   contentGeneration += 1;
   selectedPlaceId.value = null;
+  clearChromePopover({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: true,
+  });
   popover.value = null;
   panel.value = null;
   activeContentRef.value = null;
   view?.setSelected(null);
   writeUrl();
   drawMap2d();
+  void nextTick(() => restoreChromeFocus());
 }
 
 function applyWalkAxes() {
@@ -507,21 +553,63 @@ function map2dLocalPoint(event: {
   };
 }
 
-function onMap2dPointerDown(event: PointerEvent) {
-  if (viewMode.value !== "2d") {
-    return;
+function pointerDistance(): number {
+  const points = [...mapPointers.values()];
+  if (points.length < 2) {
+    return 0;
   }
+  return Math.hypot(points[0]!.x - points[1]!.x, points[0]!.y - points[1]!.y);
+}
+
+function beginMapDrag(event: PointerEvent) {
+  mapPinch = null;
   mapDrag = {
+    pointerId: event.pointerId,
+    button: event.button,
     x: event.clientX,
     y: event.clientY,
     panX: mapPan.value.x,
     panY: mapPan.value.y,
   };
+}
+
+function beginMapPinch() {
+  mapDrag = null;
+  const distance = pointerDistance();
+  if (distance <= 0) {
+    mapPinch = null;
+    return;
+  }
+  mapPinch = { distance, zoom: mapZoom.value };
+}
+
+function onMap2dPointerDown(event: PointerEvent) {
+  if (viewMode.value !== "2d") {
+    return;
+  }
+  mapPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  if (mapPointers.size >= 2) {
+    beginMapPinch();
+    return;
+  }
+  beginMapDrag(event);
 }
 
 function onMap2dPointerMove(event: PointerEvent) {
-  if (!mapDrag) {
+  if (!mapPointers.has(event.pointerId)) {
+    return;
+  }
+  mapPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (mapPinch && mapPointers.size >= 2) {
+    const distance = pointerDistance();
+    if (distance > 0 && mapPinch.distance > 0) {
+      mapZoom.value = Math.min(3, Math.max(0.5, mapPinch.zoom * (distance / mapPinch.distance)));
+      drawMap2d();
+    }
+    return;
+  }
+  if (!mapDrag || mapDrag.pointerId !== event.pointerId) {
     return;
   }
   mapPan.value = {
@@ -532,18 +620,52 @@ function onMap2dPointerMove(event: PointerEvent) {
 }
 
 function onMap2dPointerUp(event: PointerEvent) {
-  if (!mapDrag) {
+  if (!mapPointers.has(event.pointerId)) {
+    return;
+  }
+  mapPointers.delete(event.pointerId);
+  if (mapPinch) {
+    mapPinch = null;
+    mapDrag = null;
+    if (mapPointers.size === 1) {
+      const remaining = mapPointers.entries().next().value;
+      if (remaining) {
+        const [pointerId, point] = remaining;
+        mapDrag = {
+          pointerId,
+          button: 0,
+          x: point.x,
+          y: point.y,
+          panX: mapPan.value.x,
+          panY: mapPan.value.y,
+        };
+      }
+    }
+    return;
+  }
+  if (!mapDrag || mapDrag.pointerId !== event.pointerId) {
     return;
   }
   const moved = Math.hypot(event.clientX - mapDrag.x, event.clientY - mapDrag.y) > 6;
+  const primary = mapDrag.button === 0;
   mapDrag = null;
-  if (!moved) {
+  if (!moved && primary) {
     onMap2dClick(event);
   }
 }
 
-function onMap2dPointerCancel() {
-  mapDrag = null;
+function onMap2dPointerCancel(event: PointerEvent) {
+  mapPointers.delete(event.pointerId);
+  if (mapDrag?.pointerId === event.pointerId) {
+    mapDrag = null;
+  }
+  if (mapPointers.size < 2) {
+    mapPinch = null;
+  }
+  if (mapPointers.size === 0) {
+    mapDrag = null;
+    mapPinch = null;
+  }
 }
 
 function onMap2dWheel(event: WheelEvent) {
@@ -596,27 +718,92 @@ function toggleCategory(category: FindCategory) {
   expandedCategory.value = expandedCategory.value === category.id ? null : category.id;
 }
 
+function chromeFocusFallback(): HTMLElement | null {
+  return window.document.querySelector<HTMLElement>("[data-map-chrome='find']");
+}
+
+function captureRestoreFocus() {
+  const active = window.document.activeElement as HTMLElement | null;
+  if (!active || !active.isConnected) {
+    if (!restoreFocus?.isConnected) {
+      restoreFocus = chromeFocusFallback();
+    }
+    return;
+  }
+  const insideDialog =
+    !!findPanel.value?.contains(active) ||
+    !!searchPanel.value?.contains(active) ||
+    !!popoverPanel.value?.contains(active);
+  if (insideDialog) {
+    if (!restoreFocus?.isConnected) {
+      restoreFocus = chromeFocusFallback();
+    }
+    return;
+  }
+  restoreFocus = active;
+}
+
+function restoreChromeFocus() {
+  if (findOpen.value || searchOpen.value || popover.value) {
+    return;
+  }
+  const target = restoreFocus?.isConnected ? restoreFocus : chromeFocusFallback();
+  target?.focus();
+  restoreFocus = null;
+}
+
+function dismissPopoverForPanel() {
+  if (!popover.value) {
+    return;
+  }
+  stopContentRefresh();
+  contentGeneration += 1;
+  selectedPlaceId.value = null;
+  popover.value = null;
+  panel.value = null;
+  activeContentRef.value = null;
+  view?.setSelected(null);
+  writeUrl();
+  drawMap2d();
+}
+
 function openFind() {
-  restoreFocus = window.document.activeElement as HTMLElement | null;
-  searchOpen.value = false;
-  findOpen.value = true;
+  captureRestoreFocus();
+  dismissPopoverForPanel();
+  const chrome = openFindChrome({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: false,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
   void nextTick(() => focusFirst(findPanel.value));
 }
 
 function openSearch() {
-  restoreFocus = window.document.activeElement as HTMLElement | null;
-  findOpen.value = false;
-  searchOpen.value = true;
+  captureRestoreFocus();
+  dismissPopoverForPanel();
+  const chrome = openSearchChrome({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: false,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
   void nextTick(() => {
     window.document.getElementById("map-search-input")?.focus();
   });
 }
 
 function closePanels() {
-  findOpen.value = false;
-  searchOpen.value = false;
-  restoreFocus?.focus();
-  restoreFocus = null;
+  const chrome = closeChromePanels({
+    findOpen: findOpen.value,
+    searchOpen: searchOpen.value,
+    popoverOpen: !!popover.value,
+  });
+  findOpen.value = chrome.findOpen;
+  searchOpen.value = chrome.searchOpen;
+  void nextTick(() => restoreChromeFocus());
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -861,7 +1048,7 @@ onBeforeUnmount(() => {
         @pointerdown="onMap2dPointerDown"
         @pointermove="onMap2dPointerMove"
         @pointerup="onMap2dPointerUp"
-        @pointercancel="onMap2dPointerCancel"
+        @pointercancel="onMap2dPointerCancel($event)"
         @wheel.prevent="onMap2dWheel"
       />
 
@@ -1005,6 +1192,7 @@ onBeforeUnmount(() => {
       <div class="chrome-left">
         <button
           type="button"
+          data-map-chrome="find"
           :aria-pressed="findOpen"
           @click="findOpen ? closePanels() : openFind()"
         >
@@ -1012,6 +1200,7 @@ onBeforeUnmount(() => {
         </button>
         <button
           type="button"
+          data-map-chrome="search"
           :aria-pressed="searchOpen"
           @click="searchOpen ? closePanels() : openSearch()"
         >

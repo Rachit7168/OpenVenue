@@ -784,9 +784,10 @@ export function updateMaterial(
 export const MIN_FLOOR_ELEVATION = -20;
 export const MAX_FLOOR_ELEVATION = 100;
 
-export type FloorPatch = Partial<
-  Pick<Floor, "name" | "elevation" | "height" | "level" | "mapMarkers">
->;
+export type FloorPatch = Partial<Pick<Floor, "name" | "elevation" | "height" | "level">> & {
+  /** `null` removes the field so undo can restore a previously absent list. */
+  mapMarkers?: Floor["mapMarkers"] | null;
+};
 
 function assertFloorFields(floor: Pick<Floor, "name" | "elevation" | "height" | "level">): void {
   if (floor.name.length < 1 || floor.name.length > 200) {
@@ -880,7 +881,11 @@ function applyFloorPatch(
     floor.level = patch.level;
   }
   if (patch.mapMarkers !== undefined) {
-    floor.mapMarkers = clone(patch.mapMarkers);
+    if (patch.mapMarkers === null) {
+      delete floor.mapMarkers;
+    } else {
+      floor.mapMarkers = clone(patch.mapMarkers);
+    }
   }
   assertFloorFields(floor);
   return next;
@@ -1098,7 +1103,7 @@ export function updateFloor(
     before.level = floor.level;
   }
   if (patch.mapMarkers !== undefined) {
-    before.mapMarkers = clone(floor.mapMarkers ?? []);
+    before.mapMarkers = floor.mapMarkers !== undefined ? clone(floor.mapMarkers) : null;
   }
   return new UpdateFloorCommand(floorId, before, clone(patch));
 }
