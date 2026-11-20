@@ -3,6 +3,57 @@ import * as THREE from "three";
 import { modelTemplate } from "./glb.js";
 import { materialPreset } from "./materials.js";
 
+function planCentroid(points: { x: number; z: number }[]): { x: number; z: number } {
+  if (points.length === 0) {
+    return { x: 0, z: 0 };
+  }
+  let area = 0;
+  let cx = 0;
+  let cz = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index]!;
+    const next = points[(index + 1) % points.length]!;
+    const cross = current.x * next.z - next.x * current.z;
+    area += cross;
+    cx += (current.x + next.x) * cross;
+    cz += (current.z + next.z) * cross;
+  }
+  area *= 0.5;
+  if (Math.abs(area) < 1e-9) {
+    const sumX = points.reduce((sum, point) => sum + point.x, 0);
+    const sumZ = points.reduce((sum, point) => sum + point.z, 0);
+    return { x: sumX / points.length, z: sumZ / points.length };
+  }
+  return { x: cx / (6 * area), z: cz / (6 * area) };
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  stages: "#93c5fd",
+  "meeting-rooms": "#c4b5fd",
+  community: "#f9a8d4",
+  supporters: "#fdba74",
+  "food-drink": "#86efac",
+  washrooms: "#a5b4fc",
+  cowork: "#fde68a",
+  "check-in": "#67e8f9",
+  "fun-rest": "#fca5a5",
+  other: "#d4d4d8",
+};
+
+function zoneFillColor(zone: { mapColor?: unknown; color?: unknown; category?: unknown }): string {
+  if (typeof zone.mapColor === "string" && zone.mapColor.trim()) {
+    return zone.mapColor.trim();
+  }
+  if (typeof zone.color === "string" && zone.color.trim()) {
+    return zone.color.trim();
+  }
+  const category =
+    typeof zone.category === "string" && zone.category.trim()
+      ? zone.category.trim().toLowerCase()
+      : "other";
+  return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.other!;
+}
+
 const ceilingMaterial = new THREE.MeshStandardMaterial({
   color: "#27272a",
   transparent: true,
@@ -31,6 +82,70 @@ function nameSprite(label: string, x: number, y: number, z: number): THREE.Sprit
   sprite.scale.set(1.8, 0.45, 1);
   sprite.name = `sign:${label}`;
   return sprite;
+}
+
+const MAP_ICON_GLYPH: Record<string, string> = {
+  stage: "✦",
+  food: "☕",
+  booth: "▣",
+  game: "🎮",
+  laptop: "💻",
+  washroom: "WC",
+  entrance: "→",
+  music: "♪",
+  tent: "⛺",
+  other: "•",
+};
+
+function mapIconSprite(
+  icon: string,
+  x: number,
+  y: number,
+  z: number,
+  entityId: string,
+): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext("2d");
+  if (context) {
+    context.fillStyle = "#ffffff";
+    context.beginPath();
+    context.arc(64, 64, 56, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = "#0f172a";
+    context.font = "56px sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(MAP_ICON_GLYPH[icon] ?? MAP_ICON_GLYPH.other!, 64, 68);
+  }
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }),
+  );
+  sprite.position.set(x, y, z);
+  sprite.scale.set(1.1, 1.1, 1);
+  sprite.userData.entityId = entityId;
+  sprite.name = `map-icon:${entityId}`;
+  return sprite;
+}
+
+function zoneMapIcon(zone: { icon?: unknown; category?: unknown }): string {
+  if (typeof zone.icon === "string" && zone.icon.trim()) {
+    return zone.icon.trim();
+  }
+  const category = typeof zone.category === "string" ? zone.category : "other";
+  const defaults: Record<string, string> = {
+    stages: "stage",
+    "meeting-rooms": "laptop",
+    community: "tent",
+    supporters: "booth",
+    "food-drink": "food",
+    washrooms: "washroom",
+    cowork: "laptop",
+    "check-in": "entrance",
+    "fun-rest": "game",
+  };
+  return defaults[category] ?? "other";
 }
 const objectColors: Record<string, string> = {
   table: "#d4b483",
@@ -487,14 +602,68 @@ function addFloor(
     group.add(mesh);
   }
   addChairs(group, chairs, map ? mapFurnitureMaterial("chair") : materialPreset("wood"));
-  if (!map && typeof document !== "undefined") {
-    for (const zone of floor.zones) {
-      if (!shown(zone) || zone.boundary.length < 1) {
+  for (const zone of floor.zones) {
+    if (!shown(zone) || zone.boundary.length < 3) {
+      continue;
+    }
+    const centre = planCentroid(zone.boundary);
+    const x = centre.x;
+    const z = centre.z;
+    if (map) {
+      const shape = new THREE.Shape();
+      zone.boundary.forEach((point, pointIndex) => {
+        const px = point.x;
+        const py = -point.z;
+        if (pointIndex === 0) {
+          shape.moveTo(px, py);
+        } else {
+          shape.lineTo(px, py);
+        }
+      });
+      const fill = zoneFillColor(zone);
+      const slab = new THREE.Mesh(
+        new THREE.ExtrudeGeometry(shape, { depth: MAP_SLAB_DEPTH * 0.55, bevelEnabled: false }),
+        new THREE.MeshStandardMaterial({
+          color: fill,
+          roughness: 1,
+          transparent: true,
+          opacity: 0.92,
+        }),
+      );
+      slab.rotation.x = -Math.PI / 2;
+      slab.position.y = MAP_SLAB_DEPTH * 0.15;
+      slab.userData.entityId = zone.id;
+      slab.userData.mapColor = fill;
+      slab.userData.ownMaterial = true;
+      group.add(slab);
+      if (typeof document !== "undefined") {
+        group.add(mapIconSprite(zoneMapIcon(zone), x, MAP_SLAB_DEPTH + 0.85, z, zone.id));
+      }
+    } else if (typeof document !== "undefined") {
+      group.add(nameSprite(zone.name, x, 2.2, z));
+    }
+  }
+  if (map) {
+    for (const marker of floor.mapMarkers ?? []) {
+      if (!shown(marker)) {
         continue;
       }
-      const x = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
-      const z = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
-      group.add(nameSprite(zone.name, x, 2.2, z));
+      const color =
+        marker.kind === "exit"
+          ? "#fb7185"
+          : marker.kind === "stair" || marker.kind === "elevator"
+            ? "#34d399"
+            : "#1d4ed8";
+      const arrow = new THREE.Mesh(
+        new THREE.ConeGeometry(0.22, 0.55, 8),
+        new THREE.MeshStandardMaterial({ color, roughness: 0.7 }),
+      );
+      arrow.position.set(marker.position.x, MAP_SLAB_DEPTH + 0.35, marker.position.z);
+      // Cone defaults to +Y; tip toward horizontal heading of rotationY (0 => +Z).
+      arrow.rotation.order = "YXZ";
+      arrow.rotation.set(Math.PI / 2, marker.rotationY ?? 0, 0);
+      arrow.userData.ownMaterial = true;
+      group.add(arrow);
     }
   }
 

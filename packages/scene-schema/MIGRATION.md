@@ -21,6 +21,8 @@ Load order:
 
 `interaction.contentRef` points at content that is **not** part of the venue schema (a menu file, or later an API resource). That content is versioned on its own. Changing a menu must not require a venue migration.
 
+Optional map fields on zones (`category`, `icon`, `mapColor`, `blurb`, `links`) and floor `mapMarkers` were added within **1.0.0** as additive properties. Older files without them remain valid; newer files still round-trip through editors that preserve unknown properties.
+
 ## Coordinate system
 
 v1 stores an explicit coordinate system and only accepts one value: metres, +Y up, right-handed, radians. Plan points are `{x, z}` because Y is up. Keeping the object in the file means a future change is a migration, not a silent reinterpretation of old numbers.

@@ -1,5 +1,6 @@
 import { pointInPolygon, polygonCentroid } from "@openvenue/geometry";
 import type { Floor, VenueDocument, Zone } from "@openvenue/scene-schema";
+import { sanitizeLinks, safeExternalHref } from "./map.js";
 
 export type VisitorContentKind = "menu" | "info" | "session-list" | "booth" | "link";
 
@@ -11,6 +12,8 @@ export interface VisitorContent {
   sessions?: { name: string; status: string; queueMinutes?: number }[];
   audio?: string;
   href?: string;
+  icon?: string;
+  links?: { label: string; href: string; kind?: string }[];
 }
 
 export interface DirectoryEntry {
@@ -20,6 +23,9 @@ export interface DirectoryEntry {
   x: number;
   z: number;
   contentRef?: string;
+  category?: string;
+  icon?: string;
+  blurb?: string;
 }
 
 export function visitorSpawn(document: VenueDocument): {
@@ -56,17 +62,22 @@ export function zoneAt(
 
 export function directory(document: VenueDocument): DirectoryEntry[] {
   return document.venue.floors.flatMap((floor) =>
-    floor.zones.map((zone) => {
-      const centre = zone.boundary.length >= 3 ? polygonCentroid(zone.boundary) : { x: 0, z: 0 };
-      return {
-        id: zone.id,
-        name: zone.name,
-        floorId: floor.id,
-        x: centre.x,
-        z: centre.z,
-        contentRef: zone.interaction?.contentRef,
-      };
-    }),
+    floor.zones
+      .filter((zone) => (zone as { visible?: unknown }).visible !== false)
+      .map((zone) => {
+        const centre = zone.boundary.length >= 3 ? polygonCentroid(zone.boundary) : { x: 0, z: 0 };
+        return {
+          id: zone.id,
+          name: zone.name,
+          floorId: floor.id,
+          x: centre.x,
+          z: centre.z,
+          contentRef: zone.interaction?.contentRef,
+          category: typeof zone.category === "string" ? zone.category : undefined,
+          icon: typeof zone.icon === "string" ? zone.icon : undefined,
+          blurb: typeof zone.blurb === "string" ? zone.blurb : undefined,
+        };
+      }),
   );
 }
 
@@ -99,18 +110,19 @@ export function parseContent(value: unknown): VisitorContent {
           href?: unknown;
           link?: unknown;
         };
+        const rawHref =
+          typeof entry.href === "string"
+            ? entry.href
+            : typeof entry.link === "string"
+              ? entry.link
+              : undefined;
         return [
           {
             name: entry.name,
             detail: typeof entry.detail === "string" ? entry.detail : undefined,
             price: typeof entry.price === "string" ? entry.price : undefined,
             image: typeof entry.image === "string" ? entry.image : undefined,
-            href:
-              typeof entry.href === "string"
-                ? entry.href
-                : typeof entry.link === "string"
-                  ? entry.link
-                  : undefined,
+            href: safeExternalHref(rawHref) ?? undefined,
           },
         ];
       })
@@ -134,6 +146,27 @@ export function parseContent(value: unknown): VisitorContent {
         ];
       })
     : undefined;
+  const links = sanitizeLinks(
+    Array.isArray(record.links)
+      ? record.links.flatMap((item) => {
+          if (
+            !item ||
+            typeof item !== "object" ||
+            typeof (item as { href?: unknown }).href !== "string"
+          ) {
+            return [];
+          }
+          const entry = item as { href: string; label?: unknown; kind?: unknown };
+          return [
+            {
+              href: entry.href,
+              label: typeof entry.label === "string" ? entry.label : undefined,
+              kind: typeof entry.kind === "string" ? entry.kind : undefined,
+            },
+          ];
+        })
+      : [],
+  );
   return {
     title: typeof record.title === "string" ? record.title : "Details",
     kind,
@@ -141,19 +174,31 @@ export function parseContent(value: unknown): VisitorContent {
     items,
     sessions,
     audio: typeof record.audio === "string" ? record.audio : undefined,
-    href: typeof record.href === "string" ? record.href : undefined,
+    href: safeExternalHref(typeof record.href === "string" ? record.href : null) ?? undefined,
+    icon: typeof record.icon === "string" ? record.icon : undefined,
+    links,
   };
 }
 
 export function mapProjection(floor: Floor, width: number, height: number) {
-  const points = floor.walls.flatMap((wall) => [wall.start, wall.end]);
+  const points = [
+    ...floor.walls.flatMap((wall) => [wall.start, wall.end]),
+    ...floor.zones.flatMap((zone) => zone.boundary),
+    ...(floor.mapMarkers ?? []).map((marker) => marker.position),
+    ...floor.rooms.flatMap((room) => room.boundary),
+  ];
+  if (points.length === 0) {
+    points.push({ x: 0, z: 0 }, { x: 1, z: 1 });
+  }
   const xs = points.map((point) => point.x);
   const zs = points.map((point) => point.z);
-  const minX = Math.min(0, ...xs);
-  const maxX = Math.max(1, ...xs);
-  const minZ = Math.min(0, ...zs);
-  const maxZ = Math.max(1, ...zs);
-  const scale = Math.min((width - 20) / (maxX - minX), (height - 20) / (maxZ - minZ));
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minZ = Math.min(...zs);
+  const maxZ = Math.max(...zs);
+  const spanX = Math.max(maxX - minX, 1);
+  const spanZ = Math.max(maxZ - minZ, 1);
+  const scale = Math.min((width - 20) / spanX, (height - 20) / spanZ);
   return {
     toScreen(x: number, z: number) {
       return { x: 10 + (x - minX) * scale, y: 10 + (z - minZ) * scale };

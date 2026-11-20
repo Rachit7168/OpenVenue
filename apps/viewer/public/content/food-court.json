@@ -1,10 +1,11 @@
 {
   "title": "Food court",
-  "kind": "session-list",
-  "body": "Counter service on this floor.",
+  "kind": "menu",
+  "body": "Coffee, lunch, and snacks.",
+  "icon": "food",
   "items": [
-    { "name": "Coffee", "detail": "Front counter" },
-    { "name": "Lunch bowl", "detail": "Hot counter" }
+    { "name": "Filter coffee", "price": "3" },
+    { "name": "Lunch bowl", "price": "12" }
   ],
-  "sessions": [{ "name": "Lunch service", "status": "open", "queueMinutes": 4 }]
+  "links": [{ "label": "Full menu", "href": "https://example.com/menu", "kind": "website" }]
 }

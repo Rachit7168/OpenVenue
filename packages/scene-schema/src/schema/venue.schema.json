@@ -148,6 +148,11 @@
         "zones": {
           "type": "array",
           "items": { "$ref": "#/$defs/Zone" }
+        },
+        "mapMarkers": {
+          "type": "array",
+          "description": "Entrance arrows, stair cues, and other map-only circulation markers for this floor.",
+          "items": { "$ref": "#/$defs/MapMarker" }
         }
       }
     },
@@ -239,7 +244,7 @@
     },
     "Zone": {
       "title": "Zone",
-      "description": "Named area such as a food court or sponsor booth. The viewer raycasts this boundary and opens the interaction overlay. The menu or booth copy is not stored here.",
+      "description": "Named area such as a food court or sponsor booth. The viewer raycasts this boundary and opens the interaction overlay. Long menu or booth copy stays in contentRef files; short map blurb and links may live on the zone for the popover.",
       "type": "object",
       "additionalProperties": true,
       "required": ["id", "type", "name", "boundary"],
@@ -248,7 +253,75 @@
         "type": { "const": "zone" },
         "name": { "type": "string", "minLength": 1, "maxLength": 200 },
         "boundary": { "$ref": "#/$defs/Polygon" },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Find-panel taxonomy key, for example stages, meeting-rooms, food-drink, supporters."
+        },
+        "icon": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Map icon id such as stage, food, booth, game, laptop, washroom, entrance."
+        },
+        "mapColor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "CSS color for map fills. Prefer this over the legacy color field."
+        },
+        "color": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Legacy map fill color. Prefer mapColor."
+        },
+        "blurb": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Short map popover description without loading a content file."
+        },
+        "links": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MapLink" }
+        },
         "interaction": { "$ref": "#/$defs/Interaction" }
+      }
+    },
+    "MapLink": {
+      "title": "MapLink",
+      "description": "Outbound link shown on the map popover (website, social, schedule).",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["href"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "href": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "kind": {
+          "type": "string",
+          "enum": ["website", "twitter", "linkedin", "schedule", "other"]
+        }
+      }
+    },
+    "MapMarker": {
+      "title": "MapMarker",
+      "description": "Circulation cue drawn on the visitor map (entrance arrow, stair, exit).",
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "kind", "position"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "kind": {
+          "type": "string",
+          "enum": ["entrance", "arrow", "stair", "elevator", "exit"]
+        },
+        "position": { "$ref": "#/$defs/PlanPoint" },
+        "rotationY": {
+          "type": "number",
+          "description": "Yaw around +Y in radians. For arrows, 0 points toward +Z."
+        },
+        "label": { "type": "string", "maxLength": 80 }
       }
     },
     "Interaction": {

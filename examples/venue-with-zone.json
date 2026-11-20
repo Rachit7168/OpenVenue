@@ -86,6 +86,11 @@
             "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
             "type": "zone",
             "name": "Food Court",
+            "category": "food-drink",
+            "icon": "food",
+            "mapColor": "#86efac",
+            "blurb": "Coffee, lunch, and the venue menu.",
+            "links": [{ "label": "Menu", "href": "https://example.com/menu", "kind": "website" }],
             "boundary": [
               { "x": 0, "z": 0 },
               { "x": 6, "z": 0 },
@@ -96,6 +101,15 @@
               "type": "info-panel",
               "contentRef": "content/food-court.json"
             }
+          }
+        ],
+        "mapMarkers": [
+          {
+            "id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+            "kind": "entrance",
+            "position": { "x": 3, "z": 0.8 },
+            "rotationY": 0,
+            "label": "Main entrance"
           }
         ]
       }

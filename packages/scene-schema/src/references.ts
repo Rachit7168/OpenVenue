@@ -52,6 +52,9 @@ export function venueReferenceIssues(document: VenueDocument): string[] {
     for (const zone of floor.zones) {
       claimId(seen, issues, zone.id, `zone ${zone.name}`);
     }
+    for (const marker of floor.mapMarkers ?? []) {
+      claimId(seen, issues, marker.id, `map marker ${marker.kind}`);
+    }
   }
 
   for (const spawn of document.venue.spawnPoints) {

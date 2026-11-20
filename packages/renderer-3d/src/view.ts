@@ -298,11 +298,6 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     return raycaster.intersectObject(venue, true)[0] ?? null;
   };
 
-  const pickId = (clientX: number, clientY: number): string | null => {
-    const hit = pickHit(clientX, clientY);
-    return hit ? entityIdFromHit(hit.object, hit.instanceId) : null;
-  };
-
   const tintMapSelection = () => {
     if (!venue) {
       return;
@@ -317,7 +312,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         return;
       }
       const chosen = mode === "map" && child.userData.entityId === selectedId;
-      material.color.set(chosen ? "#5eead4" : color);
+      material.color.set(chosen ? "#2563eb" : color);
+      material.emissive?.set(chosen ? "#1d4ed8" : "#000000");
+      if ("emissiveIntensity" in material) {
+        material.emissiveIntensity = chosen ? 0.35 : 0;
+      }
     });
   };
 
@@ -341,24 +340,52 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
     if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) {
       return;
     }
-    if (mode === "map" && mapFloorId === null) {
-      const hit = pickHit(event.clientX, event.clientY);
-      const floorId = hit ? floorIdOf(hit.object) : null;
-      if (floorId) {
-        onFloor(floorId);
+    const hit = pickHit(event.clientX, event.clientY);
+    const entityId = hit ? entityIdFromHit(hit.object, hit.instanceId) : null;
+    if (mode === "map" && mapFloorId === null && hit) {
+      const floorId = floorIdOf(hit.object);
+      // Clicking a bare floor slab (room) focuses that level; POI zones select in place.
+      if (
+        floorId &&
+        entityId &&
+        lastDocument?.venue.floors.some((floor) => floor.id === entityId)
+      ) {
+        onFloor(entityId);
+        return;
       }
-      onSelect(hit ? entityIdFromHit(hit.object, hit.instanceId) : null);
-      return;
+      if (floorId && !entityId) {
+        onFloor(floorId);
+        return;
+      }
+      if (
+        floorId &&
+        entityId &&
+        lastDocument?.venue.floors.some((floor) => floor.rooms.some((room) => room.id === entityId))
+      ) {
+        onFloor(floorId);
+        return;
+      }
     }
-    onSelect(pickId(event.clientX, event.clientY));
+    onSelect(entityId);
   };
 
-  const onDoubleClick = () => {
+  const onDoubleClick = (event: MouseEvent) => {
     if (mode !== "map") {
       return;
     }
-    orthographic.zoom = Math.min(orthographic.zoom * 1.4, 12);
+    const before = orthographic.zoom;
+    orthographic.zoom = Math.min(orthographic.zoom * 1.45, 14);
+    if (orthographic.zoom === before) {
+      return;
+    }
+    // Zoom toward the double-click point in screen space.
+    const bounds = canvas.getBoundingClientRect();
+    const ndcX = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+    const ndcY = -(((event.clientY - bounds.top) / bounds.height) * 2 - 1);
+    const world = new THREE.Vector3(ndcX, ndcY, 0).unproject(orthographic);
+    controls.target.lerp(new THREE.Vector3(world.x, controls.target.y, world.z), 0.35);
     orthographic.updateProjectionMatrix();
+    controls.update();
   };
 
   gizmo.addEventListener("dragging-changed", (event) => {
@@ -436,19 +463,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   const beginWalk = () => {
     const floor = displayedFloor();
     const spawns = lastDocument?.venue.spawnPoints ?? [];
+    // Stay on the currently shown floor — never jump to another floor's spawn.
     const spawn =
       spawns.find((point) => point.role === "visitor" && point.floorId === floor?.id) ??
       spawns.find((point) => point.floorId === floor?.id) ??
-      spawns.find((point) => point.role === "visitor") ??
-      spawns[0];
-    if (spawn && mode !== "map" && spawn.floorId !== shownFloorId) {
-      shownFloorId = spawn.floorId;
-      if (lastDocument) {
-        replaceDocument(lastDocument, true);
-      }
-      syncDropPlane();
-      onFloor(spawn.floorId);
-    }
+      null;
     const walls = currentWalls();
     walker = spawn
       ? spawnWalker(spawn.position, spawn.rotationY, walls)
@@ -686,6 +705,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         replaceDocument(lastDocument, true);
       }
       if (next === "walk") {
+        // beginWalk uses displayedFloor()/shownFloorId — caller should setShownFloor first.
         beginWalk();
         return;
       }
