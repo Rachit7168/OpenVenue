@@ -3,7 +3,8 @@ import { mountVenueView, type VenueView } from "@openvenue/renderer-3d";
 import { loadVenueJson, type VenueDocument } from "@openvenue/scene-schema";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { publicContentFetchUrl, publicVenueIdFromUrl, safeContentRef, safeVenueUrl } from "./fetch";
-import { focusFirst, trapTabKey } from "./focus";
+import DialogChrome from "./DialogChrome.vue";
+import { trapTabKey } from "./focus";
 import {
   findCategories,
   floorsForChrome,
@@ -17,13 +18,7 @@ import {
   type MapPlace,
   type MapViewMode,
 } from "./map";
-import {
-  clearChromePopover,
-  closeChromePanels,
-  openChromePopover,
-  openFindChrome,
-  openSearchChrome,
-} from "./panels";
+import { clearChromePopover, closeChromePanels, openChromePopover } from "./panels";
 import {
   liveSummary,
   mapProjection,
@@ -48,9 +43,10 @@ const expandedCategory = ref<string | null>(null);
 const hintsVisible = ref(true);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const map2d = ref<HTMLCanvasElement | null>(null);
-const findPanel = ref<HTMLElement | null>(null);
-const searchPanel = ref<HTMLElement | null>(null);
-const popoverPanel = ref<HTMLElement | null>(null);
+const dialogChrome = ref<InstanceType<typeof DialogChrome> | null>(null);
+const findPanel = computed(() => dialogChrome.value?.findPanel ?? null);
+const searchPanel = computed(() => dialogChrome.value?.searchPanel ?? null);
+const popoverPanel = computed(() => dialogChrome.value?.popoverPanel ?? null);
 const mapPan = ref({ x: 0, y: 0 });
 const mapZoom = ref(1);
 const mapPointers = new Map<number, { x: number; y: number }>();
@@ -770,24 +766,17 @@ function dismissPopoverForPanel() {
 function openFind() {
   captureRestoreFocus();
   dismissPopoverForPanel();
-  const chrome = openFindChrome();
-  findOpen.value = chrome.findOpen;
-  searchOpen.value = chrome.searchOpen;
-  void nextTick(() => focusFirst(findPanel.value));
+  dialogChrome.value?.openFind();
 }
 
 function openSearch() {
   captureRestoreFocus();
   dismissPopoverForPanel();
-  const chrome = openSearchChrome();
-  findOpen.value = chrome.findOpen;
-  searchOpen.value = chrome.searchOpen;
-  void nextTick(() => {
-    window.document.getElementById("map-search-input")?.focus();
-  });
+  dialogChrome.value?.openSearch();
 }
 
 function closePanels() {
+  dialogChrome.value?.closePanels();
   const chrome = closeChromePanels({
     findOpen: findOpen.value,
     searchOpen: searchOpen.value,
@@ -888,12 +877,6 @@ watch(panel, (value) => {
 
 watch(quality, (value) => view?.setQuality(value));
 watch([document, floorId, selectedPlaceId, viewMode], () => drawMap2d());
-
-watch(popover, (next) => {
-  if (next) {
-    void nextTick(() => focusFirst(popoverPanel.value));
-  }
-});
 
 onMounted(async () => {
   window.addEventListener("keydown", onKeydown);
@@ -1044,78 +1027,46 @@ onBeforeUnmount(() => {
         @wheel.prevent="onMap2dWheel"
       />
 
-      <aside
-        v-if="findOpen"
-        ref="findPanel"
-        class="side-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Find a place"
-        tabindex="-1"
+      <DialogChrome
+        ref="dialogChrome"
+        v-model:find-open="findOpen"
+        v-model:search-open="searchOpen"
+        v-model:search-query="searchQuery"
+        :popover-open="!!popover"
+        @dismiss-popover="dismissPopoverForPanel"
+        @close-popover="clearSelection"
       >
-        <header>
-          <h2 id="find-title">Find a place</h2>
-          <button type="button" class="ghost" aria-label="Close find" @click="closePanels">
-            ×
-          </button>
-        </header>
-        <div class="category-list">
-          <section v-for="category in categories" :key="category.id">
-            <button
-              type="button"
-              class="category-row"
-              :aria-expanded="expandedCategory === category.id"
-              @click="toggleCategory(category)"
-            >
-              <span>{{ category.label }}</span>
-              <span>{{ category.count }}</span>
-            </button>
-            <div v-if="expandedCategory === category.id" class="category-places">
-              <div v-for="group in category.byFloor" :key="group.floorId">
-                <p class="level-label">LEVEL {{ group.floorLevel }}</p>
-                <button
-                  v-for="place in group.places"
-                  :key="place.id"
-                  type="button"
-                  class="place-row"
-                  @click="selectPlace(place)"
-                >
-                  <span>{{ iconGlyph(place.icon) }}</span>
-                  {{ place.name }}
-                </button>
+        <template #find>
+          <div class="category-list">
+            <section v-for="category in categories" :key="category.id">
+              <button
+                type="button"
+                class="category-row"
+                :aria-expanded="expandedCategory === category.id"
+                @click="toggleCategory(category)"
+              >
+                <span>{{ category.label }}</span>
+                <span>{{ category.count }}</span>
+              </button>
+              <div v-if="expandedCategory === category.id" class="category-places">
+                <div v-for="group in category.byFloor" :key="group.floorId">
+                  <p class="level-label">LEVEL {{ group.floorLevel }}</p>
+                  <button
+                    v-for="place in group.places"
+                    :key="place.id"
+                    type="button"
+                    class="place-row"
+                    @click="selectPlace(place)"
+                  >
+                    <span>{{ iconGlyph(place.icon) }}</span>
+                    {{ place.name }}
+                  </button>
+                </div>
               </div>
-            </div>
-          </section>
-        </div>
-      </aside>
-
-      <aside
-        v-if="searchOpen"
-        ref="searchPanel"
-        class="side-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Search the map"
-        tabindex="-1"
-      >
-        <header>
-          <h2 id="search-title">Search the map</h2>
-          <button type="button" class="ghost" aria-label="Close search" @click="closePanels">
-            ×
-          </button>
-        </header>
-        <label class="search-field">
-          <span class="sr-only">Rooms, food, floors</span>
-          <input
-            id="map-search-input"
-            v-model="searchQuery"
-            type="search"
-            role="searchbox"
-            placeholder="Rooms, food, floors…"
-            aria-controls="search-results"
-          />
-        </label>
-        <div id="search-results" role="listbox" aria-label="Search results">
+            </section>
+          </div>
+        </template>
+        <template #search>
           <button
             v-for="place in searchResults"
             :key="place.id"
@@ -1130,75 +1081,44 @@ onBeforeUnmount(() => {
               <small>L{{ place.floorLevel }} · {{ place.categoryLabel }}</small>
             </span>
           </button>
-        </div>
-      </aside>
-
-      <article
-        v-if="popover"
-        ref="popoverPanel"
-        class="place-popover"
-        role="dialog"
-        aria-modal="true"
-        :aria-label="popover.name"
-        tabindex="-1"
-      >
-        <button type="button" class="ghost close" aria-label="Close" @click="clearSelection">
-          ×
-        </button>
-        <div class="popover-body">
-          <div class="popover-icon" aria-hidden="true">{{ iconGlyph(popover.icon) }}</div>
-          <div>
-            <h2>{{ panel?.title || popover.name }}</h2>
-            <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
-            <p v-if="panel?.body || popover.blurb">{{ panel?.body || popover.blurb }}</p>
-            <p v-if="live" class="live">{{ live }}</p>
-            <div v-if="panel?.links?.length || popover.links.length" class="link-row">
-              <a
-                v-for="link in panel?.links?.length ? panel.links : popover.links"
-                :key="link.href"
-                :href="link.href"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ link.label }}
-              </a>
+        </template>
+        <template #popover>
+          <div v-if="popover" class="popover-body">
+            <div class="popover-icon" aria-hidden="true">{{ iconGlyph(popover.icon) }}</div>
+            <div>
+              <h2>{{ panel?.title || popover.name }}</h2>
+              <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
+              <p v-if="panel?.body || popover.blurb">{{ panel?.body || popover.blurb }}</p>
+              <p v-if="live" class="live">{{ live }}</p>
+              <div v-if="panel?.links?.length || popover.links.length" class="link-row">
+                <a
+                  v-for="link in panel?.links?.length ? panel.links : popover.links"
+                  :key="link.href"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ link.label }}
+                </a>
+              </div>
+              <ul v-if="panel?.items?.length" class="content-items">
+                <li v-for="item in panel.items" :key="item.name">
+                  <img
+                    v-if="itemImageSrc(item.image)"
+                    :src="itemImageSrc(item.image) ?? undefined"
+                    :alt="item.name"
+                    class="content-item-image"
+                  />
+                  <a v-if="item.href" :href="item.href">{{ item.name }}</a>
+                  <template v-else>{{ item.name }}</template>
+                  <span v-if="item.price"> — {{ item.price }}</span>
+                  <span v-else-if="item.detail"> — {{ item.detail }}</span>
+                </li>
+              </ul>
             </div>
-            <ul v-if="panel?.items?.length" class="content-items">
-              <li v-for="item in panel.items" :key="item.name">
-                <img
-                  v-if="itemImageSrc(item.image)"
-                  :src="itemImageSrc(item.image) ?? undefined"
-                  :alt="item.name"
-                  class="content-item-image"
-                />
-                <a v-if="item.href" :href="item.href">{{ item.name }}</a>
-                <template v-else>{{ item.name }}</template>
-                <span v-if="item.price"> — {{ item.price }}</span>
-                <span v-else-if="item.detail"> — {{ item.detail }}</span>
-              </li>
-            </ul>
           </div>
-        </div>
-      </article>
-
-      <div class="chrome-left">
-        <button
-          type="button"
-          data-map-chrome="find"
-          :aria-pressed="findOpen"
-          @click="findOpen ? closePanels() : openFind()"
-        >
-          Find
-        </button>
-        <button
-          type="button"
-          data-map-chrome="search"
-          :aria-pressed="searchOpen"
-          @click="searchOpen ? closePanels() : openSearch()"
-        >
-          Search
-        </button>
-      </div>
+        </template>
+      </DialogChrome>
 
       <div class="chrome-right" role="radiogroup" aria-label="Floor filter">
         <button

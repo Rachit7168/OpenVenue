@@ -16,6 +16,7 @@ export {
   floorsForChrome,
   mapPlaces,
   mergePlaceDetails,
+  placesForFloorFilter,
   safeExternalHref,
   searchPlaces,
   zoneMapColor,

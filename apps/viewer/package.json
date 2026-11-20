@@ -18,6 +18,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.5.1",
+    "jsdom": "^27.4.0",
     "typescript": "catalog:",
     "vite": "^7.1.12",
     "vitest": "catalog:"
