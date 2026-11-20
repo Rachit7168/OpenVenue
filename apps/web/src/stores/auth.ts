@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { apiJson, backendAuthEnabled, ensureCsrf } from "../api/client";
+import { ApiError, apiJson, backendAuthEnabled, ensureCsrf } from "../api/client";
 
 export interface UserProfile {
   id: string;
@@ -54,6 +54,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoading = ref(false);
   const error = ref("");
   const backendReady = ref(false);
+  let sessionEpoch = 0;
 
   const isAuthenticated = computed(() => user.value !== null);
   const isGuest = computed(() => Boolean(user.value?.isGuest));
@@ -84,19 +85,35 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function refreshSession(): Promise<void> {
+    const epoch = ++sessionEpoch;
     if (!backendAuthEnabled()) {
       hydrateFromStorage();
-      backendReady.value = true;
+      if (epoch === sessionEpoch) {
+        backendReady.value = true;
+      }
       return;
     }
     try {
       await ensureCsrf();
       const profile = await apiJson<ApiProfile>("/auth/me/", { method: "GET" });
+      if (epoch !== sessionEpoch) {
+        return;
+      }
       persist(fromApi(profile));
-    } catch {
-      user.value = null;
+    } catch (caught) {
+      if (epoch !== sessionEpoch) {
+        return;
+      }
+      const unauthorized = caught instanceof ApiError && (caught.status === 401 || caught.status === 403);
+      if (unauthorized) {
+        persist(null);
+      } else if (!user.value) {
+        hydrateFromStorage();
+      }
     } finally {
-      backendReady.value = true;
+      if (epoch === sessionEpoch) {
+        backendReady.value = true;
+      }
     }
   }
 
@@ -126,12 +143,15 @@ export const useAuthStore = defineStore("auth", () => {
 
     if (backendAuthEnabled()) {
       try {
+        const epoch = ++sessionEpoch;
         const profile = await apiJson<ApiProfile>("/auth/login/", {
           method: "POST",
           body: JSON.stringify({ email, password: credentials.password }),
         });
         const mapped = fromApi(profile);
-        persist(mapped);
+        if (epoch === sessionEpoch) {
+          persist(mapped);
+        }
         isLoading.value = false;
         return mapped;
       } catch (caught) {
@@ -189,16 +209,21 @@ export const useAuthStore = defineStore("auth", () => {
 
     if (backendAuthEnabled()) {
       try {
+        const epoch = ++sessionEpoch;
         const profile = await apiJson<ApiProfile>("/auth/register/", {
           method: "POST",
           body: JSON.stringify({
             name,
             email,
             password: credentials.password,
+            role: credentials.role || "Venue Designer",
+            organization: credentials.organization || "",
           }),
         });
         const mapped = fromApi(profile);
-        persist(mapped);
+        if (epoch === sessionEpoch) {
+          persist(mapped);
+        }
         isLoading.value = false;
         return mapped;
       } catch (caught) {
@@ -224,6 +249,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   function continueAsGuest(): UserProfile {
     error.value = "";
+    sessionEpoch += 1;
     const profile: UserProfile = {
       id: `guest_${Date.now().toString(36)}`,
       email: "guest@openvenue.local",
@@ -286,6 +312,8 @@ export const useAuthStore = defineStore("auth", () => {
         body: JSON.stringify({
           name: updates.name,
           email: updates.email,
+          role: updates.role,
+          organization: updates.organization,
         }),
       });
       const mapped = fromApi(profile);
@@ -302,12 +330,9 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function logout(): Promise<void> {
     if (backendAuthEnabled() && user.value && !user.value.isGuest) {
-      try {
-        await apiJson("/auth/logout/", { method: "POST" });
-      } catch {
-        // Clear local session even when the network call fails.
-      }
+      await apiJson("/auth/logout/", { method: "POST" });
     }
+    sessionEpoch += 1;
     persist(null);
     error.value = "";
   }
