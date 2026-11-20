@@ -26,7 +26,7 @@ import {
 export const useProjectLibrary = defineStore("projects", () => {
   const projects = ref<VenueDocument[]>(readProjects(localStorage));
   const error = ref("");
-  const ready = ref(true);
+  const ready = ref(false);
   const saveState = ref("");
   let database: VenueDatabase | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
@@ -40,6 +40,7 @@ export const useProjectLibrary = defineStore("projects", () => {
 
   async function hydrate() {
     const epochAtStart = epoch;
+    const localCopy = readProjects(localStorage);
     try {
       const store = await db();
       const stored = await store.list();
@@ -47,12 +48,16 @@ export const useProjectLibrary = defineStore("projects", () => {
         return;
       }
       if (stored.length === 0) {
-        for (const item of projects.value) {
+        for (const item of localCopy) {
           await store.put(item);
+        }
+        if (epoch === epochAtStart) {
+          projects.value = localCopy;
+          error.value = "";
         }
         return;
       }
-      const byId = new Map(projects.value.map((item) => [item.project.id, item]));
+      const byId = new Map(localCopy.map((item) => [item.project.id, item]));
       let restored = false;
       for (const item of stored) {
         const snapshot = newerDocument(item, await store.latestSnapshot(item.project.id));
@@ -68,11 +73,15 @@ export const useProjectLibrary = defineStore("projects", () => {
       }
       if (epoch === epochAtStart) {
         projects.value = [...byId.values()];
+        error.value = "";
         saveState.value = restored ? "restored" : saveState.value;
       }
     } catch {
-      projects.value = readProjects(localStorage);
-      error.value = "Could not open the saved venues. Showing the browser copy.";
+      projects.value = localCopy;
+      // Keep working from localStorage without a blocking red banner when the
+      // browser copy is already available; surface only if there is nothing else.
+      error.value =
+        localCopy.length === 0 ? "Could not open the saved venues in this browser." : "";
     } finally {
       ready.value = true;
     }

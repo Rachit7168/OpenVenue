@@ -4,6 +4,7 @@ import {
   createMemoryDatabase,
   newerDocument,
   openVenueDatabase,
+  plainDocument,
   SNAPSHOT_LIMIT,
 } from "./persistence";
 
@@ -36,5 +37,19 @@ describe("venue persistence", () => {
     expect((await database.latestSnapshot(document.project.id))?.project.name).toBe("Stored hall");
     await database.remove(document.project.id);
     expect(await database.latestSnapshot(document.project.id)).toBeNull();
+  });
+
+  it("stores a plain clone so reactive wrappers cannot break IndexedDB", async () => {
+    const document = createEmptyVenue("Proxy hall");
+    const wrapped = new Proxy(document, {
+      get(target, property, receiver) {
+        return Reflect.get(target, property, receiver);
+      },
+    });
+    const plain = plainDocument(wrapped as typeof document);
+    expect(plain.project.name).toBe("Proxy hall");
+    const database = createMemoryDatabase();
+    await database.put(wrapped as typeof document);
+    expect((await database.list())[0]?.project.name).toBe("Proxy hall");
   });
 });

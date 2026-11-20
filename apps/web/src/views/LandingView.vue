@@ -176,11 +176,16 @@ const blueprints = [
             <img
               :src="hallStill"
               alt="Plan, 3D hall, and walk toward stage"
-              class="max-h-[28rem] w-full object-cover"
+              class="max-h-[28rem] w-full object-cover opacity-90"
             />
             <div
-              class="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-4 sm:p-5"
-              style="background: linear-gradient(transparent, rgba(5, 10, 13, 0.9))"
+              class="absolute inset-x-3 bottom-3 flex flex-wrap items-center justify-between gap-3 border p-4 sm:inset-x-4 sm:bottom-4"
+              style="
+                border-color: rgba(237, 244, 246, 0.14);
+                border-radius: 0.9rem;
+                background: rgba(5, 10, 13, 0.88);
+                backdrop-filter: blur(10px);
+              "
             >
               <div class="max-w-xl text-left text-[#edf4f6]">
                 <p class="text-sm font-semibold">
@@ -193,7 +198,7 @@ const blueprints = [
                   >
                   <span v-else>Multi-level Cutaway: Isolated Floor Plates</span>
                 </p>
-                <p class="mt-1 text-xs" style="color: rgba(237, 244, 246, 0.72)">
+                <p class="mt-1 text-sm" style="color: rgba(237, 244, 246, 0.82)">
                   <span v-if="activeTab === 'plan'"
                     >Draw walls, rooms, doors and furniture with automated dimension overlays.</span
                   >
@@ -208,7 +213,7 @@ const blueprints = [
               </div>
               <button
                 type="button"
-                class="btn btn-primary min-h-9 px-3 text-xs"
+                class="btn btn-primary min-h-10 px-4 text-xs"
                 @click="launchConferenceHallDemo"
               >
                 Open This Hall
