@@ -39,9 +39,14 @@ async function handleSaveProfile() {
 }
 
 async function handleSignOut() {
-  await auth.logout();
-  toast.info("Signed out", "You have been signed out.");
-  void router.push("/");
+  try {
+    await auth.logout();
+    toast.info("Signed out", "You have been signed out.");
+    void router.push("/");
+  } catch (caught) {
+    const message = caught instanceof Error ? caught.message : "Could not sign out.";
+    toast.error("Sign out failed", message);
+  }
 }
 
 function exportAllBackup() {

@@ -28,8 +28,25 @@ export async function ensureCsrf(): Promise<void> {
   if (!apiBase()) {
     return;
   }
-  csrfReady ??= fetch(`${apiBase()}/auth/csrf/`, { credentials: "include" }).then(() => undefined);
+  if (!csrfReady) {
+    csrfReady = fetch(`${apiBase()}/auth/csrf/`, { credentials: "include" })
+      .then(() => undefined)
+      .catch((error) => {
+        csrfReady = null;
+        throw error;
+      });
+  }
   await csrfReady;
+}
+
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
 }
 
 export async function apiJson<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -58,7 +75,7 @@ export async function apiJson<T>(path: string, init: RequestInit = {}): Promise<
       payload && typeof payload === "object" && "detail" in payload
         ? String((payload as { detail: unknown }).detail)
         : `Request failed (${response.status}).`;
-    throw new Error(detail);
+    throw new ApiError(detail, response.status);
   }
   return payload as T;
 }

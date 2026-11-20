@@ -32,6 +32,7 @@ export const useProjectLibrary = defineStore("projects", () => {
   let timer: ReturnType<typeof setTimeout> | null = null;
   let pending: VenueDocument[] | null = null;
   let epoch = 0;
+  let flushChain: Promise<void> = Promise.resolve();
 
   async function db(): Promise<VenueDatabase> {
     database ??= await openVenueDatabase();
@@ -120,36 +121,40 @@ export const useProjectLibrary = defineStore("projects", () => {
       clearTimeout(timer);
       timer = null;
     }
-    const batch = pending;
-    pending = null;
-    if (!batch) {
-      return;
-    }
-    saveState.value = "saving";
-    try {
-      const store = await db();
-      const ids = new Set(batch.map((item) => item.project.id));
-      for (const existing of await store.list()) {
-        if (!ids.has(existing.project.id)) {
-          await store.remove(existing.project.id);
-        }
+    const run = async () => {
+      const batch = pending;
+      pending = null;
+      if (!batch) {
+        return;
       }
-      for (const item of batch) {
-        const checked = validateVenue(item);
-        if (!checked.valid) {
-          saveState.value = "error";
-          error.value = checked.issues[0] ?? "This venue could not be saved.";
-          return;
+      saveState.value = "saving";
+      try {
+        const store = await db();
+        const ids = new Set(batch.map((item) => item.project.id));
+        for (const existing of await store.list()) {
+          if (!ids.has(existing.project.id)) {
+            await store.remove(existing.project.id);
+          }
         }
-        const document = checked.document;
-        await store.put(document);
-        await store.addSnapshot(document);
+        for (const item of batch) {
+          const checked = validateVenue(item);
+          if (!checked.valid) {
+            saveState.value = "error";
+            error.value = checked.issues[0] ?? "This venue could not be saved.";
+            return;
+          }
+          const document = checked.document;
+          await store.put(document);
+          await store.addSnapshot(document);
+        }
+        saveState.value = "saved";
+      } catch {
+        saveState.value = "error";
+        error.value = "Could not save projects in this browser.";
       }
-      saveState.value = "saved";
-    } catch {
-      saveState.value = "error";
-      error.value = "Could not save projects in this browser.";
-    }
+    };
+    flushChain = flushChain.then(run, run);
+    await flushChain;
   }
 
   if (typeof window !== "undefined") {
