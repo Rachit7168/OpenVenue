@@ -1,0 +1,11 @@
+{
+  "title": "Food Court",
+  "kind": "menu",
+  "body": "Coffee, lunch, and snacks.",
+  "icon": "food",
+  "items": [
+    { "name": "Filter coffee", "price": "3" },
+    { "name": "Lunch bowl", "price": "12" }
+  ],
+  "links": [{ "label": "Full menu", "href": "https://example.com/menu", "kind": "website" }]
+}

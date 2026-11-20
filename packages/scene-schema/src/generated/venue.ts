@@ -113,6 +113,10 @@ export interface Floor {
   walls: Wall[];
   objects: SceneObject[];
   zones: Zone[];
+  /**
+   * Entrance arrows, stair cues, and other map-only circulation markers for this floor.
+   */
+  mapMarkers?: MapMarker[];
   [k: string]: unknown;
 }
 export interface Room {
@@ -197,14 +201,58 @@ export interface BoxDimensions {
   [k: string]: unknown;
 }
 /**
- * Named area such as a food court or sponsor booth. The viewer raycasts this boundary and opens the interaction overlay. The menu or booth copy is not stored here.
+ * Named area such as a food court or sponsor booth. The viewer raycasts this boundary and opens the interaction overlay. Long menu or booth copy stays in contentRef files; short map blurb and links may live on the zone for the popover.
  */
 export interface Zone {
   id: string;
   type: "zone";
   name: string;
   boundary: Polygon;
+  /**
+   * Find-panel taxonomy key, for example stages, meeting-rooms, food-drink, supporters.
+   */
+  category?: string;
+  /**
+   * Map icon id such as stage, food, booth, game, laptop, washroom, entrance.
+   */
+  icon?: string;
+  /**
+   * CSS color for map fills. Prefer this over the legacy color field.
+   */
+  mapColor?: string;
+  /**
+   * Legacy map fill color. Prefer mapColor.
+   */
+  color?: string;
+  /**
+   * Short map popover description without loading a content file.
+   */
+  blurb?: string;
+  links?: MapLink[];
   interaction?: Interaction;
+  [k: string]: unknown;
+}
+/**
+ * Outbound link shown on the map popover (website, social, schedule).
+ */
+export interface MapLink {
+  label?: string;
+  href: string;
+  kind?: "website" | "twitter" | "linkedin" | "schedule" | "other";
+  [k: string]: unknown;
+}
+/**
+ * Circulation cue drawn on the visitor map (entrance arrow, stair, exit).
+ */
+export interface MapMarker {
+  id: string;
+  kind: "entrance" | "arrow" | "stair" | "elevator" | "exit";
+  position: PlanPoint;
+  /**
+   * Yaw around +Y in radians. For arrows, 0 points toward +Z.
+   */
+  rotationY?: number;
+  label?: string;
   [k: string]: unknown;
 }
 export interface SpawnPoint {

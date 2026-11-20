@@ -11,6 +11,8 @@ export interface VisitorContent {
   sessions?: { name: string; status: string; queueMinutes?: number }[];
   audio?: string;
   href?: string;
+  icon?: string;
+  links?: { label: string; href: string; kind?: string }[];
 }
 
 export interface DirectoryEntry {
@@ -20,6 +22,9 @@ export interface DirectoryEntry {
   x: number;
   z: number;
   contentRef?: string;
+  category?: string;
+  icon?: string;
+  blurb?: string;
 }
 
 export function visitorSpawn(document: VenueDocument): {
@@ -65,6 +70,9 @@ export function directory(document: VenueDocument): DirectoryEntry[] {
         x: centre.x,
         z: centre.z,
         contentRef: zone.interaction?.contentRef,
+        category: typeof zone.category === "string" ? zone.category : undefined,
+        icon: typeof zone.icon === "string" ? zone.icon : undefined,
+        blurb: typeof zone.blurb === "string" ? zone.blurb : undefined,
       };
     }),
   );
@@ -134,6 +142,21 @@ export function parseContent(value: unknown): VisitorContent {
         ];
       })
     : undefined;
+  const links = Array.isArray(record.links)
+    ? record.links.flatMap((item) => {
+        if (!item || typeof item !== "object" || typeof (item as { href?: unknown }).href !== "string") {
+          return [];
+        }
+        const entry = item as { href: string; label?: unknown; kind?: unknown };
+        return [
+          {
+            href: entry.href,
+            label: typeof entry.label === "string" && entry.label.trim() ? entry.label : "Link",
+            kind: typeof entry.kind === "string" ? entry.kind : undefined,
+          },
+        ];
+      })
+    : undefined;
   return {
     title: typeof record.title === "string" ? record.title : "Details",
     kind,
@@ -142,6 +165,8 @@ export function parseContent(value: unknown): VisitorContent {
     sessions,
     audio: typeof record.audio === "string" ? record.audio : undefined,
     href: typeof record.href === "string" ? record.href : undefined,
+    icon: typeof record.icon === "string" ? record.icon : undefined,
+    links,
   };
 }
 

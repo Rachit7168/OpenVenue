@@ -66,6 +66,21 @@
         a <code>contentRef</code> outside this file, so changing a menu does not require a venue
         migration.
       </p>
+      <p>
+        Map metadata on a zone (all optional): <code>category</code> (Find taxonomy),
+        <code>icon</code>, <code>mapColor</code> (preferred over legacy <code>color</code>),
+        <code>blurb</code>, and <code>links</code>. Floors may list <code>mapMarkers</code>
+        (<code>entrance</code>, <code>arrow</code>, <code>stair</code>, <code>elevator</code>,
+        <code>exit</code>) for circulation cues on the visitor map.
+      </p>
+      <h2>Visitor map</h2>
+      <p>
+        The read-only viewer (<code>apps/viewer</code>) is map-first: 2D and 3D share Find, Search,
+        floor filters, and place popovers. Open
+        <code>examples/map-demo.venue.json</code> in the viewer, or load it with
+        <code>?url=</code>. Deep links support <code>view=2d|3d|walk</code>, <code>floor</code>,
+        and <code>place</code>.
+      </p>
       <h2>What this version does not edit</h2>
       <p>
         Map can show every floor. The plan tools and the stairs still use the ground floor. Spawn

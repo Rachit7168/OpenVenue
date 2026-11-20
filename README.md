@@ -94,7 +94,7 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 | ----------------------- | ------------------------------------------------------------- |
 | `apps/web`              | Vue 3 editor shell                                            |
 | `apps/docs`             | Getting started, schema, assets, changelog                    |
-| `apps/viewer`           | Read-only visitor app (`pnpm --filter @openvenue/viewer dev`) |
+| `apps/viewer`           | Map-first visitor app (2D/3D Find/Search); `pnpm --filter @openvenue/viewer dev` then open `?url=/examples/map-demo.venue.json` |
 | `apps/api`              | Optional Django API                                           |
 | `packages/scene-schema` | `venue.json` schema, types, validator                         |
 | `packages/geometry`     | Plan math, snapping, walls, and rooms                         |

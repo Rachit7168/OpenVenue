@@ -17,6 +17,30 @@ import { useVenueStore } from "../stores/venue";
 const store = useVenueStore();
 
 const interactions = ["none", "info-panel", "link", "menu", "session-list"] as const;
+const mapCategories = [
+  "stages",
+  "meeting-rooms",
+  "community",
+  "supporters",
+  "food-drink",
+  "washrooms",
+  "cowork",
+  "check-in",
+  "fun-rest",
+  "other",
+] as const;
+const mapIcons = [
+  "stage",
+  "food",
+  "booth",
+  "game",
+  "laptop",
+  "washroom",
+  "entrance",
+  "music",
+  "tent",
+  "other",
+] as const;
 
 const floors = computed(() => store.document.venue.floors);
 
@@ -199,7 +223,32 @@ function commitColor(event: Event) {
   if (!current) {
     return;
   }
-  commitZone({ ...current, color: text(event) });
+  const mapColor = text(event);
+  commitZone({ ...current, mapColor, color: mapColor });
+}
+
+function commitCategory(event: Event) {
+  const current = zone.value;
+  if (!current) {
+    return;
+  }
+  commitZone({ ...current, category: text(event) });
+}
+
+function commitIcon(event: Event) {
+  const current = zone.value;
+  if (!current) {
+    return;
+  }
+  commitZone({ ...current, icon: text(event) });
+}
+
+function commitBlurb(event: Event) {
+  const current = zone.value;
+  if (!current) {
+    return;
+  }
+  commitZone({ ...current, blurb: text(event).slice(0, 500) });
 }
 
 function commitFlag(flag: "locked" | "visible", event: Event) {
@@ -394,6 +443,35 @@ function distribute() {
 
       <template v-if="zone">
         <label class="block text-xs text-zinc-300">
+          Map category
+          <select
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            :value="typeof zone.category === 'string' ? zone.category : 'other'"
+            @change="commitCategory"
+          >
+            <option v-for="kind in mapCategories" :key="kind" :value="kind">{{ kind }}</option>
+          </select>
+        </label>
+        <label class="block text-xs text-zinc-300">
+          Map icon
+          <select
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            :value="typeof zone.icon === 'string' ? zone.icon : 'other'"
+            @change="commitIcon"
+          >
+            <option v-for="kind in mapIcons" :key="kind" :value="kind">{{ kind }}</option>
+          </select>
+        </label>
+        <label class="block text-xs text-zinc-300">
+          Map blurb
+          <textarea
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            rows="3"
+            :value="typeof zone.blurb === 'string' ? zone.blurb : ''"
+            @change="commitBlurb"
+          />
+        </label>
+        <label class="block text-xs text-zinc-300">
           Interaction
           <select
             class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
@@ -415,11 +493,17 @@ function distribute() {
           />
         </label>
         <label class="block text-xs text-zinc-300">
-          Colour
+          Map colour
           <input
             class="mt-1 h-8 w-full bg-transparent"
             type="color"
-            :value="typeof zone.color === 'string' ? zone.color : '#6d28d9'"
+            :value="
+              typeof zone.mapColor === 'string'
+                ? zone.mapColor
+                : typeof zone.color === 'string'
+                  ? zone.color
+                  : '#6d28d9'
+            "
             @change="commitColor"
           />
         </label>

@@ -487,14 +487,70 @@ function addFloor(
     group.add(mesh);
   }
   addChairs(group, chairs, map ? mapFurnitureMaterial("chair") : materialPreset("wood"));
-  if (!map && typeof document !== "undefined") {
-    for (const zone of floor.zones) {
-      if (!shown(zone) || zone.boundary.length < 1) {
+  for (const zone of floor.zones) {
+    if (!shown(zone) || zone.boundary.length < 3) {
+      continue;
+    }
+    const x = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
+    const z = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
+    if (map) {
+      const shape = new THREE.Shape();
+      zone.boundary.forEach((point, pointIndex) => {
+        const px = point.x;
+        const py = -point.z;
+        if (pointIndex === 0) {
+          shape.moveTo(px, py);
+        } else {
+          shape.lineTo(px, py);
+        }
+      });
+      const fill =
+        (typeof zone.mapColor === "string" && zone.mapColor) ||
+        (typeof zone.color === "string" && zone.color) ||
+        "#93c5fd";
+      const slab = new THREE.Mesh(
+        new THREE.ExtrudeGeometry(shape, { depth: MAP_SLAB_DEPTH * 0.55, bevelEnabled: false }),
+        new THREE.MeshStandardMaterial({
+          color: fill,
+          roughness: 1,
+          transparent: true,
+          opacity: 0.92,
+        }),
+      );
+      slab.rotation.x = -Math.PI / 2;
+      slab.position.y = MAP_SLAB_DEPTH * 0.15;
+      slab.userData.entityId = zone.id;
+      slab.userData.mapColor = fill;
+      slab.userData.ownMaterial = true;
+      group.add(slab);
+      const pin = new THREE.Mesh(
+        new THREE.SphereGeometry(0.28, 12, 10),
+        new THREE.MeshStandardMaterial({ color: "#0f172a", roughness: 0.6 }),
+      );
+      pin.position.set(x, MAP_SLAB_DEPTH + 0.45, z);
+      pin.userData.entityId = zone.id;
+      pin.userData.ownMaterial = true;
+      group.add(pin);
+    } else if (typeof document !== "undefined") {
+      group.add(nameSprite(zone.name, x, 2.2, z));
+    }
+  }
+  if (map) {
+    for (const marker of floor.mapMarkers ?? []) {
+      if (!shown(marker)) {
         continue;
       }
-      const x = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
-      const z = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
-      group.add(nameSprite(zone.name, x, 2.2, z));
+      const color =
+        marker.kind === "exit" ? "#fb7185" : marker.kind === "stair" || marker.kind === "elevator" ? "#34d399" : "#1d4ed8";
+      const arrow = new THREE.Mesh(
+        new THREE.ConeGeometry(0.22, 0.55, 8),
+        new THREE.MeshStandardMaterial({ color, roughness: 0.7 }),
+      );
+      arrow.position.set(marker.position.x, MAP_SLAB_DEPTH + 0.35, marker.position.z);
+      arrow.rotation.x = Math.PI / 2;
+      arrow.rotation.z = -(marker.rotationY ?? 0);
+      arrow.userData.ownMaterial = true;
+      group.add(arrow);
     }
   }
 

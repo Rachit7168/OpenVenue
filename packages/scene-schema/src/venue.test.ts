@@ -39,6 +39,10 @@ describe("venue schema", () => {
     const zone = firstFloor(result.document).zones[0];
     expect(zone?.name).toBe("Food Court");
     expect(zone?.interaction?.contentRef).toBe("content/food-court.json");
+    expect(zone?.category).toBe("food-drink");
+    expect(zone?.icon).toBe("food");
+    expect(zone?.blurb).toContain("menu");
+    expect(firstFloor(result.document).mapMarkers?.[0]?.kind).toBe("entrance");
     expect(result.document.venue.spawnPoints).toHaveLength(1);
     expect(result.document.venue.navigation?.walkableAreas).toHaveLength(1);
   });

@@ -96,7 +96,11 @@ export function planScene(document: VenueDocument, floorIndex = 0): PlanScene {
       id: zone.id,
       name: zone.name,
       points: polygon,
-      ...(typeof zone.color === "string" ? { color: zone.color } : {}),
+      ...(typeof zone.mapColor === "string"
+        ? { color: zone.mapColor }
+        : typeof zone.color === "string"
+          ? { color: zone.color }
+          : {}),
     });
     points.push(...polygon);
   }

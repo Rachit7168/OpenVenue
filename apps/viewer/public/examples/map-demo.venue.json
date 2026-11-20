@@ -1,0 +1,393 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "id": "a1000000-0000-4000-8000-000000000001",
+    "name": "Map demo campus",
+    "metadata": {
+      "createdAt": "2026-11-20T00:00:00.000Z",
+      "updatedAt": "2026-11-20T00:00:00.000Z",
+      "description": "Multi-floor sample for the Devcon-parity visitor map (Find, Search, 2D/3D).",
+      "generator": "openvenue"
+    }
+  },
+  "coordinateSystem": {
+    "lengthUnit": "metres",
+    "upAxis": "Y",
+    "handedness": "right",
+    "angleUnit": "radians"
+  },
+  "assets": [],
+  "venue": {
+    "id": "a1000000-0000-4000-8000-000000000002",
+    "name": "Map demo campus",
+    "floors": [
+      {
+        "id": "a1000000-0000-4000-8000-000000000010",
+        "name": "Ground floor",
+        "level": 0,
+        "elevation": 0,
+        "height": 4,
+        "rooms": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000011",
+            "name": "Lobby",
+            "boundary": [
+              { "x": 0, "z": 0 },
+              { "x": 24, "z": 0 },
+              { "x": 24, "z": 14 },
+              { "x": 0, "z": 14 }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000012",
+            "start": { "x": 0, "z": 0 },
+            "end": { "x": 24, "z": 0 },
+            "thickness": 0.2,
+            "height": 4,
+            "openings": [
+              {
+                "id": "a1000000-0000-4000-8000-000000000013",
+                "kind": "door",
+                "offset": 10,
+                "width": 2.4,
+                "height": 2.4,
+                "sill": 0
+              }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000014",
+            "start": { "x": 24, "z": 0 },
+            "end": { "x": 24, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000015",
+            "start": { "x": 24, "z": 14 },
+            "end": { "x": 0, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000016",
+            "start": { "x": 0, "z": 14 },
+            "end": { "x": 0, "z": 0 },
+            "thickness": 0.2,
+            "height": 4
+          }
+        ],
+        "objects": [],
+        "zones": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000020",
+            "type": "zone",
+            "name": "Community Led Stage",
+            "category": "stages",
+            "icon": "stage",
+            "mapColor": "#93c5fd",
+            "blurb": "Community talks and lightning sessions.",
+            "boundary": [
+              { "x": 1, "z": 1 },
+              { "x": 8, "z": 1 },
+              { "x": 8, "z": 6 },
+              { "x": 1, "z": 6 }
+            ],
+            "interaction": { "type": "info-panel", "contentRef": "content/community-stage.json" }
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000021",
+            "type": "zone",
+            "name": "Check-in",
+            "category": "check-in",
+            "icon": "entrance",
+            "mapColor": "#67e8f9",
+            "blurb": "Badge pickup and swag.",
+            "boundary": [
+              { "x": 16, "z": 1 },
+              { "x": 23, "z": 1 },
+              { "x": 23, "z": 5 },
+              { "x": 16, "z": 5 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000022",
+            "type": "zone",
+            "name": "Washrooms",
+            "category": "washrooms",
+            "icon": "washroom",
+            "mapColor": "#a5b4fc",
+            "blurb": "Ground-floor washrooms.",
+            "boundary": [
+              { "x": 19, "z": 9 },
+              { "x": 23, "z": 9 },
+              { "x": 23, "z": 13 },
+              { "x": 19, "z": 13 }
+            ]
+          }
+        ],
+        "mapMarkers": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000023",
+            "kind": "entrance",
+            "position": { "x": 12, "z": 0.8 },
+            "rotationY": 0,
+            "label": "Main entrance"
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000024",
+            "kind": "stair",
+            "position": { "x": 12, "z": 12 },
+            "rotationY": 0,
+            "label": "Stairs up"
+          }
+        ]
+      },
+      {
+        "id": "a1000000-0000-4000-8000-000000000030",
+        "name": "Level 1",
+        "level": 1,
+        "elevation": 4,
+        "height": 4,
+        "rooms": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000031",
+            "name": "Gallery",
+            "boundary": [
+              { "x": 0, "z": 0 },
+              { "x": 24, "z": 0 },
+              { "x": 24, "z": 14 },
+              { "x": 0, "z": 14 }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000032",
+            "start": { "x": 0, "z": 0 },
+            "end": { "x": 24, "z": 0 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000033",
+            "start": { "x": 24, "z": 0 },
+            "end": { "x": 24, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000034",
+            "start": { "x": 24, "z": 14 },
+            "end": { "x": 0, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000035",
+            "start": { "x": 0, "z": 14 },
+            "end": { "x": 0, "z": 0 },
+            "thickness": 0.2,
+            "height": 4
+          }
+        ],
+        "objects": [],
+        "zones": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000040",
+            "type": "zone",
+            "name": "Lightning Stage",
+            "category": "stages",
+            "icon": "stage",
+            "mapColor": "#93c5fd",
+            "blurb": "Short talks all day.",
+            "boundary": [
+              { "x": 1, "z": 8 },
+              { "x": 9, "z": 8 },
+              { "x": 9, "z": 13 },
+              { "x": 1, "z": 13 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000041",
+            "type": "zone",
+            "name": "Cowork lounge",
+            "category": "cowork",
+            "icon": "laptop",
+            "mapColor": "#fde68a",
+            "blurb": "Quiet tables and power.",
+            "boundary": [
+              { "x": 11, "z": 1 },
+              { "x": 18, "z": 1 },
+              { "x": 18, "z": 6 },
+              { "x": 11, "z": 6 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000042",
+            "type": "zone",
+            "name": "Food Court",
+            "category": "food-drink",
+            "icon": "food",
+            "mapColor": "#86efac",
+            "blurb": "Coffee and lunch service.",
+            "links": [{ "label": "Menu", "href": "https://example.com/menu", "kind": "website" }],
+            "boundary": [
+              { "x": 16, "z": 8 },
+              { "x": 23, "z": 8 },
+              { "x": 23, "z": 13 },
+              { "x": 16, "z": 13 }
+            ],
+            "interaction": { "type": "menu", "contentRef": "content/food-court.json" }
+          }
+        ],
+        "mapMarkers": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000043",
+            "kind": "stair",
+            "position": { "x": 12, "z": 12 },
+            "rotationY": 3.14,
+            "label": "Stairs"
+          }
+        ]
+      },
+      {
+        "id": "a1000000-0000-4000-8000-000000000050",
+        "name": "Level 2",
+        "level": 2,
+        "elevation": 8,
+        "height": 4,
+        "rooms": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000051",
+            "name": "Upper hall",
+            "boundary": [
+              { "x": 0, "z": 0 },
+              { "x": 24, "z": 0 },
+              { "x": 24, "z": 14 },
+              { "x": 0, "z": 14 }
+            ]
+          }
+        ],
+        "walls": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000052",
+            "start": { "x": 0, "z": 0 },
+            "end": { "x": 24, "z": 0 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000053",
+            "start": { "x": 24, "z": 0 },
+            "end": { "x": 24, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000054",
+            "start": { "x": 24, "z": 14 },
+            "end": { "x": 0, "z": 14 },
+            "thickness": 0.2,
+            "height": 4
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000055",
+            "start": { "x": 0, "z": 14 },
+            "end": { "x": 0, "z": 0 },
+            "thickness": 0.2,
+            "height": 4
+          }
+        ],
+        "objects": [],
+        "zones": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000060",
+            "type": "zone",
+            "name": "Jasmine Stage 4",
+            "category": "stages",
+            "icon": "stage",
+            "mapColor": "#93c5fd",
+            "blurb": "Talks and panels.",
+            "boundary": [
+              { "x": 2, "z": 2 },
+              { "x": 10, "z": 2 },
+              { "x": 10, "z": 8 },
+              { "x": 2, "z": 8 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000061",
+            "type": "zone",
+            "name": "Gnosis",
+            "category": "supporters",
+            "icon": "booth",
+            "mapColor": "#fdba74",
+            "blurb": "Core supporter booth.",
+            "links": [
+              { "label": "Website", "href": "https://example.com/gnosis", "kind": "website" },
+              { "label": "X", "href": "https://example.com/x", "kind": "twitter" }
+            ],
+            "boundary": [
+              { "x": 12, "z": 2 },
+              { "x": 16, "z": 2 },
+              { "x": 16, "z": 5 },
+              { "x": 12, "z": 5 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000062",
+            "type": "zone",
+            "name": "Music Stage",
+            "category": "fun-rest",
+            "icon": "music",
+            "mapColor": "#fca5a5",
+            "blurb": "Live music through the day.",
+            "boundary": [
+              { "x": 17, "z": 8 },
+              { "x": 23, "z": 8 },
+              { "x": 23, "z": 13 },
+              { "x": 17, "z": 13 }
+            ]
+          },
+          {
+            "id": "a1000000-0000-4000-8000-000000000063",
+            "type": "zone",
+            "name": "Meeting Room A",
+            "category": "meeting-rooms",
+            "icon": "laptop",
+            "mapColor": "#c4b5fd",
+            "blurb": "Bookable meeting space.",
+            "boundary": [
+              { "x": 1, "z": 10 },
+              { "x": 6, "z": 10 },
+              { "x": 6, "z": 13 },
+              { "x": 1, "z": 13 }
+            ]
+          }
+        ],
+        "mapMarkers": [
+          {
+            "id": "a1000000-0000-4000-8000-000000000064",
+            "kind": "elevator",
+            "position": { "x": 12, "z": 12 },
+            "rotationY": 0,
+            "label": "Lift"
+          }
+        ]
+      }
+    ],
+    "spawnPoints": [
+      {
+        "id": "a1000000-0000-4000-8000-000000000070",
+        "name": "Entrance",
+        "floorId": "a1000000-0000-4000-8000-000000000010",
+        "position": { "x": 12, "y": 0, "z": 1.5 },
+        "rotationY": 0,
+        "role": "visitor"
+      }
+    ]
+  }
+}
