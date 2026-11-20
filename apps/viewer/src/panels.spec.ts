@@ -12,7 +12,7 @@ const closed: MapChromeState = { findOpen: false, searchOpen: false, popoverOpen
 
 describe("map chrome open/close", () => {
   it("opens Find and dismisses Search and popover", () => {
-    expect(openFindChrome({ findOpen: false, searchOpen: true, popoverOpen: true })).toEqual({
+    expect(openFindChrome()).toEqual({
       findOpen: true,
       searchOpen: false,
       popoverOpen: false,
@@ -20,7 +20,7 @@ describe("map chrome open/close", () => {
   });
 
   it("opens Search and dismisses Find and popover", () => {
-    expect(openSearchChrome({ findOpen: true, searchOpen: false, popoverOpen: true })).toEqual({
+    expect(openSearchChrome()).toEqual({
       findOpen: false,
       searchOpen: true,
       popoverOpen: false,

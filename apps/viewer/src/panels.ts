@@ -6,11 +6,11 @@ export interface MapChromeState {
   popoverOpen: boolean;
 }
 
-export function openFindChrome(_state: MapChromeState): MapChromeState {
+export function openFindChrome(): MapChromeState {
   return { findOpen: true, searchOpen: false, popoverOpen: false };
 }
 
-export function openSearchChrome(_state: MapChromeState): MapChromeState {
+export function openSearchChrome(): MapChromeState {
   return { findOpen: false, searchOpen: true, popoverOpen: false };
 }
 

@@ -770,11 +770,7 @@ function dismissPopoverForPanel() {
 function openFind() {
   captureRestoreFocus();
   dismissPopoverForPanel();
-  const chrome = openFindChrome({
-    findOpen: findOpen.value,
-    searchOpen: searchOpen.value,
-    popoverOpen: false,
-  });
+  const chrome = openFindChrome();
   findOpen.value = chrome.findOpen;
   searchOpen.value = chrome.searchOpen;
   void nextTick(() => focusFirst(findPanel.value));
@@ -783,11 +779,7 @@ function openFind() {
 function openSearch() {
   captureRestoreFocus();
   dismissPopoverForPanel();
-  const chrome = openSearchChrome({
-    findOpen: findOpen.value,
-    searchOpen: searchOpen.value,
-    popoverOpen: false,
-  });
+  const chrome = openSearchChrome();
   findOpen.value = chrome.findOpen;
   searchOpen.value = chrome.searchOpen;
   void nextTick(() => {
