@@ -1,6 +1,12 @@
 import { createEmptyVenue, type VenueDocument } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
-import { findCategories, mapPlaces, searchPlaces, zoneMapColor } from "./map.js";
+import {
+  findCategories,
+  floorsForChrome,
+  mapPlaces,
+  searchPlaces,
+  zoneMapColor,
+} from "./map.js";
 
 function demo(): VenueDocument {
   const document = createEmptyVenue("Campus");
@@ -83,5 +89,11 @@ describe("map helpers", () => {
     expect(zoneMapColor(stage)).toBe("#93c5fd");
     const food = document.venue.floors[0]!.zones[1]!;
     expect(zoneMapColor(food)).toBe("#86efac");
+  });
+
+  it("orders floor chrome from top level down and ignores empty search", () => {
+    const document = demo();
+    expect(floorsForChrome(document).map((floor) => floor.label)).toEqual(["L2", "L0"]);
+    expect(searchPlaces(document, "   ")).toEqual([]);
   });
 });

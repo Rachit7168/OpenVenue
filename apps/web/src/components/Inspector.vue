@@ -251,6 +251,44 @@ function commitBlurb(event: Event) {
   commitZone({ ...current, blurb: text(event).slice(0, 500) });
 }
 
+function commitLinks(event: Event) {
+  const current = zone.value;
+  if (!current) {
+    return;
+  }
+  const raw = text(event).trim();
+  if (!raw) {
+    commitZone({ ...current, links: [] });
+    return;
+  }
+  const links = raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const [labelPart, hrefPart] = line.includes("|") ? line.split("|", 2) : ["Link", line];
+      const href = (hrefPart ?? "").trim();
+      const label = (labelPart ?? "Link").trim() || "Link";
+      if (!href) {
+        return [];
+      }
+      return [{ label: label.slice(0, 80), href: href.slice(0, 2000), kind: "website" as const }];
+    });
+  commitZone({ ...current, links });
+}
+
+function linksEditorValue(zoneValue: Zone): string {
+  if (!Array.isArray(zoneValue.links) || zoneValue.links.length === 0) {
+    return "";
+  }
+  return zoneValue.links
+    .map((link) => {
+      const label = typeof link.label === "string" && link.label.trim() ? link.label : "Link";
+      return `${label}|${link.href}`;
+    })
+    .join("\n");
+}
+
 function commitFlag(flag: "locked" | "visible", event: Event) {
   const id = focusId.value;
   if (!id || !(event.target instanceof HTMLInputElement)) {
@@ -469,6 +507,15 @@ function distribute() {
             rows="3"
             :value="typeof zone.blurb === 'string' ? zone.blurb : ''"
             @change="commitBlurb"
+          />
+        </label>
+        <label class="block text-xs text-zinc-300">
+          Map links (one per line: Label|https://…)
+          <textarea
+            class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1"
+            rows="3"
+            :value="linksEditorValue(zone)"
+            @change="commitLinks"
           />
         </label>
         <label class="block text-xs text-zinc-300">

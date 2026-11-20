@@ -32,6 +32,64 @@ function nameSprite(label: string, x: number, y: number, z: number): THREE.Sprit
   sprite.name = `sign:${label}`;
   return sprite;
 }
+
+const MAP_ICON_GLYPH: Record<string, string> = {
+  stage: "✦",
+  food: "☕",
+  booth: "▣",
+  game: "🎮",
+  laptop: "💻",
+  washroom: "WC",
+  entrance: "→",
+  music: "♪",
+  tent: "⛺",
+  other: "•",
+};
+
+function mapIconSprite(icon: string, x: number, y: number, z: number, entityId: string): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext("2d");
+  if (context) {
+    context.fillStyle = "#ffffff";
+    context.beginPath();
+    context.arc(64, 64, 56, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = "#0f172a";
+    context.font = "56px sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(MAP_ICON_GLYPH[icon] ?? MAP_ICON_GLYPH.other!, 64, 68);
+  }
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }),
+  );
+  sprite.position.set(x, y, z);
+  sprite.scale.set(1.1, 1.1, 1);
+  sprite.userData.entityId = entityId;
+  sprite.name = `map-icon:${entityId}`;
+  return sprite;
+}
+
+function zoneMapIcon(zone: { icon?: unknown; category?: unknown }): string {
+  if (typeof zone.icon === "string" && zone.icon.trim()) {
+    return zone.icon.trim();
+  }
+  const category = typeof zone.category === "string" ? zone.category : "other";
+  const defaults: Record<string, string> = {
+    stages: "stage",
+    "meeting-rooms": "laptop",
+    community: "tent",
+    supporters: "booth",
+    "food-drink": "food",
+    washrooms: "washroom",
+    cowork: "laptop",
+    "check-in": "entrance",
+    "fun-rest": "game",
+  };
+  return defaults[category] ?? "other";
+}
 const objectColors: Record<string, string> = {
   table: "#d4b483",
   chair: "#e7e5e4",
@@ -523,14 +581,11 @@ function addFloor(
       slab.userData.mapColor = fill;
       slab.userData.ownMaterial = true;
       group.add(slab);
-      const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(0.28, 12, 10),
-        new THREE.MeshStandardMaterial({ color: "#0f172a", roughness: 0.6 }),
-      );
-      pin.position.set(x, MAP_SLAB_DEPTH + 0.45, z);
-      pin.userData.entityId = zone.id;
-      pin.userData.ownMaterial = true;
-      group.add(pin);
+      if (typeof document !== "undefined") {
+        group.add(
+          mapIconSprite(zoneMapIcon(zone), x, MAP_SLAB_DEPTH + 0.85, z, zone.id),
+        );
+      }
     } else if (typeof document !== "undefined") {
       group.add(nameSprite(zone.name, x, 2.2, z));
     }

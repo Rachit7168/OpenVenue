@@ -545,12 +545,25 @@ onMounted(async () => {
     try {
       view = mountVenueView(element);
       view.setHandlers({
-        onSelect: () => undefined,
+        onSelect: (id) => {
+          const current = document.value;
+          if (!current || !id || viewMode.value === "2d") {
+            return;
+          }
+          const place = mapPlaces(current).find((item) => item.id === id);
+          if (place) {
+            void selectPlace(place);
+          }
+        },
         onTransform: () => undefined,
         onFloor: (id) => {
           if (viewMode.value === "walk") {
             floorId.value = id;
             writeUrl();
+            return;
+          }
+          if (viewMode.value === "3d" && floorId.value === null) {
+            setFloorFilter(id);
           }
         },
       });
@@ -562,20 +575,21 @@ onMounted(async () => {
     }
   }
   const url = new URLSearchParams(window.location.search).get("url");
-  if (url) {
-    const safe = safeVenueUrl(url);
-    if (!safe) {
-      status.value =
-        "That venue link is not allowed. Use a same-origin .json URL, a public /api/v1/public/venues/{id}/ URL, or set VITE_API_ORIGIN for your API host.";
-    } else {
-      status.value = "Loading venue…";
-      try {
-        publicVenue.value = publicVenueIdFromUrl(safe);
-        const response = await fetch(safe);
-        await openDocument(await response.text());
-      } catch {
-        status.value = "The venue link could not be loaded.";
-      }
+  const bootUrl = url ?? "/examples/map-demo.venue.json";
+  const safe = safeVenueUrl(bootUrl);
+  if (!safe) {
+    status.value =
+      "That venue link is not allowed. Use a same-origin .json URL, a public /api/v1/public/venues/{id}/ URL, or set VITE_API_ORIGIN for your API host.";
+  } else {
+    status.value = "Loading venue…";
+    try {
+      publicVenue.value = publicVenueIdFromUrl(safe);
+      const response = await fetch(safe);
+      await openDocument(await response.text());
+    } catch {
+      status.value = url
+        ? "The venue link could not be loaded."
+        : "Open a venue.json file, or add ?url= to this page.";
     }
   }
   ambient = new Audio("/ambience.mp3");
