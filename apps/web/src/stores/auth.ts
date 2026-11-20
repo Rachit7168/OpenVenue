@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { apiJson, backendAuthEnabled, ensureCsrf } from "../api/client";
 
 export interface UserProfile {
   id: string;
@@ -26,17 +27,39 @@ export interface SignupCredentials {
   organization?: string;
 }
 
+interface ApiProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  organization?: string;
+  createdAt: string;
+}
+
 const STORAGE_KEY = "openvenue-auth-user";
+
+function fromApi(profile: ApiProfile): UserProfile {
+  return {
+    id: profile.id,
+    email: profile.email,
+    name: profile.name,
+    role: profile.role,
+    organization: profile.organization,
+    createdAt: profile.createdAt,
+  };
+}
 
 export const useAuthStore = defineStore("auth", () => {
   const user = ref<UserProfile | null>(null);
   const isLoading = ref(false);
   const error = ref("");
+  const backendReady = ref(false);
 
   const isAuthenticated = computed(() => user.value !== null);
   const isGuest = computed(() => Boolean(user.value?.isGuest));
+  const usesBackend = computed(() => backendAuthEnabled());
 
-  function hydrate(): void {
+  function hydrateFromStorage(): void {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -50,13 +73,30 @@ export const useAuthStore = defineStore("auth", () => {
   function persist(profile: UserProfile | null): void {
     user.value = profile;
     try {
-      if (profile) {
+      if (profile && !profile.isGuest) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
       } else {
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch {
       // Ignore localStorage write errors in constrained environments
+    }
+  }
+
+  async function refreshSession(): Promise<void> {
+    if (!backendAuthEnabled()) {
+      hydrateFromStorage();
+      backendReady.value = true;
+      return;
+    }
+    try {
+      await ensureCsrf();
+      const profile = await apiJson<ApiProfile>("/auth/me/", { method: "GET" });
+      persist(fromApi(profile));
+    } catch {
+      user.value = null;
+    } finally {
+      backendReady.value = true;
     }
   }
 
@@ -77,13 +117,30 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error(error.value);
     }
 
-    if (credentials.password.length < 6) {
+    const minLength = backendAuthEnabled() ? 8 : 6;
+    if (credentials.password.length < minLength) {
       isLoading.value = false;
-      error.value = "Password must be at least 6 characters.";
+      error.value = `Password must be at least ${minLength} characters.`;
       throw new Error(error.value);
     }
 
-    // Generate/retrieve user profile (local-first friendly)
+    if (backendAuthEnabled()) {
+      try {
+        const profile = await apiJson<ApiProfile>("/auth/login/", {
+          method: "POST",
+          body: JSON.stringify({ email, password: credentials.password }),
+        });
+        const mapped = fromApi(profile);
+        persist(mapped);
+        isLoading.value = false;
+        return mapped;
+      } catch (caught) {
+        isLoading.value = false;
+        error.value = caught instanceof Error ? caught.message : "Sign-in failed.";
+        throw caught;
+      }
+    }
+
     const rawName = email.split("@")[0] ?? "venue";
     const nameFromEmail = rawName.replace(/[._-]+/g, " ");
     const formattedName = nameFromEmail
@@ -123,10 +180,32 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error(error.value);
     }
 
-    if (!credentials.password || credentials.password.length < 6) {
+    const minLength = backendAuthEnabled() ? 8 : 6;
+    if (!credentials.password || credentials.password.length < minLength) {
       isLoading.value = false;
-      error.value = "Password must be at least 6 characters long.";
+      error.value = `Password must be at least ${minLength} characters long.`;
       throw new Error(error.value);
+    }
+
+    if (backendAuthEnabled()) {
+      try {
+        const profile = await apiJson<ApiProfile>("/auth/register/", {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            email,
+            password: credentials.password,
+          }),
+        });
+        const mapped = fromApi(profile);
+        persist(mapped);
+        isLoading.value = false;
+        return mapped;
+      } catch (caught) {
+        isLoading.value = false;
+        error.value = caught instanceof Error ? caught.message : "Sign-up failed.";
+        throw caught;
+      }
     }
 
     const profile: UserProfile = {
@@ -158,6 +237,10 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function loginWithProvider(provider: "github" | "google"): Promise<UserProfile> {
+    if (backendAuthEnabled()) {
+      error.value = "Social sign-in is not wired to the API yet. Use email and password.";
+      throw new Error(error.value);
+    }
     isLoading.value = true;
     error.value = "";
 
@@ -193,9 +276,21 @@ export const useAuthStore = defineStore("auth", () => {
     return true;
   }
 
-  function updateProfile(updates: Partial<UserProfile>): UserProfile | null {
+  async function updateProfile(updates: Partial<UserProfile>): Promise<UserProfile | null> {
     if (!user.value) {
       return null;
+    }
+    if (backendAuthEnabled() && !user.value.isGuest) {
+      const profile = await apiJson<ApiProfile>("/auth/me/", {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: updates.name,
+          email: updates.email,
+        }),
+      });
+      const mapped = fromApi(profile);
+      persist(mapped);
+      return mapped;
     }
     const updated: UserProfile = {
       ...user.value,
@@ -205,21 +300,29 @@ export const useAuthStore = defineStore("auth", () => {
     return updated;
   }
 
-  function logout(): void {
+  async function logout(): Promise<void> {
+    if (backendAuthEnabled() && user.value && !user.value.isGuest) {
+      try {
+        await apiJson("/auth/logout/", { method: "POST" });
+      } catch {
+        // Clear local session even when the network call fails.
+      }
+    }
     persist(null);
     error.value = "";
   }
 
-  // Hydrate store on initialization
-  hydrate();
+  void refreshSession();
 
   return {
     user,
     isLoading,
     error,
+    backendReady,
     isAuthenticated,
     isGuest,
-    hydrate,
+    usesBackend,
+    hydrate: refreshSession,
     login,
     signup,
     continueAsGuest,

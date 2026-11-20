@@ -6,7 +6,7 @@ export type ThemeMode = "dark" | "light";
 const STORAGE_KEY = "openvenue-theme";
 
 export const useThemeStore = defineStore("theme", () => {
-  const mode = ref<ThemeMode>("dark");
+  const mode = ref<ThemeMode>("light");
 
   function apply(next: ThemeMode) {
     mode.value = next;
@@ -25,7 +25,11 @@ export const useThemeStore = defineStore("theme", () => {
     } catch {
       stored = null;
     }
-    apply(stored === "light" ? "light" : "dark");
+    if (stored === "dark" || stored === "light") {
+      apply(stored);
+      return;
+    }
+    apply("light");
   }
 
   function toggle() {

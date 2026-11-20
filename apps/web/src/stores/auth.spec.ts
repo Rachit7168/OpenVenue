@@ -72,7 +72,7 @@ describe("auth store", () => {
   it("updates user profile information", async () => {
     const auth = useAuthStore();
     await auth.login({ email: "user@studio.com", password: "password123" });
-    auth.updateProfile({ name: "Studio Director", organization: "Metro Venues" });
+    await auth.updateProfile({ name: "Studio Director", organization: "Metro Venues" });
 
     expect(auth.user?.name).toBe("Studio Director");
     expect(auth.user?.organization).toBe("Metro Venues");
@@ -83,7 +83,7 @@ describe("auth store", () => {
     await auth.login({ email: "test@domain.com", password: "password123" });
     expect(auth.isAuthenticated).toBe(true);
 
-    auth.logout();
+    await auth.logout();
     expect(auth.isAuthenticated).toBe(false);
     expect(auth.user).toBeNull();
     expect(localStorage.getItem("openvenue-auth-user")).toBeNull();

@@ -182,6 +182,7 @@ export const useVenueStore = defineStore("venue", () => {
     invalidateLoads();
     try {
       scene.execute(command, options);
+      touch();
       issues.value = [];
       status.value = "Unsaved changes";
     } catch (error) {
@@ -195,11 +196,13 @@ export const useVenueStore = defineStore("venue", () => {
 
   function undo() {
     scene.undo();
+    touch();
     status.value = scene.canRedo ? "Undone" : status.value;
   }
 
   function redo() {
     scene.redo();
+    touch();
     status.value = "Redone";
   }
 

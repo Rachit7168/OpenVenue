@@ -235,78 +235,86 @@ function importFile(event: Event) {
 </script>
 
 <template>
-  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 class="text-2xl font-semibold tracking-tight">Projects</h1>
-        <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Venues stay in this browser. Nothing is uploaded.
-        </p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <button
-          ref="newProjectButton"
-          type="button"
-          data-testid="new-project"
-          class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
-          @click="wizardOpen = !wizardOpen"
-        >
-          New project
-        </button>
-        <button
-          type="button"
-          data-testid="import-project"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-          @click="fileInput?.click()"
-        >
-          Import JSON
-        </button>
-        <button
-          type="button"
-          data-testid="conference-hall"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-          @click="openConferenceHall"
-        >
-          Conference hall
-        </button>
-        <div class="relative inline-block text-left">
+  <main class="page-grid mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <header class="rise-in surface" style="border-radius: 1.15rem; padding: 1.25rem 1.35rem">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 class="section-title">Projects</h1>
+          <p class="mt-1 text-sm" style="color: var(--ink-soft)">
+            Venues stay in this browser. Nothing is uploaded.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button
+            ref="newProjectButton"
+            type="button"
+            data-testid="new-project"
+            class="btn btn-primary min-h-10 px-3"
+            @click="wizardOpen = !wizardOpen"
+          >
+            New project
+          </button>
           <button
             type="button"
-            data-testid="templates-menu-btn"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
-            @click="templatesMenuOpen = !templatesMenuOpen"
+            data-testid="import-project"
+            class="btn btn-secondary min-h-10 px-3"
+            @click="fileInput?.click()"
           >
-            Blueprints ▾
+            Import JSON
           </button>
-          <div
-            v-if="templatesMenuOpen"
-            class="absolute right-0 z-30 mt-1 w-64 origin-top-right rounded-lg border border-zinc-200 bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:border-zinc-800 dark:bg-zinc-900"
+          <button
+            type="button"
+            data-testid="conference-hall"
+            class="btn btn-secondary min-h-10 px-3"
+            @click="openConferenceHall"
           >
+            Conference hall
+          </button>
+          <div class="relative inline-block text-left">
             <button
-              v-for="bp in sampleBlueprints"
-              :key="bp.id"
               type="button"
-              :data-testid="`open-blueprint-${bp.id}`"
-              class="block w-full px-4 py-2.5 text-left text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              @click="
-                templatesMenuOpen = false;
-                openBlueprint(bp.raw);
+              data-testid="templates-menu-btn"
+              class="btn btn-secondary min-h-10 px-3"
+              @click="templatesMenuOpen = !templatesMenuOpen"
+            >
+              Blueprints ▾
+            </button>
+            <div
+              v-if="templatesMenuOpen"
+              class="absolute right-0 z-30 mt-1 w-64 origin-top-right border py-1"
+              style="
+                border-color: var(--line);
+                border-radius: 0.85rem;
+                background: var(--paper-raised);
+                box-shadow: var(--shadow);
               "
             >
-              <div class="font-semibold text-zinc-900 dark:text-zinc-100">{{ bp.name }}</div>
-              <div class="text-[11px] text-zinc-500">{{ bp.desc }}</div>
-            </button>
+              <button
+                v-for="bp in sampleBlueprints"
+                :key="bp.id"
+                type="button"
+                :data-testid="`open-blueprint-${bp.id}`"
+                class="block w-full px-4 py-2.5 text-left text-xs hover:opacity-90"
+                @click="
+                  templatesMenuOpen = false;
+                  openBlueprint(bp.raw);
+                "
+              >
+                <div class="font-semibold">{{ bp.name }}</div>
+                <div class="text-[11px]" style="color: var(--ink-soft)">{{ bp.desc }}</div>
+              </button>
+            </div>
           </div>
+          <input
+            ref="fileInput"
+            class="sr-only"
+            type="file"
+            accept="application/json,.json"
+            @change="importFile"
+          />
         </div>
-        <input
-          ref="fileInput"
-          class="sr-only"
-          type="file"
-          accept="application/json,.json"
-          @change="importFile"
-        />
       </div>
-    </div>
+    </header>
 
     <div v-if="wizardOpen" class="fixed inset-0 z-20 bg-zinc-950/40" @click="wizardOpen = false" />
     <dialog
@@ -414,125 +422,111 @@ function importFile(event: Event) {
       </form>
     </dialog>
 
-    <p
-      v-if="library.error"
-      class="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-100"
-      role="alert"
-    >
+    <p v-if="library.error" class="editor-alert-error mt-5" role="alert">
       {{ library.error }}
+      <button type="button" class="ml-3 underline" @click="library.error = ''">Dismiss</button>
     </p>
 
     <p
       v-if="!library.ready"
-      class="mt-8 text-sm text-zinc-700 dark:text-zinc-300"
+      class="mt-8 text-sm"
+      style="color: var(--ink-soft)"
       data-testid="empty-projects"
     >
       Loading projects…
     </p>
     <div
       v-else-if="cards.length === 0"
-      class="mt-8 rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+      class="mt-8 surface p-8 text-center"
+      style="border-radius: 1.15rem; border-style: dashed"
       data-testid="empty-projects"
     >
-      <p class="font-medium text-zinc-900 dark:text-zinc-100">No projects yet.</p>
-      <p class="mt-1 text-xs text-zinc-500">
-        Create a new blank venue above, or launch any of our pre-furnished blueprints below:
+      <p class="font-display text-lg font-semibold">No projects yet.</p>
+      <p class="mt-1 text-sm" style="color: var(--ink-soft)">
+        Create a blank venue, or launch a furnished blueprint:
       </p>
-      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-left">
+      <div class="mt-6 grid gap-3 text-left sm:grid-cols-2 lg:grid-cols-3">
         <button
           v-for="bp in sampleBlueprints"
           :key="bp.id"
           type="button"
           :data-testid="`empty-blueprint-${bp.id}`"
-          class="group rounded-lg border border-zinc-200 p-4 transition hover:border-teal-600 hover:shadow-sm dark:border-zinc-800 dark:hover:border-teal-400 bg-white dark:bg-zinc-900"
+          class="project-tile p-4 text-left"
           @click="openBlueprint(bp.raw)"
         >
-          <div class="flex items-center justify-between">
-            <h3
-              class="text-sm font-semibold text-zinc-900 group-hover:text-teal-700 dark:text-zinc-100 dark:group-hover:text-teal-300"
-            >
-              {{ bp.name }}
-            </h3>
-            <span class="text-xs text-teal-600 dark:text-teal-400">Launch →</span>
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold">{{ bp.name }}</h3>
+            <span class="text-xs" style="color: var(--accent)">Launch →</span>
           </div>
-          <p class="mt-1 text-xs text-zinc-500">
-            {{ bp.desc }}
-          </p>
+          <p class="mt-1 text-xs" style="color: var(--ink-soft)">{{ bp.desc }}</p>
         </button>
       </div>
     </div>
 
     <ul v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <li
-        v-for="card in cards"
-        :key="card.id"
-        data-testid="project-card"
-        class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-      >
-        <div data-testid="project-thumbnail" class="h-40 overflow-hidden rounded-md">
+      <li v-for="card in cards" :key="card.id" data-testid="project-card" class="project-tile">
+        <div data-testid="project-thumbnail" class="h-44 overflow-hidden">
           <FloorPlan :document="card.document" :interactive="false" />
         </div>
-        <h2 class="mt-3 font-medium">{{ card.name }}</h2>
-        <p class="mt-1 text-xs text-zinc-700 dark:text-zinc-300">
-          {{ card.size }} · {{ card.updatedAt }}
-        </p>
-        <form
-          v-if="renamingId === card.id"
-          class="mt-3 flex gap-2"
-          @submit.prevent="commitRename(card.id)"
-        >
-          <input
-            v-model="renameValue"
-            data-testid="rename-input"
-            maxlength="200"
-            class="focus-ring min-w-0 flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
-          />
-          <button
-            type="submit"
-            class="focus-ring min-h-10 rounded-md px-2 text-sm font-medium text-teal-800 dark:text-teal-300"
+        <div class="flex flex-1 flex-col p-4">
+          <h2 class="font-display text-base font-semibold">{{ card.name }}</h2>
+          <p class="mt-1 text-xs" style="color: var(--ink-soft)">
+            {{ card.size }} · {{ card.updatedAt }}
+          </p>
+          <form
+            v-if="renamingId === card.id"
+            class="mt-3 flex gap-2"
+            @submit.prevent="commitRename(card.id)"
           >
-            Save
-          </button>
-        </form>
-        <div class="mt-3 flex flex-wrap gap-2 text-sm">
-          <button
-            type="button"
-            data-testid="project-open"
-            class="focus-ring min-h-10 rounded-md px-2 font-medium text-teal-800 hover:underline dark:text-teal-300"
-            @click="router.push({ name: 'project', params: { projectId: card.id } })"
-          >
-            Open
-          </button>
-          <button
-            type="button"
-            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
-            @click="startRename(card.id, card.name)"
-          >
-            Rename
-          </button>
-          <button
-            type="button"
-            data-testid="project-duplicate"
-            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
-            @click="duplicate(card.id)"
-          >
-            Duplicate
-          </button>
-          <button
-            type="button"
-            class="focus-ring min-h-10 rounded-md px-2 hover:underline"
-            @click="exportProject(card.id, card.name)"
-          >
-            Export
-          </button>
-          <button
-            type="button"
-            data-testid="project-delete"
-            class="focus-ring min-h-10 rounded-md px-2 text-red-700 hover:underline dark:text-red-300"
-            @click="remove(card.id, card.name)"
-          >
-            Delete
-          </button>
+            <input
+              v-model="renameValue"
+              data-testid="rename-input"
+              maxlength="200"
+              class="field min-w-0 flex-1"
+            />
+            <button type="submit" class="btn btn-secondary min-h-10 px-3 text-xs">Save</button>
+          </form>
+          <div class="mt-auto flex flex-wrap gap-2 pt-4 text-sm">
+            <button
+              type="button"
+              data-testid="project-open"
+              class="btn btn-primary min-h-9 px-3 text-xs"
+              @click="router.push({ name: 'project', params: { projectId: card.id } })"
+            >
+              Open
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary min-h-9 px-3 text-xs"
+              @click="startRename(card.id, card.name)"
+            >
+              Rename
+            </button>
+            <button
+              type="button"
+              data-testid="project-duplicate"
+              class="btn btn-secondary min-h-9 px-3 text-xs"
+              @click="duplicate(card.id)"
+            >
+              Duplicate
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary min-h-9 px-3 text-xs"
+              @click="exportProject(card.id, card.name)"
+            >
+              Export
+            </button>
+            <button
+              type="button"
+              data-testid="project-delete"
+              class="btn btn-ghost min-h-9 px-2 text-xs"
+              style="color: var(--danger)"
+              @click="remove(card.id, card.name)"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </li>
     </ul>

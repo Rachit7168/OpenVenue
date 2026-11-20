@@ -5,6 +5,11 @@ export const SNAPSHOT_LIMIT = 5;
 const DB_NAME = "openvenue";
 const DB_VERSION = 1;
 
+/** Strip Vue proxies / non-cloneable values before IndexedDB writes. */
+export function plainDocument(document: VenueDocument): VenueDocument {
+  return JSON.parse(JSON.stringify(document)) as VenueDocument;
+}
+
 export interface VenueDatabase {
   list(): Promise<VenueDocument[]>;
   put(document: VenueDocument): Promise<void>;
@@ -41,7 +46,8 @@ export function createMemoryDatabase(): VenueDatabase {
       return [...projects.values()];
     },
     async put(document) {
-      projects.set(document.project.id, structuredClone(document));
+      const plain = plainDocument(document);
+      projects.set(plain.project.id, plain);
     },
     async remove(projectId) {
       projects.delete(projectId);
@@ -52,14 +58,15 @@ export function createMemoryDatabase(): VenueDatabase {
       return records.at(-1)?.document ?? null;
     },
     async addSnapshot(document) {
-      const records = snapshots.get(document.project.id) ?? [];
+      const plain = plainDocument(document);
+      const records = snapshots.get(plain.project.id) ?? [];
       records.push({
-        key: `${document.project.id}:${document.project.metadata.updatedAt}:${records.length}`,
-        projectId: document.project.id,
-        savedAt: document.project.metadata.updatedAt,
-        document: structuredClone(document),
+        key: `${plain.project.id}:${plain.project.metadata.updatedAt}:${records.length}`,
+        projectId: plain.project.id,
+        savedAt: plain.project.metadata.updatedAt,
+        document: plain,
       });
-      snapshots.set(document.project.id, records.slice(-SNAPSHOT_LIMIT));
+      snapshots.set(plain.project.id, records.slice(-SNAPSHOT_LIMIT));
     },
   };
 }
@@ -110,24 +117,36 @@ function indexedDatabase(database: IDBDatabase): VenueDatabase {
       return records.map((record) => record.document);
     },
     put: async (document) => {
+      const plain = plainDocument(document);
       await transaction(database, "projects", "readwrite", (store) =>
-        store.put({ projectId: document.project.id, document }),
+        store.put({ projectId: plain.project.id, document: plain }),
       );
     },
     remove: async (projectId) => {
       await transaction(database, "projects", "readwrite", (store) => store.delete(projectId));
+      const records = await snapshotsFor(database, projectId);
+      if (records.length === 0) {
+        return;
+      }
+      const tx = database.transaction("snapshots", "readwrite");
+      const store = tx.objectStore("snapshots");
+      for (const record of records) {
+        store.delete(record.key);
+      }
+      await transactionDone(tx);
     },
     latestSnapshot: async (projectId) => {
       const records = await snapshotsFor(database, projectId);
       return records.at(-1)?.document ?? null;
     },
     addSnapshot: async (document) => {
-      const records = await snapshotsFor(database, document.project.id);
+      const plain = plainDocument(document);
+      const records = await snapshotsFor(database, plain.project.id);
       const next: SnapshotRecord = {
-        key: `${document.project.id}:${document.project.metadata.updatedAt}:${records.length}`,
-        projectId: document.project.id,
-        savedAt: document.project.metadata.updatedAt,
-        document,
+        key: `${plain.project.id}:${plain.project.metadata.updatedAt}:${records.length}`,
+        projectId: plain.project.id,
+        savedAt: plain.project.metadata.updatedAt,
+        document: plain,
       };
       const tx = database.transaction("snapshots", "readwrite");
       const store = tx.objectStore("snapshots");

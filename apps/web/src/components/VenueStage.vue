@@ -31,6 +31,7 @@ const emit = defineEmits<{
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
+const stageError = ref("");
 let view: VenueView | null = null;
 let observer: ResizeObserver | null = null;
 let unsubscribe: (() => void) | null = null;
@@ -50,7 +51,10 @@ onMounted(() => {
   }
   try {
     view = mountVenueView(element);
+    stageError.value = "";
   } catch {
+    stageError.value =
+      "3D preview needs WebGL. Try another browser or switch back to the plan view.";
     return;
   }
   view.setHandlers({
@@ -139,7 +143,7 @@ function onAssetDrop(event: DragEvent) {
   emit("place", assetId, point);
 }
 
-defineExpose({ fit: fitView, reset: resetView });
+defineExpose({ fit: fitView, reset: resetView, stageError });
 
 onBeforeUnmount(() => {
   unsubscribe?.();
@@ -150,7 +154,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="h-full min-h-0 w-full bg-zinc-950" @dragover.prevent @drop="onAssetDrop">
-    <canvas ref="canvas" data-testid="venue-stage" class="h-full w-full" />
+  <div class="editor-stage-shell" @dragover.prevent @drop="onAssetDrop">
+    <p v-if="stageError" class="editor-stage-error" role="alert">{{ stageError }}</p>
+    <canvas ref="canvas" data-testid="venue-stage" class="editor-stage-canvas" />
   </div>
 </template>
