@@ -84,6 +84,25 @@ describe("DialogChrome open/close", () => {
     expect(wrapper.find("[data-testid=place-popover]").exists()).toBe(false);
   });
 
+  it("opens the place popover from a closed state", async () => {
+    const wrapper = mount(DialogChrome, {
+      props: {
+        findOpen: true,
+        searchOpen: false,
+        popoverOpen: false,
+        popoverLabel: "Gnosis",
+      },
+    });
+
+    expect(wrapper.find("[data-testid=place-popover]").exists()).toBe(false);
+    await wrapper.setProps({ findOpen: false, searchOpen: false, popoverOpen: true });
+    await nextTick();
+
+    expect(wrapper.find("[data-testid=place-popover]").exists()).toBe(true);
+    expect(wrapper.find("[data-testid=find-panel]").exists()).toBe(false);
+    expect(wrapper.get("[data-testid=place-popover]").attributes("aria-label")).toBe("Gnosis");
+  });
+
   it("closes the place popover from its close control", async () => {
     const wrapper = mount(DialogChrome, {
       props: {
