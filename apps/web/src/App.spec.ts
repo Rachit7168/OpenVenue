@@ -61,10 +61,10 @@ describe("app shell", () => {
     await flushPromises();
 
     await vi.waitUntil(() => first.wrapper.text().includes("No projects yet"));
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-    await first.wrapper.get("[data-testid=theme-toggle]").trigger("click");
     expect(document.documentElement.classList.contains("dark")).toBe(false);
-    expect(localStorage.getItem("openvenue-theme")).toBe("light");
+    await first.wrapper.get("[data-testid=theme-toggle]").trigger("click");
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(localStorage.getItem("openvenue-theme")).toBe("dark");
 
     await first.wrapper.get("[data-testid=new-project]").trigger("click");
     await first.wrapper.get("[data-testid=project-name]").setValue("Main hall");

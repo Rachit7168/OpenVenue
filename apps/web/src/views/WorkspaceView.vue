@@ -428,7 +428,7 @@ async function saveGlb() {
 </script>
 
 <template>
-  <main class="editor-shell mx-auto flex max-w-[94rem] flex-col gap-4 px-4 py-4 sm:px-6">
+  <main class="editor-shell mx-auto flex max-w-[94rem] flex-col gap-4 px-4 py-5 sm:px-6">
     <div
       v-if="library.error || store.issues.length > 0"
       class="flex flex-col gap-2"
@@ -440,11 +440,14 @@ async function saveGlb() {
     <div class="editor-toolbar flex flex-wrap items-center gap-2">
       <RouterLink
         to="/projects"
-        class="inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium text-teal-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300 dark:focus-visible:ring-teal-400"
+        class="focus-ring inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium hover:underline"
+        style="color: var(--accent-deep)"
       >
         All projects
       </RouterLink>
-      <h1 class="text-lg font-semibold tracking-tight">{{ store.document.project.name }}</h1>
+      <h1 class="font-display text-lg font-semibold tracking-tight">
+        {{ store.document.project.name }}
+      </h1>
       <div class="flex gap-1">
         <button
           type="button"

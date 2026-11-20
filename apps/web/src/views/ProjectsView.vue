@@ -235,20 +235,18 @@ function importFile(event: Event) {
 </script>
 
 <template>
-  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <main class="page-grid mx-auto max-w-6xl px-4 py-8 sm:px-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 class="text-2xl font-semibold tracking-tight">Projects</h1>
-        <p class="mt-1 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          Venues stay in this browser. Nothing is uploaded.
-        </p>
+      <div class="rise-in">
+        <h1 class="section-title">Projects</h1>
+        <p class="section-copy">Venues stay in this browser. Nothing is uploaded.</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button
           ref="newProjectButton"
           type="button"
           data-testid="new-project"
-          class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300 dark:focus-visible:ring-teal-200"
+          class="btn btn-primary min-h-10 px-3"
           @click="wizardOpen = !wizardOpen"
         >
           New project
@@ -256,7 +254,7 @@ function importFile(event: Event) {
         <button
           type="button"
           data-testid="import-project"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+          class="btn btn-secondary min-h-10 px-3"
           @click="fileInput?.click()"
         >
           Import JSON
@@ -264,7 +262,7 @@ function importFile(event: Event) {
         <button
           type="button"
           data-testid="conference-hall"
-          class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+          class="btn btn-secondary min-h-10 px-3"
           @click="openConferenceHall"
         >
           Conference hall
@@ -273,7 +271,7 @@ function importFile(event: Event) {
           <button
             type="button"
             data-testid="templates-menu-btn"
-            class="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus-visible:ring-teal-400"
+            class="btn btn-secondary min-h-10 px-3"
             @click="templatesMenuOpen = !templatesMenuOpen"
           >
             Blueprints ▾
@@ -463,12 +461,7 @@ function importFile(event: Event) {
     </div>
 
     <ul v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <li
-        v-for="card in cards"
-        :key="card.id"
-        data-testid="project-card"
-        class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-      >
+      <li v-for="card in cards" :key="card.id" data-testid="project-card" class="project-tile p-4">
         <div data-testid="project-thumbnail" class="h-40 overflow-hidden rounded-md">
           <FloorPlan :document="card.document" :interactive="false" />
         </div>
