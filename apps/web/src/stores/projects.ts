@@ -1,4 +1,9 @@
-import { loadVenueJson, VenueValidationError, type VenueDocument } from "@openvenue/scene-schema";
+import {
+  loadVenueJson,
+  validateVenue,
+  VenueValidationError,
+  type VenueDocument,
+} from "@openvenue/scene-schema";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
@@ -121,8 +126,15 @@ export const useProjectLibrary = defineStore("projects", () => {
         }
       }
       for (const item of batch) {
-        await store.put(item);
-        await store.addSnapshot(item);
+        const checked = validateVenue(item);
+        if (!checked.valid) {
+          saveState.value = "error";
+          error.value = checked.issues[0] ?? "This venue could not be saved.";
+          return;
+        }
+        const document = checked.document;
+        await store.put(document);
+        await store.addSnapshot(document);
       }
       saveState.value = "saved";
     } catch {
@@ -146,7 +158,13 @@ export const useProjectLibrary = defineStore("projects", () => {
 
   function save(document: VenueDocument): void {
     try {
-      queue(upsertProject(projects.value, document));
+      const checked = validateVenue(document);
+      if (!checked.valid) {
+        saveState.value = "error";
+        error.value = checked.issues[0] ?? "This venue could not be saved.";
+        return;
+      }
+      queue(upsertProject(projects.value, checked.document));
       error.value = "";
     } catch {
       error.value = "Could not save projects in this browser.";

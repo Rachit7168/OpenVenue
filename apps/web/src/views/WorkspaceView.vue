@@ -428,8 +428,16 @@ async function saveGlb() {
 </script>
 
 <template>
-  <main class="mx-auto flex max-w-[90rem] flex-col gap-4 px-4 py-4 sm:px-6">
-    <div class="flex flex-wrap items-center gap-2">
+  <main class="editor-shell mx-auto flex max-w-[94rem] flex-col gap-4 px-4 py-4 sm:px-6">
+    <div
+      v-if="library.error || store.issues.length > 0"
+      class="flex flex-col gap-2"
+      aria-live="polite"
+    >
+      <p v-if="library.error" class="editor-alert-error">{{ library.error }}</p>
+      <p v-for="issue in store.issues" :key="issue" class="editor-alert-error">{{ issue }}</p>
+    </div>
+    <div class="editor-toolbar flex flex-wrap items-center gap-2">
       <RouterLink
         to="/projects"
         class="inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium text-teal-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300 dark:focus-visible:ring-teal-400"
@@ -440,18 +448,18 @@ async function saveGlb() {
       <div class="flex gap-1">
         <button
           type="button"
-          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          class="btn-segment"
           :aria-pressed="viewMode === 'plan'"
-          :class="viewMode === 'plan' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          :class="viewMode === 'plan' ? 'btn-segment-active' : 'btn-segment-idle'"
           @click="viewMode = 'plan'"
         >
           Plan
         </button>
         <button
           type="button"
-          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          class="btn-segment"
           :aria-pressed="viewMode === 'stage'"
-          :class="viewMode === 'stage' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          :class="viewMode === 'stage' ? 'btn-segment-active' : 'btn-segment-idle'"
           data-testid="view-3d"
           @click="viewMode = 'stage'"
         >
@@ -459,9 +467,9 @@ async function saveGlb() {
         </button>
         <button
           type="button"
-          class="focus-ring min-h-10 rounded-md px-3 text-sm font-medium"
+          class="btn-segment"
           :aria-pressed="viewMode === 'both'"
-          :class="viewMode === 'both' ? 'bg-teal-400 text-zinc-950' : 'bg-zinc-800 text-zinc-100'"
+          :class="viewMode === 'both' ? 'btn-segment-active' : 'btn-segment-idle'"
           data-testid="view-both"
           @click="viewMode = 'both'"
         >
@@ -535,8 +543,8 @@ async function saveGlb() {
       </div>
     </div>
 
-    <section class="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <div class="flex min-h-[36rem] flex-col overflow-hidden rounded-xl border border-zinc-800">
+    <section class="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <div class="editor-canvas-frame">
         <div
           v-if="viewMode !== 'plan'"
           class="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-900 p-2"
@@ -797,7 +805,9 @@ async function saveGlb() {
           it, or Find a room. Escape closes the card, then shows every floor.
         </p>
       </div>
-      <Inspector />
+      <div class="editor-sidebar">
+        <Inspector />
+      </div>
     </section>
 
     <section class="grid gap-4 lg:grid-cols-2">

@@ -6,6 +6,7 @@ from healthcheck.views import health
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/v1/", include("users.urls")),
     path("api/v1/", include("projects.urls")),
     path("api/v1/health/", health, name="health"),
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),

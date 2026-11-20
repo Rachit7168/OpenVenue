@@ -29,10 +29,10 @@ const userInitials = computed(() => {
   return auth.user.name.slice(0, 2).toUpperCase();
 });
 
-function handleSignOut() {
+async function handleSignOut() {
   userMenuOpen.value = false;
   mobileMenuOpen.value = false;
-  auth.logout();
+  await auth.logout();
   toast.info("Signed out", "You have been signed out.");
   void router.push("/");
 }

@@ -103,6 +103,8 @@ Dockerfiles: [apps/api/Dockerfile](apps/api/Dockerfile) and [apps/web/Dockerfile
 | `packages/renderer-2d`  | Plan viewport: pan, zoom, and grid                            |
 | `packages/renderer-3d`  | Three.js hall built from the venue document                   |
 
+For API-backed sign-in, run the API (`apps/api`) and set `VITE_API_URL=/api/v1` in a root `.env.development` file (the web dev server proxies `/api` to port 8000). Staff can manage accounts at `http://localhost:8000/admin/`.
+
 ## License
 
 [Apache-2.0](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

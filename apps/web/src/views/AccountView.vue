@@ -24,17 +24,22 @@ const initials = computed(() => {
   return (auth.user?.name ?? "V").slice(0, 2).toUpperCase();
 });
 
-function handleSaveProfile() {
-  auth.updateProfile({
-    name: name.value,
-    organization: organization.value,
-    role: role.value,
-  });
-  toast.success("Profile updated", "Your profile changes have been saved.");
+async function handleSaveProfile() {
+  try {
+    await auth.updateProfile({
+      name: name.value,
+      organization: organization.value,
+      role: role.value,
+    });
+    toast.success("Profile updated", "Your profile changes have been saved.");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Profile could not be saved.";
+    toast.error("Update failed", message);
+  }
 }
 
-function handleSignOut() {
-  auth.logout();
+async function handleSignOut() {
+  await auth.logout();
   toast.info("Signed out", "You have been signed out.");
   void router.push("/");
 }
