@@ -15,6 +15,8 @@ export {
   findCategories,
   floorsForChrome,
   mapPlaces,
+  mergePlaceDetails,
+  safeExternalHref,
   searchPlaces,
   zoneMapColor,
   type FindCategory,

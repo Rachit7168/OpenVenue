@@ -463,19 +463,11 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
   const beginWalk = () => {
     const floor = displayedFloor();
     const spawns = lastDocument?.venue.spawnPoints ?? [];
+    // Stay on the currently shown floor — never jump to another floor's spawn.
     const spawn =
       spawns.find((point) => point.role === "visitor" && point.floorId === floor?.id) ??
       spawns.find((point) => point.floorId === floor?.id) ??
-      spawns.find((point) => point.role === "visitor") ??
-      spawns[0];
-    if (spawn && mode !== "map" && spawn.floorId !== shownFloorId) {
-      shownFloorId = spawn.floorId;
-      if (lastDocument) {
-        replaceDocument(lastDocument, true);
-      }
-      syncDropPlane();
-      onFloor(spawn.floorId);
-    }
+      null;
     const walls = currentWalls();
     walker = spawn
       ? spawnWalker(spawn.position, spawn.rotationY, walls)
@@ -713,6 +705,7 @@ export function mountVenueView(canvas: HTMLCanvasElement): VenueView {
         replaceDocument(lastDocument, true);
       }
       if (next === "walk") {
+        // beginWalk uses displayedFloor()/shownFloorId — caller should setShownFloor first.
         beginWalk();
         return;
       }

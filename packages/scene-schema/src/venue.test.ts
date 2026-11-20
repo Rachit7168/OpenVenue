@@ -41,8 +41,12 @@ describe("venue schema", () => {
     expect(zone?.interaction?.contentRef).toBe("content/food-court.json");
     expect(zone?.category).toBe("food-drink");
     expect(zone?.icon).toBe("food");
-    expect(zone?.blurb).toContain("menu");
+    expect(zone?.blurb).toBe("Coffee, lunch, and the venue menu.");
+    expect(zone?.mapColor).toBe("#86efac");
     expect(firstFloor(result.document).mapMarkers?.[0]?.kind).toBe("entrance");
+    expect(firstFloor(result.document).mapMarkers?.[0]?.id).toBe(
+      "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+    );
     expect(result.document.venue.spawnPoints).toHaveLength(1);
     expect(result.document.venue.navigation?.walkableAreas).toHaveLength(1);
   });
@@ -145,6 +149,32 @@ describe("venue schema", () => {
     expect(danglingResult.valid).toBe(false);
     if (!danglingResult.valid) {
       expect(danglingResult.issues.some((issue) => issue.includes("missing floor"))).toBe(true);
+    }
+
+    const markerClash = readExample("venue-with-zone.json") as {
+      venue: {
+        floors: {
+          zones: { id: string }[];
+          mapMarkers?: { id: string; kind: string; position: { x: number; z: number } }[];
+        }[];
+      };
+    };
+    const floor = markerClash.venue.floors[0];
+    const zoneId = floor?.zones[0]?.id;
+    if (!floor || !zoneId) {
+      throw new Error("expected sample zone");
+    }
+    floor.mapMarkers = [
+      {
+        id: zoneId,
+        kind: "entrance",
+        position: { x: 1, z: 1 },
+      },
+    ];
+    const markerResult = validateVenue(markerClash);
+    expect(markerResult.valid).toBe(false);
+    if (!markerResult.valid) {
+      expect(markerResult.issues.some((issue) => issue.includes("Duplicate id"))).toBe(true);
     }
   });
 

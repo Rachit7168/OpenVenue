@@ -16,7 +16,7 @@ export const MAP_CATEGORIES = [
   { id: "other", label: "Other" },
 ] as const;
 
-export type MapCategoryId = (typeof MAP_CATEGORIES)[number]["id"];
+export type KnownMapCategoryId = (typeof MAP_CATEGORIES)[number]["id"];
 
 const CATEGORY_COLORS: Record<string, string> = {
   stages: "#93c5fd",
@@ -44,37 +44,103 @@ const ICON_GLYPH: Record<string, string> = {
   other: "•",
 };
 
+export interface MapLink {
+  label: string;
+  href: string;
+  kind?: string;
+}
+
 export interface MapPlace {
   id: string;
   name: string;
   floorId: string;
   floorName: string;
   floorLevel: number;
-  category: MapCategoryId;
+  category: string;
   categoryLabel: string;
   icon: string;
   color: string;
   blurb: string;
-  links: { label: string; href: string; kind?: string }[];
+  links: MapLink[];
   contentRef?: string;
   x: number;
   z: number;
 }
 
 export interface FindCategory {
-  id: MapCategoryId;
+  id: string;
   label: string;
   count: number;
   byFloor: { floorId: string; floorName: string; floorLevel: number; places: MapPlace[] }[];
 }
 
-function asCategory(value: unknown): MapCategoryId {
-  const id = typeof value === "string" ? value.trim().toLowerCase() : "";
-  return MAP_CATEGORIES.some((item) => item.id === id) ? (id as MapCategoryId) : "other";
+export function safeExternalHref(href: string | undefined | null): string | null {
+  if (typeof href !== "string") {
+    return null;
+  }
+  const trimmed = href.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(trimmed)?.[1]?.toLowerCase();
+  if (!scheme) {
+    return null;
+  }
+  if (scheme === "mailto") {
+    return trimmed;
+  }
+  if (scheme === "http" || scheme === "https") {
+    // Reject obvious script / data payloads even if scheme looks fine.
+    if (/[\s<>"']/.test(trimmed) || trimmed.toLowerCase().includes("javascript:")) {
+      return null;
+    }
+    return trimmed;
+  }
+  return null;
 }
 
-export function zoneCategory(zone: Zone): MapCategoryId {
-  return asCategory(zone.category);
+export function sanitizeLinks(
+  links: { label?: string; href: string; kind?: string }[] | undefined,
+): MapLink[] {
+  if (!Array.isArray(links)) {
+    return [];
+  }
+  return links.flatMap((link) => {
+    const href = safeExternalHref(link.href);
+    if (!href) {
+      return [];
+    }
+    return [
+      {
+        href,
+        label: typeof link.label === "string" && link.label.trim() ? link.label.trim() : "Link",
+        kind: typeof link.kind === "string" ? link.kind : undefined,
+      },
+    ];
+  });
+}
+
+function zoneVisible(zone: Zone): boolean {
+  return (zone as { visible?: unknown }).visible !== false;
+}
+
+function categoryLabelFor(id: string): string {
+  const known = MAP_CATEGORIES.find((item) => item.id === id);
+  if (known) {
+    return known.label;
+  }
+  return id
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function zoneCategory(zone: Zone): string {
+  if (typeof zone.category === "string" && zone.category.trim()) {
+    return zone.category.trim().toLowerCase();
+  }
+  return "other";
 }
 
 export function zoneIcon(zone: Zone): string {
@@ -82,7 +148,7 @@ export function zoneIcon(zone: Zone): string {
     return zone.icon.trim();
   }
   const category = zoneCategory(zone);
-  const defaults: Record<MapCategoryId, string> = {
+  const defaults: Record<string, string> = {
     stages: "stage",
     "meeting-rooms": "laptop",
     community: "tent",
@@ -94,7 +160,7 @@ export function zoneIcon(zone: Zone): string {
     "fun-rest": "game",
     other: "other",
   };
-  return defaults[category];
+  return defaults[category] ?? "other";
 }
 
 export function zoneMapColor(zone: Zone): string {
@@ -113,23 +179,9 @@ export function iconGlyph(icon: string): string {
 
 export function mapPlaces(document: VenueDocument): MapPlace[] {
   return document.venue.floors.flatMap((floor) =>
-    floor.zones.map((zone) => {
+    floor.zones.filter(zoneVisible).map((zone) => {
       const category = zoneCategory(zone);
       const centre = zone.boundary.length >= 3 ? polygonCentroid(zone.boundary) : { x: 0, z: 0 };
-      const links = Array.isArray(zone.links)
-        ? zone.links.flatMap((link) => {
-            if (!link || typeof link !== "object" || typeof link.href !== "string") {
-              return [];
-            }
-            return [
-              {
-                label: typeof link.label === "string" && link.label.trim() ? link.label : "Link",
-                href: link.href,
-                kind: typeof link.kind === "string" ? link.kind : undefined,
-              },
-            ];
-          })
-        : [];
       return {
         id: zone.id,
         name: zone.name,
@@ -137,11 +189,25 @@ export function mapPlaces(document: VenueDocument): MapPlace[] {
         floorName: floor.name,
         floorLevel: floor.level,
         category,
-        categoryLabel: MAP_CATEGORIES.find((item) => item.id === category)?.label ?? "Other",
+        categoryLabel: categoryLabelFor(category),
         icon: zoneIcon(zone),
         color: zoneMapColor(zone),
         blurb: typeof zone.blurb === "string" ? zone.blurb : "",
-        links,
+        links: sanitizeLinks(
+          Array.isArray(zone.links)
+            ? zone.links.flatMap((link) =>
+                link && typeof link === "object" && typeof link.href === "string"
+                  ? [
+                      {
+                        href: link.href,
+                        label: typeof link.label === "string" ? link.label : undefined,
+                        kind: typeof link.kind === "string" ? link.kind : undefined,
+                      },
+                    ]
+                  : [],
+              )
+            : [],
+        ),
         contentRef: zone.interaction?.contentRef,
         x: centre.x,
         z: centre.z,
@@ -152,8 +218,15 @@ export function mapPlaces(document: VenueDocument): MapPlace[] {
 
 export function findCategories(document: VenueDocument): FindCategory[] {
   const places = mapPlaces(document);
-  return MAP_CATEGORIES.map((category) => {
-    const matched = places.filter((place) => place.category === category.id);
+  const order = new Map<string, number>(MAP_CATEGORIES.map((item, index) => [item.id, index]));
+  const ids = [...new Set(places.map((place) => place.category))];
+  ids.sort((left, right) => {
+    const leftOrder = order.get(left) ?? MAP_CATEGORIES.length;
+    const rightOrder = order.get(right) ?? MAP_CATEGORIES.length;
+    return leftOrder - rightOrder || left.localeCompare(right);
+  });
+  return ids.map((categoryId) => {
+    const matched = places.filter((place) => place.category === categoryId);
     const floors = new Map<string, FindCategory["byFloor"][number]>();
     for (const place of matched) {
       let group = floors.get(place.floorId);
@@ -169,12 +242,12 @@ export function findCategories(document: VenueDocument): FindCategory[] {
       group.places.push(place);
     }
     return {
-      id: category.id,
-      label: category.label,
+      id: categoryId,
+      label: categoryLabelFor(categoryId),
       count: matched.length,
       byFloor: [...floors.values()].sort((a, b) => a.floorLevel - b.floorLevel),
     };
-  }).filter((category) => category.count > 0);
+  });
 }
 
 export function searchPlaces(document: VenueDocument, query: string): MapPlace[] {
@@ -211,4 +284,32 @@ export function floorsForChrome(
       label: `L${floor.level}`,
       level: floor.level,
     }));
+}
+
+export function mergePlaceDetails(
+  place: MapPlace,
+  content: { body?: string; links?: MapLink[]; icon?: string; title?: string },
+): { title: string; body: string; links: MapLink[]; icon: string } {
+  const contentLinks = sanitizeLinks(content.links);
+  const seen = new Set(contentLinks.map((link) => link.href));
+  const links = [
+    ...contentLinks,
+    ...place.links.filter((link) => {
+      if (seen.has(link.href)) {
+        return false;
+      }
+      seen.add(link.href);
+      return true;
+    }),
+  ];
+  const body =
+    typeof content.body === "string" && content.body.trim()
+      ? content.body
+      : place.blurb || "No extra details are attached.";
+  return {
+    title: content.title?.trim() || place.name,
+    body,
+    links,
+    icon: content.icon || place.icon,
+  };
 }

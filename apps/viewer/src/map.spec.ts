@@ -1,6 +1,14 @@
 import { createEmptyVenue, type VenueDocument } from "@openvenue/scene-schema";
 import { describe, expect, it } from "vitest";
-import { findCategories, floorsForChrome, mapPlaces, searchPlaces, zoneMapColor } from "./map.js";
+import {
+  findCategories,
+  floorsForChrome,
+  mapPlaces,
+  mergePlaceDetails,
+  safeExternalHref,
+  searchPlaces,
+  zoneMapColor,
+} from "./map.js";
 
 function demo(): VenueDocument {
   const document = createEmptyVenue("Campus");
@@ -14,7 +22,7 @@ function demo(): VenueDocument {
       name: "Jasmine Stage 4",
       category: "stages",
       icon: "stage",
-      mapColor: "#93c5fd",
+      mapColor: "#112233",
       blurb: "Talks and panels.",
       boundary: [
         { x: 0, z: 0 },
@@ -35,6 +43,19 @@ function demo(): VenueDocument {
         { x: 10, z: 0 },
         { x: 10, z: 4 },
         { x: 6, z: 4 },
+      ],
+    },
+    {
+      id: "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e55",
+      type: "zone",
+      name: "Hidden lounge",
+      category: "cowork",
+      visible: false,
+      boundary: [
+        { x: 12, z: 0 },
+        { x: 14, z: 0 },
+        { x: 14, z: 2 },
+        { x: 12, z: 2 },
       ],
     },
   );
@@ -61,6 +82,22 @@ function demo(): VenueDocument {
           { x: 0, z: 3 },
         ],
       },
+      {
+        id: "6f1c2a40-7b2e-4c1a-9d3e-1a2b3c4d5e56",
+        type: "zone",
+        name: "Press room",
+        category: "media-suite",
+        boundary: [
+          { x: 4, z: 0 },
+          { x: 7, z: 0 },
+          { x: 7, z: 3 },
+          { x: 4, z: 3 },
+        ],
+        links: [
+          { label: "Site", href: "https://example.com" },
+          { label: "Bad", href: "javascript:alert(1)" },
+        ],
+      },
     ],
   });
   return document;
@@ -72,17 +109,32 @@ describe("map helpers", () => {
     const categories = findCategories(document);
     expect(categories.find((item) => item.id === "stages")?.count).toBe(1);
     expect(categories.find((item) => item.id === "food-drink")?.count).toBe(1);
+    expect(categories.find((item) => item.id === "media-suite")?.label).toBe("Media Suite");
     expect(searchPlaces(document, "gnosis")[0]?.name).toBe("Gnosis");
     expect(searchPlaces(document, "level 2")[0]?.name).toBe("Gnosis");
-    expect(mapPlaces(document)).toHaveLength(3);
+    expect(mapPlaces(document).some((place) => place.name === "Hidden lounge")).toBe(false);
+    expect(mapPlaces(document)).toHaveLength(4);
   });
 
-  it("uses mapColor then category defaults", () => {
+  it("uses mapColor then category defaults and sanitizes links", () => {
     const document = demo();
     const stage = document.venue.floors[0]!.zones[0]!;
-    expect(zoneMapColor(stage)).toBe("#93c5fd");
+    expect(zoneMapColor(stage)).toBe("#112233");
     const food = document.venue.floors[0]!.zones[1]!;
     expect(zoneMapColor(food)).toBe("#86efac");
+    expect(safeExternalHref("javascript:alert(1)")).toBeNull();
+    expect(safeExternalHref("https://example.com/x")).toBe("https://example.com/x");
+    const press = mapPlaces(document).find((place) => place.name === "Press room");
+    expect(press?.links.map((link) => link.href)).toEqual(["https://example.com"]);
+    const merged = mergePlaceDetails(press!, {
+      body: "From content",
+      links: [{ label: "More", href: "https://example.com/more" }],
+    });
+    expect(merged.body).toBe("From content");
+    expect(merged.links.map((link) => link.href)).toEqual([
+      "https://example.com/more",
+      "https://example.com",
+    ]);
   });
 
   it("orders floor chrome from top level down and ignores empty search", () => {

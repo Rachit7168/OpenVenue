@@ -9,6 +9,7 @@ import {
   floorMarkers,
   iconGlyph,
   mapPlaces,
+  mergePlaceDetails,
   searchPlaces,
   zoneMapColor,
   type FindCategory,
@@ -88,15 +89,26 @@ function writeUrl() {
   window.history.replaceState({}, "", url);
 }
 
+function stopContentRefresh() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
 function applyCameraForMode() {
   if (!view) {
     return;
   }
   if (viewMode.value === "walk") {
-    view.setCameraMode("walk");
-    view.setWalkClick(true);
+    // Set the walk floor before entering walk so beginWalk stays on that level.
     if (floorId.value) {
       view.setShownFloor(floorId.value);
+    }
+    view.setCameraMode("walk");
+    view.setWalkClick(true);
+    if (selectedPlaceId.value) {
+      view.setSelected(selectedPlaceId.value);
     }
     return;
   }
@@ -104,6 +116,9 @@ function applyCameraForMode() {
   view.setWalkTarget(null);
   view.setCameraMode("map");
   view.setMapFloor(floorId.value);
+  if (selectedPlaceId.value) {
+    view.setSelected(selectedPlaceId.value);
+  }
   view.fit();
 }
 
@@ -155,6 +170,7 @@ function drawMap2d() {
   }
   const stack = floors.length > 1;
   const sliceHeight = stack ? height / floors.length : height;
+  const placesById = new Map(mapPlaces(current).map((place) => [place.id, place]));
   floors.forEach((floor, index) => {
     const offsetY = stack ? (floors.length - 1 - index) * sliceHeight : 0;
     const project = mapProjection(floor, width, sliceHeight - 16).toScreen;
@@ -171,9 +187,10 @@ function drawMap2d() {
       context.stroke();
     }
     for (const zone of floor.zones) {
-      if (zone.boundary.length < 3) {
+      if (zone.boundary.length < 3 || (zone as { visible?: unknown }).visible === false) {
         continue;
       }
+      const place = placesById.get(zone.id);
       const active = selectedPlaceId.value === zone.id || hoverZoneId.value === zone.id;
       context.beginPath();
       const first = project(zone.boundary[0]!.x, zone.boundary[0]!.z);
@@ -190,24 +207,27 @@ function drawMap2d() {
       context.strokeStyle = active ? "#0f172a" : "#475569";
       context.lineWidth = active ? 2.5 : 1;
       context.stroke();
-      const cx = zone.boundary.reduce((sum, point) => sum + point.x, 0) / zone.boundary.length;
-      const cz = zone.boundary.reduce((sum, point) => sum + point.z, 0) / zone.boundary.length;
-      const centre = project(cx, cz);
+      const centre = project(place?.x ?? 0, place?.z ?? 0);
       context.fillStyle = "#0f172a";
       context.font = "12px sans-serif";
       context.textAlign = "center";
-      const place = mapPlaces(current).find((item) => item.id === zone.id);
       context.fillText(iconGlyph(place?.icon ?? "other"), centre.x, centre.y + 4);
     }
     for (const marker of floorMarkers(floor)) {
       const point = project(marker.position.x, marker.position.z);
+      const yaw = marker.rotationY ?? 0;
       context.fillStyle = marker.kind === "exit" ? "#fb7185" : "#1d4ed8";
+      context.save();
+      context.translate(point.x, point.y);
+      // Canvas Y is down; negate yaw so 0 points "up" the plan (+Z in mapProjection).
+      context.rotate(-yaw);
       context.beginPath();
-      context.moveTo(point.x, point.y - 6);
-      context.lineTo(point.x + 5, point.y + 4);
-      context.lineTo(point.x - 5, point.y + 4);
+      context.moveTo(0, -6);
+      context.lineTo(5, 4);
+      context.lineTo(-5, 4);
       context.closePath();
       context.fill();
+      context.restore();
     }
     context.fillStyle = "#334155";
     context.font = "bold 12px sans-serif";
@@ -218,6 +238,8 @@ function drawMap2d() {
 }
 
 async function openDocument(text: string) {
+  stopContentRefresh();
+  contentGeneration += 1;
   const loaded = loadVenueJson(text);
   document.value = loaded;
   const spawn = visitorSpawn(loaded);
@@ -237,12 +259,13 @@ async function openDocument(text: string) {
   panel.value = null;
   popover.value = null;
   selectedPlaceId.value = null;
+  activeContentRef.value = null;
   status.value = loaded.project.name;
   view?.setDocument(loaded);
-  applyCameraForMode();
-  if (viewMode.value === "walk") {
-    view?.setShownFloor(floorId.value ?? spawn.floorId);
+  if (viewMode.value === "walk" && !floorId.value) {
+    floorId.value = spawn.floorId;
   }
+  applyCameraForMode();
   if (requestedPlace) {
     const place = mapPlaces(loaded).find((item) => item.id === requestedPlace);
     if (place) {
@@ -264,16 +287,18 @@ async function onFile(event: Event) {
 }
 
 async function openContent(contentRef: string | undefined, fallback?: MapPlace) {
+  stopContentRefresh();
   const generation = ++contentGeneration;
   if (!contentRef) {
     activeContentRef.value = null;
     if (fallback) {
+      const merged = mergePlaceDetails(fallback, {});
       panel.value = {
-        title: fallback.name,
+        title: merged.title,
         kind: "info",
-        body: fallback.blurb || "No extra details are attached.",
-        icon: fallback.icon,
-        links: fallback.links,
+        body: merged.body,
+        icon: merged.icon,
+        links: merged.links,
       };
       return;
     }
@@ -301,26 +326,52 @@ async function openContent(contentRef: string | undefined, fallback?: MapPlace) 
     if (generation !== contentGeneration) {
       return;
     }
-    const parsed = parseContent(response.ok ? await response.json() : null);
-    if (fallback) {
-      parsed.icon ??= fallback.icon;
-      parsed.links ??= fallback.links;
-      parsed.body ??= fallback.blurb || parsed.body;
+    if (!response.ok) {
+      console.warn(`Venue content failed (${response.status}): ${contentRef}`);
     }
-    panel.value = parsed;
-    status.value = document.value?.project.name ?? "Visitor";
-  } catch {
+    const payload = response.ok ? await response.json() : null;
     if (generation !== contentGeneration) {
       return;
     }
-    panel.value = {
-      title: fallback?.name ?? "Details",
-      kind: "info",
-      body: fallback?.blurb || "The content file could not be loaded.",
-      icon: fallback?.icon,
-      links: fallback?.links,
-    };
+    const parsed = parseContent(payload);
+    if (fallback) {
+      const merged = mergePlaceDetails(fallback, parsed);
+      panel.value = {
+        ...parsed,
+        title: merged.title,
+        body: merged.body,
+        icon: merged.icon,
+        links: merged.links,
+      };
+    } else {
+      panel.value = parsed;
+    }
     status.value = document.value?.project.name ?? "Visitor";
+  } catch (error) {
+    if (generation !== contentGeneration) {
+      return;
+    }
+    console.warn("Venue content request failed", error);
+    if (fallback) {
+      const merged = mergePlaceDetails(fallback, {});
+      panel.value = {
+        title: merged.title,
+        kind: "info",
+        body: fallback.blurb || "The content file could not be loaded.",
+        icon: merged.icon,
+        links: merged.links,
+      };
+    } else {
+      panel.value = {
+        title: "Details",
+        kind: "info",
+        body: "The content file could not be loaded.",
+      };
+    }
+    status.value = document.value?.project.name ?? "Visitor";
+  }
+  if (generation !== contentGeneration) {
+    return;
   }
   if (audio) {
     audio.pause();
@@ -334,17 +385,16 @@ async function openContent(contentRef: string | undefined, fallback?: MapPlace) 
 }
 
 async function selectPlace(place: MapPlace, closePanels = true) {
+  stopContentRefresh();
   selectedPlaceId.value = place.id;
   popover.value = place;
+  view?.setSelected(place.id);
   if (viewMode.value === "walk") {
     floorId.value = place.floorId;
     view?.setShownFloor(place.floorId);
     view?.setWalkTarget({ x: place.x, z: place.z });
-  } else {
-    if (floorId.value !== null && floorId.value !== place.floorId) {
-      setFloorFilter(place.floorId);
-    }
-    view?.setSelected(place.id);
+  } else if (floorId.value !== null && floorId.value !== place.floorId) {
+    setFloorFilter(place.floorId);
   }
   if (closePanels) {
     findOpen.value = false;
@@ -356,9 +406,12 @@ async function selectPlace(place: MapPlace, closePanels = true) {
 }
 
 function clearSelection() {
+  stopContentRefresh();
+  contentGeneration += 1;
   selectedPlaceId.value = null;
   popover.value = null;
   panel.value = null;
+  activeContentRef.value = null;
   view?.setSelected(null);
   writeUrl();
   drawMap2d();
@@ -386,10 +439,15 @@ function activeFloorIdForPick(): string | null {
 }
 
 function onSceneHover(event: MouseEvent) {
+  // In 3D map All-floors mode, plane picking is ambiguous; selection comes from mesh picks.
+  if (viewMode.value === "2d" || (viewMode.value === "3d" && floorId.value === null)) {
+    hoverZoneId.value = null;
+    return;
+  }
   const current = document.value;
   const floor = activeFloorIdForPick();
   const point = view?.floorPoint(event.clientX, event.clientY);
-  if (!current || !floor || !point || viewMode.value === "2d") {
+  if (!current || !floor || !point) {
     hoverZoneId.value = null;
     return;
   }
@@ -398,10 +456,14 @@ function onSceneHover(event: MouseEvent) {
 }
 
 function onSceneClick(event: MouseEvent) {
+  // 3D map selection is handled by renderer mesh picks (works for All floors).
+  if (viewMode.value !== "walk") {
+    return;
+  }
   const current = document.value;
   const floor = activeFloorIdForPick();
   const point = view?.floorPoint(event.clientX, event.clientY);
-  if (!current || !floor || !point || viewMode.value === "2d") {
+  if (!current || !floor || !point) {
     return;
   }
   const zone = zoneAt(current, floor, point);
@@ -520,13 +582,16 @@ watch(muted, (value) => {
 });
 
 watch(panel, (value) => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-    refreshTimer = null;
-  }
+  stopContentRefresh();
   if (value?.kind === "session-list" && activeContentRef.value) {
     const ref = activeContentRef.value;
+    const placeId = selectedPlaceId.value;
+    const generation = contentGeneration;
     refreshTimer = setInterval(() => {
+      if (generation !== contentGeneration || selectedPlaceId.value !== placeId) {
+        stopContentRefresh();
+        return;
+      }
       void openContent(ref, selectedPlace.value ?? undefined);
     }, 30_000);
   }
@@ -755,17 +820,17 @@ onBeforeUnmount(() => {
         <div class="popover-body">
           <div class="popover-icon" aria-hidden="true">{{ iconGlyph(popover.icon) }}</div>
           <div>
-            <h2>{{ popover.name }}</h2>
+            <h2>{{ panel?.title || popover.name }}</h2>
             <p class="muted">Level {{ popover.floorLevel }} · {{ popover.floorName }}</p>
-            <p v-if="popover.blurb || panel?.body">{{ popover.blurb || panel?.body }}</p>
+            <p v-if="panel?.body || popover.blurb">{{ panel?.body || popover.blurb }}</p>
             <p v-if="live" class="live">{{ live }}</p>
-            <div v-if="popover.links.length || panel?.links?.length" class="link-row">
+            <div v-if="panel?.links?.length || popover.links.length" class="link-row">
               <a
-                v-for="link in popover.links.length ? popover.links : (panel?.links ?? [])"
+                v-for="link in panel?.links?.length ? panel.links : popover.links"
                 :key="link.href"
                 :href="link.href"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 {{ link.label }}
               </a>
